@@ -3,499 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Labs | Mustafa Saraç</title>
-    <meta name="description" content="AI experiments, creative tools, and research projects by Mustafa Saraç">
+    <title>NeuraByte Labs | The Magnificent Seventeen</title>
+    <meta name="description" content="NeuraByte Labs - AI Product Showcase. Architecture for the Sovereign Mind.">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
+        /* --- 1. RESET & VARIABLES --- */
         :root {
-            --bg-primary: #0A0A0A;
-            --bg-secondary: #111111;
-            --bg-card: #161616;
-            --border: #2A2A2A;
-            --text-primary: #FFFFFF;
-            --text-secondary: #888888;
-            --accent-cyan: #00F0FF;
-            --accent-purple: #7000FF;
-            --accent-gold: #D4AF37;
-            --accent-crimson: #FF003C;
-            --accent-green: #00FF94;
+            /* Palette */
+            --bg-void: #020617;
+            --bg-deep: #0f172a;
+            --color-indigo: #6366f1;
+            --color-indigo-glow: rgba(99, 102, 241, 0.5);
+            --color-gold: #fbbf24;
+            --color-gold-dim: #b45309;
+            --color-neural: #7C3AED;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+
+            /* SpinozaOS Tokens */
+            --glass-bg: rgba(2, 6, 23, 0.7);
+            --glass-border: rgba(248, 250, 252, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, #020617 70%);
+
+            /* Typography */
+            --font-serif: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* Spacing */
+            --container-padding: clamp(1rem, 5vw, 4rem);
+            --max-width: 1440px;
         }
 
-        * {
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
+            background-color: var(--bg-void);
             color: var(--text-primary);
-            min-height: 100vh;
+            font-family: var(--font-sans);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .noise {
+        a { text-decoration: none; color: inherit; cursor: pointer; }
+        ul { list-style: none; }
+        button { border: none; background: none; cursor: pointer; font-family: inherit; }
+
+        /* --- 2. UTILITIES --- */
+        .font-serif { font-family: var(--font-serif); }
+        .font-sans { font-family: var(--font-sans); }
+        .font-mono { font-family: var(--font-mono); }
+
+        .text-gold { color: var(--color-gold); }
+        .text-indigo { color: var(--color-indigo); }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--container-padding);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- 3. COMPONENTS --- */
+
+        /* Background Canvas */
+        #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            opacity: 0.03;
+            height: 100vh;
+            z-index: 0;
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.6;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 24px;
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--gradient-hero);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        header {
-            padding: 32px 0;
-            border-bottom: 1px solid var(--border);
+        /* Glass Panel */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
         }
 
-        .header-content {
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 2rem 0;
+            transition: padding 0.3s ease, background 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 1rem 0;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-decoration: none;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
-        .logo:hover {
-            color: var(--text-primary);
+        .logo span { color: var(--color-indigo); }
+
+        .nav-links {
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .nav-links { display: flex; gap: 2rem; }
         }
 
-        .logo-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            border-radius: 4px;
-        }
-
-        nav a {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
+        .nav-link {
+            font-size: 0.875rem;
             color: var(--text-secondary);
-            text-decoration: none;
-            margin-left: 24px;
-            transition: color 0.2s;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
         }
 
-        nav a:hover {
-            color: var(--accent-cyan);
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-gold);
+            transition: width 0.3s ease;
         }
 
-        .hero {
-            padding: 80px 0;
-            text-align: center;
+        .nav-link:hover { color: var(--text-primary); }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Hero Section */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 80px;
         }
 
-        .hero-badge {
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            color: var(--color-gold);
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
             display: inline-block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: var(--accent-cyan);
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            padding: 6px 16px;
-            border-radius: 100px;
-            margin-bottom: 24px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            background: rgba(251, 191, 36, 0.05);
         }
 
         h1 {
-            font-size: clamp(48px, 8vw, 96px);
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1.05;
             font-weight: 700;
-            line-height: 1;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .hero-description {
-            font-size: 18px;
+        .hero-subtext {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
             color: var(--text-secondary);
             max-width: 600px;
-            margin: 0 auto;
+            margin-bottom: 3rem;
             line-height: 1.6;
+            font-weight: 300;
         }
 
-        .projects-grid {
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-indigo);
+            color: white;
+            box-shadow: 0 0 20px -5px var(--color-indigo-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px var(--color-indigo-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Products Grid */
+        #products {
+            padding: 8rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+            text-align: left;
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 24px;
-            padding: 48px 0 80px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
         }
 
-        .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
+        .product-card {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             position: relative;
             overflow: hidden;
         }
 
-        .project-card::before {
+        .product-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--card-accent);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s;
+            z-index: 0;
         }
 
-        .project-card:hover {
-            border-color: var(--card-accent);
-            transform: translateY(-4px);
-        }
-
-        .project-card:hover::before {
+        .product-card:hover::before {
             opacity: 1;
         }
 
-        .project-header {
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
+        }
+
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .project-icon {
+        .status-pill {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+        }
+
+        .status-live { color: #10B981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
+        .status-beta { color: #fbbf24; background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
+        .status-alpha { color: #EF4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+        .status-research { color: #8B5CF6; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); }
+
+        .card-icon {
             width: 48px;
             height: 48px;
             border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.01));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            background: rgba(255,255,255,0.05);
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
         }
 
-        .project-status {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 1px;
-            padding: 4px 10px;
-            border-radius: 100px;
-            text-transform: uppercase;
-        }
-
-        .status-live {
-            color: var(--accent-green);
-            background: rgba(0, 255, 148, 0.1);
-            border: 1px solid rgba(0, 255, 148, 0.2);
-        }
-
-        .status-beta {
-            color: var(--accent-cyan);
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-        }
-
-        .status-dev {
-            color: var(--accent-purple);
-            background: rgba(112, 0, 255, 0.1);
-            border: 1px solid rgba(112, 0, 255, 0.2);
-        }
-
-        .project-title {
-            font-size: 24px;
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
-        .project-tagline {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--card-accent);
-            margin-bottom: 16px;
+        .card-tagline {
+            font-size: 0.875rem;
+            color: var(--color-indigo);
+            font-family: var(--font-mono);
+            margin-bottom: 1rem;
+            display: block;
         }
 
-        .project-description {
-            font-size: 14px;
+        .card-desc {
+            font-size: 1rem;
             color: var(--text-secondary);
             line-height: 1.6;
-            margin-bottom: 24px;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            position: relative;
+            z-index: 1;
         }
 
-        .project-tech {
+        .card-actions {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .tech-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--bg-secondary);
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        .project-link {
+        .action-link {
+            font-size: 0.875rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 24px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--card-accent);
+            gap: 0.5rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
         }
 
-        .project-link svg {
-            width: 16px;
-            height: 16px;
-        }
+        .action-link:hover { opacity: 1; color: white; }
 
+        /* Footer */
         footer {
-            border-top: 1px solid var(--border);
-            padding: 32px 0;
-            text-align: center;
+            padding: 4rem 0;
+            border-top: 1px solid var(--glass-border);
+            position: relative;
+            z-index: 10;
+            background: #010208;
         }
 
-        .footer-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--text-secondary);
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
         }
 
-        .footer-text a {
-            color: var(--accent-cyan);
-            text-decoration: none;
+        .footer-brand h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 768px) {
-            .projects-grid {
-                grid-template-columns: 1fr;
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .socials a {
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .socials a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
-
-            .header-content {
-                flex-direction: column;
-                gap: 16px;
+            #bg-canvas {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="noise"></div>
 
-    <header>
-        <div class="container header-content">
-            <a href="https://mustafasarac.com" class="logo">
-                <div class="logo-icon"></div>
-                mustafasarac.com/labs
+    <!-- 3D Background -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="gradient-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container nav-inner">
+            <a href="#" class="logo">
+                <span>//</span> NEURABYTE LABS
             </a>
-            <nav>
-                <a href="https://neurabytelabs.com">NeuraByte Labs</a>
-                <a href="https://github.com/mrsarac">GitHub</a>
-            </nav>
+            <ul class="nav-links">
+                <li><a href="#products" class="nav-link">Artifacts</a></li>
+                <li><a href="https://neurabytelabs.com" target="_blank" class="nav-link">Main Site</a></li>
+                <li><a href="https://github.com/mrsarac" target="_blank" class="nav-link">GitHub</a></li>
+            </ul>
         </div>
-    </header>
+    </nav>
 
-    <main class="container">
-        <section class="hero">
-            <span class="hero-badge">EXPERIMENTAL</span>
-            <h1>Labs</h1>
-            <p class="hero-description">
-                AI experiments, creative tools, and research projects.
-                Where ideas get built, tested, and sometimes break things.
-            </p>
-        </section>
-
-        <section class="projects-grid">
-            <!-- ENGRAM -->
-            <a href="https://engram.neurabytelabs.com" class="project-card" style="--card-accent: #00F0FF;">
-                <div class="project-header">
-                    <div class="project-icon">🧠</div>
-                    <span class="project-status status-beta">Beta</span>
-                </div>
-                <h2 class="project-title">ENGRAM</h2>
-                <p class="project-tagline">"Memory is a system that can be debugged"</p>
-                <p class="project-description">
-                    Cyberpunk-themed, AI-powered flashcard app with FSRS-B spaced repetition.
-                    Gemini generates absurd, memorable mnemonics for any knowledge.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">React 19</span>
-                    <span class="tech-tag">Gemini AI</span>
-                    <span class="tech-tag">PWA</span>
-                    <span class="tech-tag">FSRS-B</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                    Launch App
-                </div>
-            </a>
-
-            <!-- META-LOGOS / Cognitive Forge -->
-            <a href="https://forge.neurabytelabs.com" class="project-card" style="--card-accent: #D4AF37;">
-                <div class="project-header">
-                    <div class="project-icon">⚒️</div>
-                    <span class="project-status status-live">Live</span>
-                </div>
-                <h2 class="project-title">Cognitive Forge</h2>
-                <p class="project-tagline">"The Age of the Autodidact"</p>
-                <p class="project-description">
-                    AI-powered learning platform with Digital Renaissance aesthetic.
-                    Features 3D WebGL visuals, Socratic AI tutor, and gamified curriculum builder.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">React 19</span>
-                    <span class="tech-tag">Three.js</span>
-                    <span class="tech-tag">Gemini AI</span>
-                    <span class="tech-tag">Zustand</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                    Enter the Forge
-                </div>
-            </a>
-
-            <!-- ORACLE Engine -->
-            <a href="https://github.com/mrsarac/ORACLE-Engine" class="project-card" style="--card-accent: #7000FF;">
-                <div class="project-header">
-                    <div class="project-icon">🔮</div>
-                    <span class="project-status status-live">Live</span>
-                </div>
-                <h2 class="project-title">ORACLE Engine</h2>
-                <p class="project-tagline">"Know the future before you build it"</p>
-                <p class="project-description">
-                    Strategic decision simulation platform. Run hundreds of AI-powered simulations
-                    to validate business hypotheses, test pricing strategies, and de-risk decisions.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">Gemini AI</span>
-                    <span class="tech-tag">CLI</span>
-                    <span class="tech-tag">JSON Templates</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                    </svg>
-                    View on GitHub
-                </div>
-            </a>
-
-            <!-- Child Claude -->
-            <a href="#" class="project-card" style="--card-accent: #00FF94;">
-                <div class="project-header">
-                    <div class="project-icon">🤖</div>
-                    <span class="project-status status-dev">Dev</span>
-                </div>
-                <h2 class="project-title">Child Claude</h2>
-                <p class="project-tagline">"Sandboxed autonomous execution"</p>
-                <p class="project-description">
-                    Docker-based autonomous agent that executes delegated tasks in an isolated sandbox.
-                    Secure command execution, file ops, code analysis, and Gemini AI integration.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">Docker</span>
-                    <span class="tech-tag">Gemini AI</span>
-                    <span class="tech-tag">Sandboxed</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    Coming Soon
-                </div>
-            </a>
-
-            <!-- NEXUS AI Forge -->
-            <a href="https://github.com/mrsarac/NEXUS-AI-Forge" class="project-card" style="--card-accent: #FF003C;">
-                <div class="project-header">
-                    <div class="project-icon">⚡</div>
-                    <span class="project-status status-live">Live</span>
-                </div>
-                <h2 class="project-title">NEXUS AI Forge</h2>
-                <p class="project-tagline">"The ultimate AI-augmented developer tool"</p>
-                <p class="project-description">
-                    Rust-powered CLI for AI code generation, review, and refactoring.
-                    Free tier with Gemini, Claude support for power users. Self-updating binary.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">Rust</span>
-                    <span class="tech-tag">Gemini AI</span>
-                    <span class="tech-tag">Claude</span>
-                    <span class="tech-tag">CLI</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download CLI
-                </div>
-            </a>
-
-            <!-- Lithosphere -->
-            <a href="https://lithosphere.mustafasarac.com" class="project-card" style="--card-accent: #00F0FF;">
-                <div class="project-header">
-                    <div class="project-icon">🌐</div>
-                    <span class="project-status status-live">Live</span>
-                </div>
-                <h2 class="project-title">Lithosphere</h2>
-                <p class="project-tagline">"WebGPU Shader Studio"</p>
-                <p class="project-description">
-                    Procedural shader playground with HAL 9000 inspired core.
-                    Real-time WGSL editing, live preview, and export capabilities.
-                </p>
-                <div class="project-tech">
-                    <span class="tech-tag">WebGPU</span>
-                    <span class="tech-tag">WGSL</span>
-                    <span class="tech-tag">Three.js</span>
-                    <span class="tech-tag">React</span>
-                </div>
-                <div class="project-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                    Launch Studio
-                </div>
-            </a>
-        </section>
-    </main>
-
-    <footer>
+    <!-- Hero Section -->
+    <section id="hero">
         <div class="container">
-            <p class="footer-text">
-                Built by <a href="https://mustafasarac.com">Mustafa Saraç</a> ·
-                <a href="https://neurabytelabs.com">NeuraByte Labs</a> ·
-                Köln, Germany
-            </p>
+            <div class="hero-content">
+                <div class="hero-eyebrow reveal">MVP FACTORY v2.0</div>
+                <h1 class="reveal">
+                    Architecting the <br>
+                    <span class="text-indigo">Sovereign Mind</span>
+                </h1>
+                <p class="hero-subtext reveal">
+                    We forge cognitive tools for the post-human era.
+                    Merging philosophical depth with engineering rigor to create
+                    <span class="text-gold">autonomous intelligence</span>.
+                </p>
+                <div class="cta-group reveal">
+                    <a href="#products" class="btn btn-primary">
+                        Explore Artifacts
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                    <a href="https://github.com/mrsarac" target="_blank" class="btn btn-secondary">
+                        View Source
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section id="products">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Artifacts</h2>
+                <p class="text-secondary" style="font-family: var(--font-mono)">// System.list_modules()</p>
+            </div>
+
+            <div class="grid-container" id="cards-container">
+                <!-- Cards injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h3>NeuraByte Labs</h3>
+                <p>&copy; 2025 Mustafa Sarac. All rights reserved.</p>
+            </div>
+            <div class="socials">
+                <a href="https://twitter.com/mikirasax" target="_blank" style="margin-left: 1rem">Twitter</a>
+                <a href="https://github.com/mrsarac" target="_blank" style="margin-left: 1rem">GitHub</a>
+                <a href="https://linkedin.com/in/mustafasarac" target="_blank" style="margin-left: 1rem">LinkedIn</a>
+            </div>
         </div>
     </footer>
+
+    <script>
+        // --- DATA ---
+        const products = [
+            {
+                id: "engram",
+                name: "ENGRAM",
+                tagline: "Memory Prosthetic",
+                description: "Your AI-powered memory prosthetic. Captures, indexes, and retrieves your digital life so you never forget what matters.",
+                status: "live",
+                accent: "#6366f1",
+                icon: "🧠",
+                links: { demo: "https://engram.neurabytelabs.com", github: "https://github.com/mrsarac/engram" }
+            },
+            {
+                id: "forge",
+                name: "Cognitive Forge",
+                tagline: "Thinking Evolution",
+                description: "Train your mind. Evolve your thinking. A structured environment for metacognitive enhancement and rapid skill acquisition.",
+                status: "beta",
+                accent: "#fbbf24",
+                icon: "⚡",
+                links: { demo: "https://forge.neurabytelabs.com", github: "https://github.com/mrsarac/meta-logos" }
+            },
+            {
+                id: "oracle",
+                name: "ORACLE-Engine",
+                tagline: "Decision Simulator",
+                description: "Strategic decisions, simulated. Input variables, define constraints, and visualize probabilistic outcomes before they happen.",
+                status: "alpha",
+                accent: "#F59E0B",
+                icon: "🔮",
+                links: { github: "https://github.com/mrsarac/oracle-engine" }
+            },
+            {
+                id: "child-claude",
+                name: "Child Claude",
+                tagline: "Autonomous Agent",
+                description: "The autonomous agent that writes its own rules. A recursive self-improvement experiment in sovereign AI architecture.",
+                status: "alpha",
+                accent: "#EF4444",
+                icon: "🤖",
+                links: { github: "https://github.com/mrsarac/child-claude" }
+            },
+            {
+                id: "nexus",
+                name: "NEXUS",
+                tagline: "AI Dev Companion",
+                description: "Your AI development companion. Seamlessly bridges the gap between ideation and deployment with context-aware assistance.",
+                status: "research",
+                accent: "#8B5CF6",
+                icon: "🔗",
+                links: { github: "https://github.com/mrsarac/nexus-ai-forge" }
+            },
+            {
+                id: "lithosphere",
+                name: "Lithosphere",
+                tagline: "WebGPU Shader Studio",
+                description: "WebGPU shader playground. Create, debug, and share stunning high-performance visuals directly in the browser.",
+                status: "live",
+                accent: "#10B981",
+                icon: "💎",
+                links: { demo: "https://lithosphere.mustafasarac.com", github: "https://github.com/mrsarac/lithosphere" }
+            }
+        ];
+
+        // --- RENDER CARDS ---
+        const container = document.getElementById('cards-container');
+
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'glass-panel product-card';
+            card.style.setProperty('--accent-color', p.accent);
+
+            let linksHtml = '';
+            if (p.links.demo) {
+                linksHtml += `<a href="${p.links.demo}" target="_blank" class="action-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    Launch
+                </a>`;
+            }
+            if (p.links.github) {
+                linksHtml += `<a href="${p.links.github}" target="_blank" class="action-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    Code
+                </a>`;
+            }
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-icon" style="color: ${p.accent}">${p.icon}</div>
+                    <span class="status-pill status-${p.status}">${p.status}</span>
+                </div>
+                <h3 class="card-title">${p.name}</h3>
+                <span class="card-tagline">${p.tagline}</span>
+                <p class="card-desc">${p.description}</p>
+                <div class="card-actions">
+                    ${linksHtml}
+                </div>
+            `;
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            container.appendChild(card);
+        });
+
+        // --- THREE.JS BACKGROUND ---
+        const initThree = () => {
+            const canvas = document.getElementById('bg-canvas');
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x020617, 0.002);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 50;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 150;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.3,
+                color: 0x6366f1,
+                transparent: true,
+                opacity: 0.8,
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            scene.add(particlesMesh);
+
+            let mouseX = 0;
+            let mouseY = 0;
+
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX) * 0.05;
+                mouseY = (event.clientY - windowHalfY) * 0.05;
+            });
+
+            const clock = new THREE.Clock();
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+
+                particlesMesh.rotation.y += 0.05 * (mouseX * 0.001 - particlesMesh.rotation.y);
+                particlesMesh.rotation.x += 0.05 * (mouseY * 0.001 - particlesMesh.rotation.x);
+
+                const positions = particlesGeometry.attributes.position.array;
+                for(let i = 0; i < particlesCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3 + 1] += Math.sin(elapsedTime + positions[i3]) * 0.01;
+                }
+                particlesGeometry.attributes.position.needsUpdate = true;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // --- GSAP ANIMATIONS ---
+        const initGSAP = () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+            tl.from(".reveal", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.15,
+                delay: 0.2
+            });
+
+            gsap.from(".product-card", {
+                scrollTrigger: {
+                    trigger: "#products",
+                    start: "top 80%",
+                },
+                y: 100,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
+            });
+        };
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initThree();
+            initGSAP();
+        });
+    </script>
 </body>
 </html>
