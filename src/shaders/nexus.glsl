@@ -252,8 +252,8 @@ void main() {
     color *= vignette;
 
     // Tone mapping
-    color = color / (1.0 + color);
-    color = pow(color, vec3(0.95));
+    color = color / (0.7 + color);
+    color = pow(color, vec3(0.85));
 
     gl_FragColor = vec4(color, 1.0);
 }
