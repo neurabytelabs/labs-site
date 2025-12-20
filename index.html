@@ -544,6 +544,20 @@
             color: var(--neutral-50);
         }
 
+        .fps-counter {
+            font-family: var(--font-mono);
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .fps-counter.warning {
+            color: #f59e0b;
+        }
+
+        .fps-counter.danger {
+            color: #ef4444;
+        }
+
         .control-toggle-switch {
             width: 44px;
             height: 24px;
@@ -731,6 +745,22 @@
                     <span class="control-label" id="speed-value">1.0x</span>
                 </div>
                 <input type="range" class="control-slider" id="animation-speed" min="0.1" max="2" step="0.1" value="1">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">Performance</div>
+            <div class="control-item">
+                <span class="control-label">FPS</span>
+                <span class="control-label fps-counter" id="fps-counter">60</span>
+            </div>
+            <div class="control-item">
+                <span class="control-label">Cards</span>
+                <span class="control-label" id="card-count">5</span>
+            </div>
+            <div class="control-item">
+                <span class="control-label">Neurons</span>
+                <span class="control-label" id="neuron-count">200</span>
             </div>
         </div>
 
@@ -1897,6 +1927,18 @@
                 this.settings = this.loadSettings();
                 this.animationSpeed = this.settings.animationSpeed || 1.0;
 
+                // Cache DOM elements for performance
+                this.heroContent = document.querySelector('.center-content');
+                this.heroOpacity = 1;
+                this.hoveredCard = null;
+
+                // FPS monitoring
+                this.fpsCounter = null;
+                this.cardCounter = null;
+                this.lastFrameTime = performance.now();
+                this.frameCount = 0;
+                this.fps = 60;
+
                 this.init();
             }
 
@@ -1949,6 +1991,10 @@
                 const panel = document.getElementById('control-panel');
                 const speedSlider = document.getElementById('animation-speed');
                 const speedValue = document.getElementById('speed-value');
+
+                // Cache performance counters
+                this.fpsCounter = document.getElementById('fps-counter');
+                this.cardCounter = document.getElementById('card-count');
 
                 // Toggle panel
                 toggle.addEventListener('click', () => {
@@ -2325,7 +2371,10 @@
                     if (card) {
                         card.isHovered = true;
                         card.material.uniforms.uMouse.value.copy(intersects[0].uv);
+                        this.hoveredCard = card;
                     }
+                } else {
+                    this.hoveredCard = null;
                 }
 
                 // Drag
@@ -2503,14 +2552,27 @@
                 this.currentDragIntensity += (targetDragIntensity - this.currentDragIntensity) * 0.1;
                 this.gridMaterial.uniforms.uDragIntensity.value = this.currentDragIntensity;
 
-                // Fade hero text during drag
-                const heroContent = document.querySelector('.center-content');
-                if (heroContent) {
-                    const targetOpacity = this.draggedCard ? 0 : 1;
-                    const currentOpacity = parseFloat(heroContent.style.opacity) || 1;
-                    const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * 0.15;
-                    heroContent.style.opacity = newOpacity;
-                    heroContent.style.filter = this.draggedCard ? 'blur(4px)' : 'blur(0px)';
+                // Hero text UX: fade on drag, dim on hover (cached element for performance)
+                if (this.heroContent) {
+                    // Calculate target opacity based on interaction state
+                    let targetOpacity = 1;
+                    let targetBlur = 0;
+
+                    if (this.draggedCard) {
+                        targetOpacity = 0;
+                        targetBlur = 6;
+                    } else if (this.hoveredCard) {
+                        targetOpacity = 0.4;
+                        targetBlur = 2;
+                    }
+
+                    // Smooth transition
+                    this.heroOpacity += (targetOpacity - this.heroOpacity) * 0.12;
+                    const currentBlur = parseFloat(this.heroContent.style.filter?.replace(/[^\d.]/g, '')) || 0;
+                    const newBlur = currentBlur + (targetBlur - currentBlur) * 0.15;
+
+                    this.heroContent.style.opacity = this.heroOpacity;
+                    this.heroContent.style.filter = `blur(${newBlur}px)`;
                 }
 
                 // Update cards with synchronized cohesion uniforms
@@ -2551,6 +2613,29 @@
                 this.camera.position.x += (this.mouse.x * 4 - 2 - this.camera.position.x) * 0.02;
                 this.camera.position.y += (-this.mouse.y * 4 + 2 - this.camera.position.y) * 0.02;
                 this.camera.lookAt(0, 0, 0);
+
+                // FPS monitoring (update every 500ms for stability)
+                this.frameCount++;
+                const now = performance.now();
+                if (now - this.lastFrameTime >= 500) {
+                    this.fps = Math.round((this.frameCount * 1000) / (now - this.lastFrameTime));
+                    this.frameCount = 0;
+                    this.lastFrameTime = now;
+
+                    // Update UI
+                    if (this.fpsCounter) {
+                        this.fpsCounter.textContent = this.fps;
+                        this.fpsCounter.className = 'control-label fps-counter';
+                        if (this.fps < 30) {
+                            this.fpsCounter.classList.add('danger');
+                        } else if (this.fps < 50) {
+                            this.fpsCounter.classList.add('warning');
+                        }
+                    }
+                    if (this.cardCounter) {
+                        this.cardCounter.textContent = this.cards.length;
+                    }
+                }
 
                 // Render
                 this.composer.render();
