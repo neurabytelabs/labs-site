@@ -651,27 +651,53 @@
             varying vec3 vPosition;
 
             void main() {
-                // Base color
-                vec3 baseColor = vec3(0.067, 0.067, 0.075);
+                // Base color - darker for better contrast
+                vec3 baseColor = vec3(0.04, 0.04, 0.05);
 
-                // Edge glow (fresnel-like)
-                float edgeX = smoothstep(0.0, 0.1, vUv.x) * smoothstep(1.0, 0.9, vUv.x);
-                float edgeY = smoothstep(0.0, 0.1, vUv.y) * smoothstep(1.0, 0.9, vUv.y);
-                float edge = 1.0 - (edgeX * edgeY);
+                // Multi-layer edge glow
+                float edgeX = smoothstep(0.0, 0.08, vUv.x) * smoothstep(1.0, 0.92, vUv.x);
+                float edgeY = smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
+                float innerEdge = 1.0 - (edgeX * edgeY);
 
-                // Animated gradient
-                float gradient = sin(vUv.x * 3.14159 + uTime) * 0.5 + 0.5;
-                vec3 glowColor = mix(uColor, uAccentColor, gradient);
+                // Outer glow layer
+                float outerX = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x);
+                float outerY = smoothstep(0.0, 0.03, vUv.y) * smoothstep(1.0, 0.97, vUv.y);
+                float outerEdge = 1.0 - (outerX * outerY);
 
-                // Combine
-                vec3 finalColor = baseColor;
-                finalColor += edge * glowColor * (0.3 + uHover * 0.5);
-                finalColor += vElevation * 0.02 * uColor;
+                // Animated gradient with depth
+                float gradient = sin(vUv.x * 3.14159 + uTime * 0.5) * 0.5 + 0.5;
+                float vertGradient = sin(vUv.y * 2.0 + uTime * 0.3) * 0.5 + 0.5;
+                vec3 glowColor = mix(uColor, uAccentColor, gradient * vertGradient);
 
-                // Selection highlight
-                finalColor += uSelected * glowColor * 0.2;
+                // Scanline effect
+                float scanline = sin(vUv.y * 100.0 + uTime * 2.0) * 0.02 + 0.98;
 
-                float alpha = 0.85 + uHover * 0.1;
+                // Combine layers
+                vec3 finalColor = baseColor * scanline;
+
+                // Inner edge glow
+                finalColor += innerEdge * glowColor * (0.4 + uHover * 0.6);
+
+                // Outer edge (brighter, sharper)
+                finalColor += outerEdge * uColor * (0.8 + uSelected * 0.5);
+
+                // Corner highlights
+                float corner = (1.0 - vUv.x) * (1.0 - vUv.y) + vUv.x * vUv.y;
+                corner += (1.0 - vUv.x) * vUv.y + vUv.x * (1.0 - vUv.y);
+                corner = pow(1.0 - corner * 0.5, 4.0);
+                finalColor += corner * glowColor * 0.3;
+
+                // Depth effect
+                finalColor += vElevation * 0.03 * uColor;
+
+                // Selection pulse
+                float pulse = sin(uTime * 4.0) * 0.5 + 0.5;
+                finalColor += uSelected * glowColor * (0.2 + pulse * 0.15);
+
+                // Hover brightness boost
+                finalColor *= 1.0 + uHover * 0.2;
+
+                float alpha = 0.9 + uHover * 0.08;
 
                 gl_FragColor = vec4(finalColor, alpha);
             }
@@ -685,7 +711,7 @@
                 this.particles = [];
                 this.scene = scene;
                 this.color = color;
-                this.maxParticles = 200;
+                this.maxParticles = 500;
 
                 // Geometry
                 const geometry = new THREE.BufferGeometry();
@@ -814,17 +840,20 @@
 
                 this.mesh = new THREE.Mesh(geometry, this.material);
 
-                // Position in grid
-                const cols = 2;
-                const row = Math.floor(index / cols);
-                const col = index % cols;
-                const offsetX = (cols - 1) * 10;
-                const offsetY = (Math.ceil(total / cols) - 1) * 7;
+                // Position in 3D space - spread cards more dynamically
+                const positions = [
+                    { x: -22, y: 12, z: 5 },   // Top left - forward
+                    { x: 20, y: 14, z: -3 },   // Top right - back
+                    { x: -18, y: -10, z: -5 }, // Bottom left - back
+                    { x: 22, y: -8, z: 8 }     // Bottom right - forward
+                ];
+
+                const pos = positions[index] || { x: 0, y: 0, z: 0 };
 
                 this.restPosition = new THREE.Vector3(
-                    col * 20 - offsetX,
-                    -row * 14 + offsetY,
-                    0
+                    pos.x,
+                    pos.y,
+                    pos.z
                 );
 
                 this.mesh.position.copy(this.restPosition);
@@ -904,7 +933,24 @@
                     // Apply velocity
                     this.velocity.multiplyScalar(CONFIG.physics.damping);
                     this.mesh.position.add(this.velocity);
+
+                    // Reset rotation smoothly
+                    this.mesh.rotation.x += (0 - this.mesh.rotation.x) * 0.1;
+                    this.mesh.rotation.y += (0 - this.mesh.rotation.y) * 0.1;
+                } else {
+                    // Tilt based on velocity during drag
+                    const tiltX = this.velocity.y * 0.02;
+                    const tiltY = -this.velocity.x * 0.02;
+                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.2;
+                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.2;
                 }
+
+                // Store velocity for drag tilt
+                if (this.isDragging && this.lastPosition) {
+                    this.velocity.x = this.mesh.position.x - this.lastPosition.x;
+                    this.velocity.y = this.mesh.position.y - this.lastPosition.y;
+                }
+                this.lastPosition = this.mesh.position.clone();
             }
 
             startDrag() {
@@ -1142,11 +1188,28 @@
                     this.raycaster.ray.intersectPlane(this.dragPlane, intersection);
 
                     if (intersection) {
+                        const prevPos = this.draggedCard.mesh.position.clone();
                         this.draggedCard.mesh.position.copy(intersection.sub(this.dragOffset));
 
-                        // Emit particles while dragging
-                        if (Math.random() > 0.7) {
-                            this.particleEmitter.emit(this.draggedCard.mesh.position, 2);
+                        // Calculate drag speed for particle intensity
+                        const dragSpeed = prevPos.distanceTo(this.draggedCard.mesh.position);
+
+                        // Emit particles while dragging - more particles for faster drags
+                        const particleCount = Math.min(8, Math.floor(dragSpeed * 15) + 1);
+                        this.particleEmitter.emit(this.draggedCard.mesh.position, particleCount);
+
+                        // Trail particles at card corners during fast drag
+                        if (dragSpeed > 0.3) {
+                            const corners = [
+                                new THREE.Vector3(-8, 5, 0),
+                                new THREE.Vector3(8, 5, 0),
+                                new THREE.Vector3(-8, -5, 0),
+                                new THREE.Vector3(8, -5, 0)
+                            ];
+                            corners.forEach(offset => {
+                                const cornerPos = this.draggedCard.mesh.position.clone().add(offset);
+                                this.particleEmitter.emit(cornerPos, 1);
+                            });
                         }
                     }
                 }
