@@ -352,6 +352,45 @@
             cursor: not-allowed;
         }
 
+        /* Conatus Energy Indicator */
+        .conatus-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+        }
+
+        .conatus-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--spinoza-yellow), var(--spinoza-indigo));
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--spinoza-yellow);
+        }
+
+        /* Child Card Styling */
+        .card-label.is-child {
+            opacity: 0.9;
+        }
+
+        .card-label.is-child .card-label-inner {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-label.is-child .card-status {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--spinoza-indigo);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-label.is-child .conatus-bar {
+            display: none;
+        }
+
         /* Loading */
         #loading {
             position: fixed;
@@ -517,10 +556,20 @@
                 }
             ],
             physics: {
-                damping: 0.97,
+                damping: 0.95,
                 restitution: 0.6,
                 attraction: 0.001,
-                throwMultiplier: 8
+                throwMultiplier: 5
+            },
+            // Spinoza's Conatus - the striving to persist in being
+            conatus: {
+                initialEnergy: 1.0,
+                spawnThreshold: 0.3,      // Minimum energy to spawn
+                spawnCost: 0.25,          // Energy cost per spawn
+                regenRate: 0.002,         // Energy regeneration per frame
+                maxChildren: 3,           // Max spawned cards per parent
+                childScale: 0.6,          // Child card scale
+                childLifespan: 15000      // Child lifespan in ms
             }
         };
 
@@ -863,6 +912,13 @@
                 this.isDragging = false;
                 this.isHovered = false;
 
+                // Spinoza's Conatus - energy to persist and create
+                this.conatus = CONFIG.conatus.initialEnergy;
+                this.children = [];
+                this.isChild = false;
+                this.birthTime = Date.now();
+                this.scale = 1.0;
+
                 // Create HTML label
                 this.createLabel();
             }
@@ -872,7 +928,7 @@
 
                 const label = document.createElement('div');
                 label.className = 'card-label';
-                label.id = `label-${this.data.id}`;
+                label.id = `label-${this.data.id}-${Date.now()}`;
                 label.innerHTML = `
                     <div class="card-label-inner">
                         <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
@@ -888,11 +944,15 @@
                             ? `<a href="${this.data.url}" class="card-link" target="_blank">Launch &rarr;</a>`
                             : `<span class="card-link card-link-disabled">Coming Soon</span>`
                         }
+                        <div class="conatus-bar">
+                            <div class="conatus-fill" style="width: 100%"></div>
+                        </div>
                     </div>
                 `;
 
                 container.appendChild(label);
                 this.labelElement = label;
+                this.conatusBar = label.querySelector('.conatus-fill');
             }
 
             updateLabel(camera) {
@@ -909,15 +969,25 @@
                 this.labelElement.style.left = `${x}px`;
                 this.labelElement.style.top = `${y}px`;
 
-                // Scale based on distance (z in NDC space is 0-1 for visible)
+                // Scale based on distance and card scale (for children)
                 const depth = Math.max(0, Math.min(1, pos.z));
-                const scale = 1.0 - depth * 0.2;
+                const baseScale = (1.0 - depth * 0.2) * this.scale;
 
                 // Apply transform for centering and scaling
-                this.labelElement.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                this.labelElement.style.transform = `translate(-50%, -50%) scale(${baseScale})`;
 
                 // Opacity based on visibility (hide if behind camera)
                 this.labelElement.style.opacity = pos.z < 1 ? 1 : 0;
+
+                // Update conatus bar
+                if (this.conatusBar && !this.isChild) {
+                    this.conatusBar.style.width = `${this.conatus * 100}%`;
+                }
+
+                // Child styling
+                if (this.isChild && !this.labelElement.classList.contains('is-child')) {
+                    this.labelElement.classList.add('is-child');
+                }
             }
 
             update(time, mouseWorld) {
@@ -926,23 +996,31 @@
                 this.material.uniforms.uHover.value += (this.isHovered ? 1 : 0 - this.material.uniforms.uHover.value) * 0.1;
 
                 if (!this.isDragging) {
-                    // Spring back to rest position
-                    const restForce = this.restPosition.clone().sub(this.mesh.position).multiplyScalar(0.05);
-                    this.velocity.add(restForce);
-
-                    // Apply velocity
+                    // NO spring-back - cards stay where dropped
+                    // Only apply friction to slow down thrown cards
                     this.velocity.multiplyScalar(CONFIG.physics.damping);
                     this.mesh.position.add(this.velocity);
+
+                    // Boundary constraints - keep cards in view
+                    const bounds = { x: 45, y: 30, z: 20 };
+                    this.mesh.position.x = Math.max(-bounds.x, Math.min(bounds.x, this.mesh.position.x));
+                    this.mesh.position.y = Math.max(-bounds.y, Math.min(bounds.y, this.mesh.position.y));
+                    this.mesh.position.z = Math.max(-bounds.z, Math.min(bounds.z, this.mesh.position.z));
 
                     // Reset rotation smoothly
                     this.mesh.rotation.x += (0 - this.mesh.rotation.x) * 0.1;
                     this.mesh.rotation.y += (0 - this.mesh.rotation.y) * 0.1;
+
+                    // Conatus regeneration - striving to persist
+                    if (!this.isChild && this.conatus < CONFIG.conatus.initialEnergy) {
+                        this.conatus = Math.min(CONFIG.conatus.initialEnergy, this.conatus + CONFIG.conatus.regenRate);
+                    }
                 } else {
                     // Tilt based on velocity during drag
-                    const tiltX = this.velocity.y * 0.02;
-                    const tiltY = -this.velocity.x * 0.02;
-                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.2;
-                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.2;
+                    const tiltX = this.velocity.y * 0.015;
+                    const tiltY = -this.velocity.x * 0.015;
+                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.15;
+                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.15;
                 }
 
                 // Store velocity for drag tilt
@@ -951,6 +1029,67 @@
                     this.velocity.y = this.mesh.position.y - this.lastPosition.y;
                 }
                 this.lastPosition = this.mesh.position.clone();
+
+                // Child card lifespan check
+                if (this.isChild) {
+                    const age = Date.now() - this.birthTime;
+                    const lifeProgress = age / CONFIG.conatus.childLifespan;
+
+                    // Fade out as lifespan ends
+                    if (lifeProgress > 0.7) {
+                        const fadeProgress = (lifeProgress - 0.7) / 0.3;
+                        this.material.uniforms.uHover.value = 1 - fadeProgress;
+                        this.labelElement.style.opacity = 1 - fadeProgress;
+                    }
+
+                    if (age > CONFIG.conatus.childLifespan) {
+                        this.shouldRemove = true;
+                    }
+                }
+            }
+
+            // Spawn a child card - Spinoza's causa sui
+            spawnChild(scene, allCards) {
+                if (this.conatus < CONFIG.conatus.spawnThreshold) return null;
+                if (this.children.length >= CONFIG.conatus.maxChildren) return null;
+                if (this.isChild) return null; // Children can't spawn
+
+                // Spend conatus energy
+                this.conatus -= CONFIG.conatus.spawnCost;
+
+                // Create child card with same data but smaller
+                const childIndex = allCards.length;
+                const child = new Card3D(this.data, childIndex, allCards.length + 1);
+                child.isChild = true;
+                child.scale = CONFIG.conatus.childScale;
+                child.birthTime = Date.now();
+                child.conatus = 0; // Children have no conatus
+
+                // Position near parent with offset
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 12 + Math.random() * 8;
+                child.mesh.position.copy(this.mesh.position);
+                child.mesh.position.x += Math.cos(angle) * distance;
+                child.mesh.position.y += Math.sin(angle) * distance;
+                child.mesh.position.z += (Math.random() - 0.5) * 10;
+
+                // Scale down the mesh
+                child.mesh.scale.setScalar(CONFIG.conatus.childScale);
+
+                // Initial velocity away from parent
+                child.velocity.set(
+                    Math.cos(angle) * 2,
+                    Math.sin(angle) * 2,
+                    0
+                );
+
+                // Update rest position to current position (no spring-back)
+                child.restPosition.copy(child.mesh.position);
+
+                this.children.push(child);
+                scene.add(child.mesh);
+
+                return child;
             }
 
             startDrag() {
@@ -1261,6 +1400,16 @@
                     // Release burst
                     this.particleEmitter.emit(this.draggedCard.mesh.position, 30);
 
+                    // Spinoza's Conatus: Spawn a child card on drop (if has energy)
+                    if (!this.draggedCard.isChild && this.draggedCard.conatus >= CONFIG.conatus.spawnThreshold) {
+                        const child = this.draggedCard.spawnChild(this.scene, this.cards);
+                        if (child) {
+                            this.cards.push(child);
+                            // Spawn burst effect
+                            this.particleEmitter.emit(child.mesh.position, 40);
+                        }
+                    }
+
                     this.draggedCard = null;
                 }
             }
@@ -1302,8 +1451,11 @@
                 // Update grid time
                 this.gridMaterial.uniforms.uTime.value = time;
 
-                // Update card positions in grid shader for attraction effect
-                const cardPositions = this.cards.map(card => card.mesh.position.clone());
+                // Update card positions in grid shader for attraction effect (first 4 only for uniform)
+                const cardPositions = this.cards.slice(0, 4).map(card => card.mesh.position.clone());
+                while (cardPositions.length < 4) {
+                    cardPositions.push(new THREE.Vector3(0, 0, -100)); // Off-screen
+                }
                 this.gridMaterial.uniforms.uCardPositions.value = cardPositions;
 
                 // Smooth drag intensity transition
@@ -1327,6 +1479,29 @@
                     card.update(time, this.mouseWorld);
                     card.updateLabel(this.camera);
                 });
+
+                // Remove dead child cards (Spinoza: finite modes have finite duration)
+                for (let i = this.cards.length - 1; i >= 0; i--) {
+                    const card = this.cards[i];
+                    if (card.shouldRemove) {
+                        // Death burst
+                        this.particleEmitter.emit(card.mesh.position, 25);
+
+                        // Clean up
+                        this.scene.remove(card.mesh);
+                        card.labelElement.remove();
+
+                        // Remove from parent's children list
+                        this.cards.forEach(parent => {
+                            const childIdx = parent.children.indexOf(card);
+                            if (childIdx > -1) {
+                                parent.children.splice(childIdx, 1);
+                            }
+                        });
+
+                        this.cards.splice(i, 1);
+                    }
+                }
 
                 // Update particles
                 this.particleEmitter.update();
