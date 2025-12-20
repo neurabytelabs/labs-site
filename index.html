@@ -875,6 +875,7 @@
             uniform float uGlobalPulse;
             uniform float uChromaticPhase;
             uniform float uEmergence;
+            uniform int uSceneType; // 0=SpinozaOS, 1=Lithosphere, 2=Boardroom, 3=Emotion, 4=Particle
 
             varying vec2 vUv;
             varying float vElevation;
@@ -893,9 +894,179 @@
                 );
             }
 
+            // ═══ INNER COSMOS - Card Scene Functions ═══
+
+            // SpinozaOS: Sacred Geometry (Vesica Piscis, Golden Spiral)
+            vec3 sceneSpinoza(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                float dist = length(center);
+                float angle = atan(center.y, center.x);
+
+                // Golden ratio based geometry
+                float phi = 1.618033988749895;
+                float circles = 0.0;
+
+                // Concentric circles with golden ratio spacing
+                for (float i = 1.0; i < 5.0; i++) {
+                    float r = i / (phi * 3.0);
+                    circles += smoothstep(0.015, 0.0, abs(dist - r)) * (0.3 + 0.2 * sin(time + i));
+                }
+
+                // Rotating hexagon pattern
+                float hex = cos(angle * 6.0 + time * 0.5) * 0.5 + 0.5;
+                hex *= smoothstep(0.4, 0.2, dist);
+
+                // Vesica piscis intersection
+                float vesica1 = length(center - vec2(0.15, 0.0));
+                float vesica2 = length(center + vec2(0.15, 0.0));
+                float vesicaIntersect = smoothstep(0.02, 0.0, abs(vesica1 - 0.2)) *
+                                        step(vesica2, 0.2);
+                vesicaIntersect += smoothstep(0.02, 0.0, abs(vesica2 - 0.2)) *
+                                   step(vesica1, 0.2);
+
+                vec3 color = uColor * (circles + hex * 0.3 + vesicaIntersect * 0.5);
+                color += uAccentColor * vesicaIntersect * sin(time * 2.0) * 0.3;
+
+                return color * 0.4;
+            }
+
+            // Lithosphere: Orbiting Bodies
+            vec3 sceneLithosphere(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                vec3 color = vec3(0.0);
+
+                // Central "sun"
+                float sun = smoothstep(0.08, 0.02, length(center));
+                color += uColor * sun;
+
+                // Orbiting bodies
+                for (float i = 0.0; i < 3.0; i++) {
+                    float orbitRadius = 0.12 + i * 0.08;
+                    float orbitSpeed = (1.5 - i * 0.3);
+                    float phase = i * 2.094;
+
+                    vec2 bodyPos = vec2(
+                        cos(time * orbitSpeed + phase) * orbitRadius,
+                        sin(time * orbitSpeed + phase) * orbitRadius
+                    );
+
+                    float body = smoothstep(0.03, 0.01, length(center - bodyPos));
+                    color += mix(uColor, uAccentColor, i / 3.0) * body;
+
+                    // Orbit trail
+                    float orbitLine = smoothstep(0.008, 0.0, abs(length(center) - orbitRadius));
+                    color += uAccentColor * orbitLine * 0.2;
+                }
+
+                return color * 0.5;
+            }
+
+            // Boardroom: Neural Network
+            vec3 sceneBoardroom(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                vec3 color = vec3(0.0);
+
+                // Grid of neural nodes
+                vec2 gridUv = fract(uv * 4.0) - 0.5;
+                vec2 gridId = floor(uv * 4.0);
+
+                // Node pulse based on grid position
+                float nodePulse = sin(time * 2.0 + gridId.x * 1.5 + gridId.y * 2.3) * 0.5 + 0.5;
+                float node = smoothstep(0.15, 0.05, length(gridUv)) * nodePulse;
+
+                // Connections between nodes (simplified)
+                float connection = 0.0;
+                connection += smoothstep(0.02, 0.0, abs(gridUv.x)) * step(abs(gridUv.y), 0.3);
+                connection += smoothstep(0.02, 0.0, abs(gridUv.y)) * step(abs(gridUv.x), 0.3);
+                connection *= sin(time * 3.0 + length(gridId) * 2.0) * 0.5 + 0.5;
+
+                color += uColor * node * 0.8;
+                color += uAccentColor * connection * 0.3;
+
+                return color * 0.4;
+            }
+
+            // Emotion Lab: Emotional Waves
+            vec3 sceneEmotion(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                vec3 color = vec3(0.0);
+
+                // Layered emotional waves
+                for (float i = 0.0; i < 4.0; i++) {
+                    float freq = 3.0 + i * 2.0;
+                    float amp = 0.1 - i * 0.02;
+                    float phase = i * 1.57;
+
+                    float wave = sin(uv.x * freq + time * (1.0 + i * 0.3) + phase) * amp;
+                    float line = smoothstep(0.02, 0.0, abs(uv.y - 0.5 - wave - i * 0.08 + 0.12));
+
+                    vec3 waveColor = mix(uColor, uAccentColor, i / 4.0);
+                    color += waveColor * line * (0.6 - i * 0.1);
+                }
+
+                // Central emotion indicator
+                float emotionGlow = exp(-length(center) * 4.0);
+                float emotionPulse = sin(time * 1.5) * 0.3 + 0.7;
+                color += uColor * emotionGlow * emotionPulse * 0.5;
+
+                return color * 0.4;
+            }
+
+            // Particle Lab: Particle Field
+            vec3 sceneParticle(vec2 uv, float time) {
+                vec3 color = vec3(0.0);
+
+                // Pseudo-random particle field
+                for (float i = 0.0; i < 15.0; i++) {
+                    // Deterministic "random" positions
+                    float rx = fract(sin(i * 12.9898) * 43758.5453);
+                    float ry = fract(sin(i * 78.233) * 43758.5453);
+
+                    vec2 particlePos = vec2(
+                        rx + sin(time * (0.5 + rx) + i) * 0.1,
+                        ry + cos(time * (0.3 + ry) + i * 1.3) * 0.1
+                    );
+
+                    float particle = smoothstep(0.03, 0.01, length(uv - particlePos));
+                    float flicker = sin(time * 5.0 + i * 3.0) * 0.3 + 0.7;
+
+                    color += mix(uColor, uAccentColor, rx) * particle * flicker;
+                }
+
+                // Connecting streams
+                float stream = sin(uv.x * 20.0 + uv.y * 10.0 + time * 2.0) * 0.5 + 0.5;
+                stream *= smoothstep(0.6, 0.4, length(uv - 0.5));
+                color += uAccentColor * stream * 0.1;
+
+                return color * 0.3;
+            }
+
             void main() {
                 // Crystalline base - very dark with subtle gradient
                 vec3 baseColor = vec3(0.02, 0.02, 0.03);
+
+                // ═══ INNER COSMOS - Project-specific scene ═══
+                vec3 sceneColor = vec3(0.0);
+                vec2 sceneUv = vUv;
+
+                // Only show scene in inner area of card
+                float sceneMask = smoothstep(0.08, 0.15, vUv.x) * smoothstep(0.92, 0.85, vUv.x) *
+                                  smoothstep(0.08, 0.15, vUv.y) * smoothstep(0.92, 0.85, vUv.y);
+
+                if (uSceneType == 0) {
+                    sceneColor = sceneSpinoza(sceneUv, uTime);
+                } else if (uSceneType == 1) {
+                    sceneColor = sceneLithosphere(sceneUv, uTime);
+                } else if (uSceneType == 2) {
+                    sceneColor = sceneBoardroom(sceneUv, uTime);
+                } else if (uSceneType == 3) {
+                    sceneColor = sceneEmotion(sceneUv, uTime);
+                } else {
+                    sceneColor = sceneParticle(sceneUv, uTime);
+                }
+
+                // Apply scene with mask and hover enhancement
+                baseColor += sceneColor * sceneMask * (0.5 + uHover * 0.5) * uEmergence;
 
                 // Fresnel effect - glass-like edge illumination
                 float fresnel = pow(1.0 - max(dot(vViewDirection, vNormal), 0.0), 3.0);
@@ -1127,7 +1298,8 @@
                         uIOR: { value: 1.45 }, // Index of refraction
                         uGlobalPulse: { value: 0 },
                         uChromaticPhase: { value: 0 },
-                        uEmergence: { value: 0 } // NEW: emergence animation
+                        uEmergence: { value: 0 }, // emergence animation
+                        uSceneType: { value: index } // Inner Cosmos scene type (0-4)
                     },
                     vertexShader: cardVertexShader,
                     fragmentShader: cardFragmentShader,
