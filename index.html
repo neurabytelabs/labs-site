@@ -335,7 +335,10 @@
         .card-canvas {
             width: 100%;
             height: 100%;
+            min-width: 280px;
+            min-height: 180px;
             display: block;
+            background: var(--color-bg);
         }
 
         .scene-overlay {
@@ -1011,7 +1014,11 @@
 
             resize() {
                 const rect = this.canvas.getBoundingClientRect();
-                this.renderer.setSize(rect.width, rect.height, false);
+                const width = rect.width || 340;
+                const height = rect.height || 180;
+                this.canvas.width = width * window.devicePixelRatio;
+                this.canvas.height = height * window.devicePixelRatio;
+                this.renderer.setSize(width, height, false);
             }
 
             update(time) {
@@ -1233,12 +1240,21 @@
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach((entry, i) => {
                         if (entry.isIntersecting) {
+                            const delay = parseInt(entry.target.dataset.index) * 0.1;
                             gsap.to(entry.target, {
                                 opacity: 1,
                                 y: 0,
                                 duration: 0.6,
-                                delay: parseInt(entry.target.dataset.index) * 0.1,
-                                ease: 'power2.out'
+                                delay: delay,
+                                ease: 'power2.out',
+                                onComplete: () => {
+                                    // Resize scene after card is visible
+                                    const canvas = entry.target.querySelector('.card-canvas');
+                                    if (canvas) {
+                                        const scene = this.scenes.get(canvas.dataset.project);
+                                        if (scene) scene.resize();
+                                    }
+                                }
                             });
                             entry.target.classList.add('visible');
                         }
@@ -1260,17 +1276,24 @@
         }
 
         // Initialize
+        let labsApp;
         window.addEventListener('DOMContentLoaded', () => {
-            new LabsApp();
+            labsApp = new LabsApp();
+            window.labsApp = labsApp;
+
+            // Initial resize after layout settles
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    labsApp.scenes.forEach(scene => scene.resize());
+                });
+            });
         });
 
         // Handle resize
         window.addEventListener('resize', () => {
-            document.querySelectorAll('.card-canvas').forEach(canvas => {
-                const rect = canvas.getBoundingClientRect();
-                const scene = window.labsApp?.scenes?.get(canvas.dataset.project);
-                if (scene) scene.resize();
-            });
+            if (labsApp) {
+                labsApp.scenes.forEach(scene => scene.resize());
+            }
         });
     </script>
 </body>
