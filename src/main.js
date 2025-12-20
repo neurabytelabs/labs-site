@@ -1,6 +1,6 @@
 /**
  * NeuraByte Labs - Main Entry Point
- * v11.1.3 - Performance & UX Update
+ * v12.0.0 - Static Cards Edition
  */
 
 import './styles/main.css';
@@ -9,15 +9,14 @@ import { Background } from './components/Background.js';
 
 // Initialize app
 function init() {
-  console.log('[Labs] NeuraByte Labs v11.2.0');
-  console.log('[Labs] Masterpiece Shader Edition - Generative Data Art Visuals');
+  console.log('[Labs] NeuraByte Labs v12.0.0');
+  console.log('[Labs] Static Cards Edition - High Performance Design');
 
   // Initialize background
   new Background();
 
   // Initialize main application
   window.labsApp = new LabsApp();
-
 
   // Initialize UI components
   initVersionModal();
