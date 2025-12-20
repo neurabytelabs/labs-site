@@ -10,48 +10,71 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
 
-    <!-- Fonts -->
+    <!-- Fonts (SUBSTANCE Design System) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════
            NEURABYTE LABS - EXPERIMENT HUB
-           Cyberpunk/Dark Aesthetic | 50 Year Vision
+           SUBSTANCE Design System v1.0
+           Based on UX/UI Market Meeting 2025-12-12
            ═══════════════════════════════════════════════════════════════════ */
 
         :root {
-            /* Void Palette */
+            /* SUBSTANCE Color Palette */
             --void: #020617;
-            --deep: #0f172a;
-            --surface: #1e293b;
-            --border: rgba(148, 163, 184, 0.1);
+            --surface: #111113;
+            --surface-elevated: #1a1a1d;
+            --slate: #1e293b;
 
-            /* Accent Colors */
-            --indigo: #6366f1;
-            --indigo-glow: rgba(99, 102, 241, 0.4);
-            --violet: #8b5cf6;
-            --teal: #2dd4bf;
-            --amber: #fbbf24;
+            /* Brand Colors */
+            --spinoza-yellow: #fbbf24;
+            --spinoza-yellow-light: #fcd34d;
+            --spinoza-yellow-dark: #d97706;
+            --spinoza-yellow-muted: rgba(251, 191, 36, 0.1);
+            --spinoza-yellow-glow: rgba(251, 191, 36, 0.3);
 
-            /* Text */
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #475569;
+            --spinoza-indigo: #6366f1;
+            --spinoza-indigo-light: #818cf8;
+            --spinoza-indigo-muted: rgba(99, 102, 241, 0.1);
+
+            /* Semantic */
+            --success: #22c55e;
+            --success-muted: rgba(34, 197, 94, 0.1);
+
+            /* Neutral Scale */
+            --neutral-50: #fafafa;
+            --neutral-100: #f4f4f5;
+            --neutral-400: #a1a1aa;
+            --neutral-500: #71717a;
+            --neutral-600: #52525b;
+            --neutral-700: #3f3f46;
+            --neutral-800: #27272a;
+            --neutral-900: #18181b;
 
             /* Typography */
-            --font-display: 'Space Grotesk', sans-serif;
+            --font-serif: 'Cinzel', Georgia, serif;
+            --font-sans: 'Inter', system-ui, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
 
-            /* Spacing */
-            --container-max: 1200px;
-            --space-xs: 0.5rem;
-            --space-sm: 1rem;
-            --space-md: 1.5rem;
-            --space-lg: 2rem;
-            --space-xl: 3rem;
-            --space-2xl: 4rem;
+            /* Spacing (8pt grid) */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+            --space-16: 64px;
+
+            /* Effects */
+            --glow-sm: 0 0 10px var(--spinoza-yellow-glow);
+            --glow: 0 0 20px var(--spinoza-yellow-glow);
+            --glow-lg: 0 0 40px var(--spinoza-yellow-glow);
         }
 
         /* Reset */
@@ -67,25 +90,25 @@
         }
 
         body {
-            font-family: var(--font-display);
+            font-family: var(--font-sans);
             background: var(--void);
-            color: var(--text-primary);
+            color: var(--neutral-50);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Background Grid */
-        .bg-grid {
+        /* SUBSTANCE Nano Grid */
+        .nano-grid {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            background-size: 40px 40px;
             background-image:
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+                linear-gradient(to right, rgba(251, 191, 36, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(251, 191, 36, 0.03) 1px, transparent 1px);
             pointer-events: none;
             z-index: 0;
         }
@@ -94,47 +117,47 @@
         .orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(120px);
             pointer-events: none;
             z-index: 0;
         }
 
         .orb-1 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--indigo-glow) 0%, transparent 70%);
-            top: -200px;
-            right: -200px;
-            animation: float 20s ease-in-out infinite;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+            top: -150px;
+            right: -100px;
+            animation: float 25s ease-in-out infinite;
         }
 
         .orb-2 {
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
             bottom: -100px;
             left: -100px;
-            animation: float 15s ease-in-out infinite reverse;
+            animation: float 20s ease-in-out infinite reverse;
         }
 
         @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); }
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.05); }
         }
 
         /* Container */
         .container {
-            max-width: var(--container-max);
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 var(--space-md);
+            padding: 0 var(--space-6);
             position: relative;
             z-index: 1;
         }
 
         /* Header */
         header {
-            padding: var(--space-lg) 0;
-            border-bottom: 1px solid var(--border);
+            padding: var(--space-6) 0;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
         }
 
         .header-content {
@@ -146,136 +169,154 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: var(--space-sm);
+            gap: var(--space-3);
             text-decoration: none;
-            color: var(--text-primary);
+            color: var(--neutral-50);
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--indigo), var(--violet));
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--spinoza-yellow), var(--spinoza-yellow-dark));
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--void);
+            box-shadow: var(--glow-sm);
         }
 
         .logo-text {
+            font-family: var(--font-serif);
             font-weight: 600;
             font-size: 1.1rem;
+            letter-spacing: 0.02em;
         }
 
         .logo-text span {
-            color: var(--text-muted);
-            font-weight: 400;
+            color: var(--spinoza-yellow);
         }
 
         .back-link {
-            color: var(--text-secondary);
+            color: var(--neutral-400);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
-            gap: var(--space-xs);
-            transition: color 0.2s;
+            gap: var(--space-2);
+            transition: color 0.15s;
+            font-family: var(--font-mono);
         }
 
         .back-link:hover {
-            color: var(--indigo);
+            color: var(--spinoza-yellow);
         }
 
         /* Hero */
         .hero {
-            padding: var(--space-2xl) 0;
+            padding: var(--space-16) 0 var(--space-12);
             text-align: center;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
-            gap: var(--space-xs);
-            padding: var(--space-xs) var(--space-sm);
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            background: var(--spinoza-yellow-muted);
+            border: 1px solid rgba(251, 191, 36, 0.2);
             border-radius: 100px;
-            font-size: 0.8rem;
-            color: var(--indigo);
-            margin-bottom: var(--space-md);
+            font-size: 0.75rem;
+            color: var(--spinoza-yellow);
+            margin-bottom: var(--space-6);
             font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .hero-badge::before {
             content: '';
             width: 6px;
             height: 6px;
-            background: var(--teal);
+            background: var(--spinoza-yellow);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 8px var(--spinoza-yellow);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
         }
 
         .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 6vw, 4rem);
             font-weight: 700;
-            margin-bottom: var(--space-md);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: var(--space-6);
+            color: var(--neutral-50);
+            letter-spacing: 0.02em;
+            text-shadow: 0 0 60px rgba(251, 191, 36, 0.2);
+        }
+
+        .hero h1 .highlight {
+            color: var(--spinoza-yellow);
+            text-shadow: 0 0 30px var(--spinoza-yellow-glow);
         }
 
         .hero p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
+            font-size: 1.125rem;
+            color: var(--neutral-400);
+            max-width: 550px;
             margin: 0 auto;
+            line-height: 1.7;
         }
 
-        /* Experiments Grid */
+        /* Section */
         .experiments {
-            padding: var(--space-xl) 0 var(--space-2xl);
+            padding: var(--space-8) 0 var(--space-16);
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-8);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
         }
 
         .section-title {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
             font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--spinoza-yellow);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
         }
 
         .experiment-count {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 0.8rem;
+            color: var(--neutral-500);
             font-family: var(--font-mono);
         }
 
+        /* Grid */
         .experiments-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: var(--space-lg);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-6);
         }
 
-        /* Experiment Card */
+        /* Card */
         .experiment-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid rgba(251, 191, 36, 0.08);
+            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
@@ -286,15 +327,17 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--indigo), var(--violet));
+            background: linear-gradient(90deg, var(--spinoza-yellow), var(--spinoza-indigo));
             opacity: 0;
             transition: opacity 0.3s;
         }
 
         .experiment-card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(251, 191, 36, 0.2);
+            transform: translateY(-6px);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(251, 191, 36, 0.05);
         }
 
         .experiment-card:hover::before {
@@ -302,132 +345,122 @@
         }
 
         .card-preview {
-            height: 200px;
-            background: var(--deep);
+            height: 180px;
+            background: var(--void);
             position: relative;
             overflow: hidden;
-        }
-
-        .card-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.3s, transform 0.3s;
-        }
-
-        .experiment-card:hover .card-preview img {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-
-        .card-preview-placeholder {
-            width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            opacity: 0.3;
+        }
+
+        .card-preview-icon {
+            font-size: 4rem;
+            opacity: 0.2;
+            transition: all 0.3s;
+        }
+
+        .experiment-card:hover .card-preview-icon {
+            opacity: 0.4;
+            transform: scale(1.1);
         }
 
         .card-status {
             position: absolute;
-            top: var(--space-sm);
-            right: var(--space-sm);
+            top: var(--space-3);
+            right: var(--space-3);
             padding: 4px 10px;
             border-radius: 100px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             font-family: var(--font-mono);
         }
 
         .status-live {
-            background: rgba(45, 212, 191, 0.2);
-            color: var(--teal);
-            border: 1px solid rgba(45, 212, 191, 0.3);
-        }
-
-        .status-beta {
-            background: rgba(251, 191, 36, 0.2);
-            color: var(--amber);
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            background: var(--success-muted);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
         .status-coming {
-            background: rgba(148, 163, 184, 0.1);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
+            background: rgba(113, 113, 122, 0.1);
+            color: var(--neutral-500);
+            border: 1px solid rgba(113, 113, 122, 0.2);
         }
 
         .card-content {
-            padding: var(--space-md);
+            padding: var(--space-5);
         }
 
         .card-category {
-            font-size: 0.75rem;
-            color: var(--indigo);
+            font-size: 0.7rem;
+            color: var(--spinoza-yellow);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             font-family: var(--font-mono);
-            margin-bottom: var(--space-xs);
+            margin-bottom: var(--space-2);
         }
 
         .card-title {
+            font-family: var(--font-serif);
             font-size: 1.25rem;
             font-weight: 600;
-            margin-bottom: var(--space-xs);
+            margin-bottom: var(--space-2);
+            letter-spacing: 0.01em;
         }
 
         .card-description {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-            line-height: 1.5;
+            font-size: 0.875rem;
+            color: var(--neutral-400);
+            margin-bottom: var(--space-4);
+            line-height: 1.6;
         }
 
         .card-tech {
             display: flex;
             flex-wrap: wrap;
-            gap: var(--space-xs);
-            margin-bottom: var(--space-md);
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
         }
 
         .tech-tag {
-            padding: 4px 8px;
-            background: rgba(99, 102, 241, 0.1);
+            padding: 3px 8px;
+            background: var(--spinoza-yellow-muted);
             border-radius: 4px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+            font-size: 0.7rem;
+            color: var(--spinoza-yellow);
             font-family: var(--font-mono);
+            border: 1px solid rgba(251, 191, 36, 0.1);
         }
 
         .card-link {
             display: inline-flex;
             align-items: center;
-            gap: var(--space-xs);
-            color: var(--indigo);
+            gap: var(--space-2);
+            color: var(--spinoza-yellow);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            transition: gap 0.2s;
+            font-family: var(--font-mono);
+            transition: all 0.2s;
         }
 
         .card-link:hover {
-            gap: var(--space-sm);
+            gap: var(--space-3);
+            text-shadow: var(--glow-sm);
         }
 
         .card-link-disabled {
-            color: var(--text-muted);
+            color: var(--neutral-600);
             cursor: not-allowed;
         }
 
         /* Footer */
         footer {
-            padding: var(--space-xl) 0;
-            border-top: 1px solid var(--border);
+            padding: var(--space-10) 0;
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
             text-align: center;
         }
 
@@ -435,29 +468,46 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--space-md);
+            gap: var(--space-4);
         }
 
         .footer-text {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 0.8rem;
+            color: var(--neutral-500);
         }
 
         .footer-text a {
-            color: var(--text-secondary);
+            color: var(--neutral-400);
             text-decoration: none;
             transition: color 0.2s;
         }
 
         .footer-text a:hover {
-            color: var(--indigo);
+            color: var(--spinoza-yellow);
         }
 
         .footer-vision {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+            font-size: 0.7rem;
+            color: var(--neutral-600);
             font-family: var(--font-mono);
-            opacity: 0.6;
+        }
+
+        /* Scrollbar (SUBSTANCE style) */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--void);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--slate);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--spinoza-yellow);
         }
 
         /* Responsive */
@@ -468,20 +518,24 @@
 
             .header-content {
                 flex-direction: column;
-                gap: var(--space-sm);
+                gap: var(--space-4);
             }
 
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: var(--space-xs);
+                gap: var(--space-2);
+            }
+
+            .hero {
+                padding: var(--space-12) 0 var(--space-8);
             }
         }
     </style>
 </head>
 <body>
     <!-- Background Effects -->
-    <div class="bg-grid"></div>
+    <div class="nano-grid"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
@@ -494,7 +548,7 @@
                     <div class="logo-text">NeuraByte <span>Labs</span></div>
                 </a>
                 <a href="https://neurabytelabs.com" class="back-link">
-                    <span>&larr;</span> Back to NeuraByte
+                    <span>&larr;</span> neurabytelabs.com
                 </a>
             </div>
         </div>
@@ -503,8 +557,8 @@
     <!-- Hero -->
     <section class="hero">
         <div class="container">
-            <div class="hero-badge">EXPERIMENT HUB</div>
-            <h1>Where Ideas Become Experiments</h1>
+            <div class="hero-badge">Experiment Hub</div>
+            <h1>Where Ideas Become <span class="highlight">Experiments</span></h1>
             <p>A playground for physics simulations, AI demos, and interactive experiences. Building the future, one experiment at a time.</p>
         </div>
     </section>
@@ -513,15 +567,15 @@
     <section class="experiments">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Active Experiments</h2>
-                <span class="experiment-count">2 live / 2 coming</span>
+                <h2 class="section-title">// Active Experiments</h2>
+                <span class="experiment-count">2 live &middot; 2 coming</span>
             </div>
 
             <div class="experiments-grid">
                 <!-- Lithosphere -->
                 <article class="experiment-card">
                     <div class="card-preview">
-                        <div class="card-preview-placeholder">🌌</div>
+                        <span class="card-preview-icon">🌌</span>
                         <span class="card-status status-live">Live</span>
                     </div>
                     <div class="card-content">
@@ -534,7 +588,7 @@
                             <span class="tech-tag">Physics</span>
                         </div>
                         <a href="https://lithosphere.mustafasarac.com" class="card-link" target="_blank">
-                            Launch Experiment <span>&rarr;</span>
+                            Launch &rarr;
                         </a>
                     </div>
                 </article>
@@ -542,7 +596,7 @@
                 <!-- Boardroom -->
                 <article class="experiment-card">
                     <div class="card-preview">
-                        <div class="card-preview-placeholder">🧠</div>
+                        <span class="card-preview-icon">🧠</span>
                         <span class="card-status status-live">Live</span>
                     </div>
                     <div class="card-content">
@@ -555,15 +609,15 @@
                             <span class="tech-tag">Real-time</span>
                         </div>
                         <a href="https://board.phinote.com" class="card-link" target="_blank">
-                            Launch Experiment <span>&rarr;</span>
+                            Launch &rarr;
                         </a>
                     </div>
                 </article>
 
-                <!-- Emotion Lab (Coming Soon) -->
+                <!-- Emotion Lab -->
                 <article class="experiment-card">
                     <div class="card-preview">
-                        <div class="card-preview-placeholder">💫</div>
+                        <span class="card-preview-icon">💫</span>
                         <span class="card-status status-coming">Coming</span>
                     </div>
                     <div class="card-content">
@@ -581,10 +635,10 @@
                     </div>
                 </article>
 
-                <!-- Particle Lab (Coming Soon) -->
+                <!-- Particle Lab -->
                 <article class="experiment-card">
                     <div class="card-preview">
-                        <div class="card-preview-placeholder">✨</div>
+                        <span class="card-preview-icon">✨</span>
                         <span class="card-status status-coming">Coming</span>
                     </div>
                     <div class="card-content">
