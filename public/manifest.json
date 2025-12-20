@@ -1,0 +1,19 @@
+{
+  "name": "NeuraByte Labs",
+  "short_name": "Labs",
+  "description": "Experimental AI & design projects pushing boundaries",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#fac023",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["technology", "design", "development"]
+}

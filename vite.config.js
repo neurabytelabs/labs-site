@@ -12,7 +12,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     minify: 'esbuild',
-    sourcemap: false
+    sourcemap: false,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'three': ['three'],
+          'gsap': ['gsap']
+        }
+      }
+    }
   },
   server: {
     port: 3000,

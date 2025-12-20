@@ -699,3 +699,67 @@ a {
 .changelog-entry li::marker {
   color: var(--color-text-muted);
 }
+
+/* ============================================
+   Scroll Progress Indicator
+   ============================================ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-cyan));
+  z-index: calc(var(--z-header) + 1);
+  transition: width 50ms linear;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* ============================================
+   Enhanced Card Hover Animations
+   ============================================ */
+.project-card {
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(250, 192, 35, 0.1);
+}
+
+.project-card:active {
+  transform: translateY(-2px);
+}
+
+/* Card stagger animation on load */
+.project-card:nth-child(1) { transition-delay: 0ms; }
+.project-card:nth-child(2) { transition-delay: 50ms; }
+.project-card:nth-child(3) { transition-delay: 100ms; }
+.project-card:nth-child(4) { transition-delay: 150ms; }
+.project-card:nth-child(5) { transition-delay: 200ms; }
+.project-card:nth-child(6) { transition-delay: 250ms; }
+.project-card:nth-child(7) { transition-delay: 300ms; }
+.project-card:nth-child(8) { transition-delay: 350ms; }
+
+/* ============================================
+   Mobile Optimizations
+   ============================================ */
+@media (max-width: 768px) {
+  .scroll-progress {
+    height: 3px;
+  }
+
+  .project-card:hover {
+    transform: none;
+  }
+
+  .hero-stats {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+}

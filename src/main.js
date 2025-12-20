@@ -1,6 +1,6 @@
 /**
  * NeuraByte Labs - Main Entry Point
- * v11.1.0 - Masterpiece Shader Edition
+ * v11.1.1 - Performance & UX Update
  */
 
 import './styles/main.css';
@@ -8,17 +8,34 @@ import { LabsApp } from './components/LabsApp.js';
 
 // Initialize app
 function init() {
-  console.log('[Labs] NeuraByte Labs v11.1.0');
+  console.log('[Labs] NeuraByte Labs v11.1.1');
   console.log('[Labs] Masterpiece Shader Edition - Generative Data Art Visuals');
 
   // Initialize main application
   window.labsApp = new LabsApp();
 
-  // Initialize version modal
+  // Initialize UI components
   initVersionModal();
+  initScrollProgress();
 
   // Loading complete
   document.body.classList.add('loaded');
+}
+
+// Scroll Progress Indicator
+function initScrollProgress() {
+  const progressBar = document.getElementById('scroll-progress');
+  if (!progressBar) return;
+
+  const updateProgress = () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = `${progress}%`;
+  };
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress(); // Initial call
 }
 
 // Version Modal Logic
