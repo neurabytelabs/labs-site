@@ -655,33 +655,45 @@
             }
         `;
 
+        // ═══════════════════════════════════════════════════════════════════
+        // CRYSTALLINE CARD SHADERS (Award-Winning Quality)
+        // ═══════════════════════════════════════════════════════════════════
         const cardVertexShader = `
             uniform float uTime;
             uniform float uHover;
             uniform vec2 uMouse;
+            uniform float uMomentum;
 
             varying vec2 vUv;
             varying float vElevation;
             varying vec3 vNormal;
             varying vec3 vPosition;
+            varying vec3 vWorldPosition;
+            varying vec3 vViewDirection;
 
             void main() {
                 vUv = uv;
-                vNormal = normal;
+                vNormal = normalize(normalMatrix * normal);
 
                 vec3 pos = position;
 
-                // Wave displacement on hover
-                float wave = sin(pos.x * 4.0 + uTime * 2.0) * cos(pos.y * 4.0 + uTime * 2.0);
-                pos.z += wave * uHover * 3.0;
+                // Crystalline surface displacement
+                float crystalWave = sin(pos.x * 8.0 + uTime * 1.5) * cos(pos.y * 8.0 + uTime * 1.2);
+                pos.z += crystalWave * uHover * 0.15;
 
-                // Mouse influence
-                vec2 mouseLocal = uMouse * 2.0 - 1.0;
-                float mouseDist = length(vUv - uMouse);
-                pos.z += (1.0 - mouseDist) * uHover * 5.0;
+                // Edge beveling effect
+                float edgeDist = min(min(abs(pos.x) - 7.5, abs(pos.y) - 4.5), 0.0);
+                pos.z += edgeDist * 0.3;
+
+                // Momentum-based deformation
+                pos.x += uMomentum * pos.z * 0.05;
 
                 vElevation = pos.z;
                 vPosition = pos;
+
+                vec4 worldPos = modelMatrix * vec4(pos, 1.0);
+                vWorldPosition = worldPos.xyz;
+                vViewDirection = normalize(cameraPosition - worldPos.xyz);
 
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
@@ -693,60 +705,103 @@
             uniform float uTime;
             uniform float uHover;
             uniform float uSelected;
+            uniform float uMomentum;
+            uniform float uIOR;
 
             varying vec2 vUv;
             varying float vElevation;
             varying vec3 vNormal;
             varying vec3 vPosition;
+            varying vec3 vWorldPosition;
+            varying vec3 vViewDirection;
+
+            // Holographic rainbow function
+            vec3 holographic(float angle, float time) {
+                return vec3(
+                    sin(angle + time) * 0.5 + 0.5,
+                    sin(angle + time + 2.094) * 0.5 + 0.5,
+                    sin(angle + time + 4.188) * 0.5 + 0.5
+                );
+            }
 
             void main() {
-                // Base color - darker for better contrast
-                vec3 baseColor = vec3(0.04, 0.04, 0.05);
+                // Crystalline base - very dark with subtle gradient
+                vec3 baseColor = vec3(0.02, 0.02, 0.03);
 
-                // Multi-layer edge glow
-                float edgeX = smoothstep(0.0, 0.08, vUv.x) * smoothstep(1.0, 0.92, vUv.x);
-                float edgeY = smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
-                float innerEdge = 1.0 - (edgeX * edgeY);
+                // Fresnel effect - glass-like edge illumination
+                float fresnel = pow(1.0 - max(dot(vViewDirection, vNormal), 0.0), 3.0);
 
-                // Outer glow layer
-                float outerX = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x);
-                float outerY = smoothstep(0.0, 0.03, vUv.y) * smoothstep(1.0, 0.97, vUv.y);
-                float outerEdge = 1.0 - (outerX * outerY);
+                // Multi-layer crystalline edges
+                float edgeX = smoothstep(0.0, 0.06, vUv.x) * smoothstep(1.0, 0.94, vUv.x);
+                float edgeY = smoothstep(0.0, 0.06, vUv.y) * smoothstep(1.0, 0.94, vUv.y);
+                float crystalEdge = 1.0 - (edgeX * edgeY);
 
-                // Animated gradient with depth
-                float gradient = sin(vUv.x * 3.14159 + uTime * 0.5) * 0.5 + 0.5;
-                float vertGradient = sin(vUv.y * 2.0 + uTime * 0.3) * 0.5 + 0.5;
-                vec3 glowColor = mix(uColor, uAccentColor, gradient * vertGradient);
+                // Sharp outer rim
+                float rimX = smoothstep(0.0, 0.015, vUv.x) * smoothstep(1.0, 0.985, vUv.x);
+                float rimY = smoothstep(0.0, 0.015, vUv.y) * smoothstep(1.0, 0.985, vUv.y);
+                float sharpRim = 1.0 - (rimX * rimY);
 
-                // Scanline effect
-                float scanline = sin(vUv.y * 100.0 + uTime * 2.0) * 0.02 + 0.98;
+                // Holographic bands - animated rainbow refraction
+                float holoAngle = vUv.y * 30.0 + vUv.x * 10.0;
+                vec3 holoColor = holographic(holoAngle, uTime * 2.0);
 
-                // Combine layers
-                vec3 finalColor = baseColor * scanline;
+                // Chromatic aberration simulation
+                float chromaR = smoothstep(0.3, 0.0, length(vUv - 0.5 + vec2(0.02, 0.0)));
+                float chromaB = smoothstep(0.3, 0.0, length(vUv - 0.5 - vec2(0.02, 0.0)));
+                vec3 chromatic = vec3(chromaR * 0.1, 0.0, chromaB * 0.1);
 
-                // Inner edge glow
-                finalColor += innerEdge * glowColor * (0.4 + uHover * 0.6);
+                // Animated gradient flow
+                float flowGradient = sin(vUv.x * 3.14159 + uTime * 0.3) * 0.5 + 0.5;
+                float vertFlow = cos(vUv.y * 2.5 + uTime * 0.4) * 0.5 + 0.5;
+                vec3 glowColor = mix(uColor, uAccentColor, flowGradient * vertFlow);
 
-                // Outer edge (brighter, sharper)
-                finalColor += outerEdge * uColor * (0.8 + uSelected * 0.5);
+                // Scanlines with depth
+                float scanline = sin(vUv.y * 150.0 + uTime * 3.0) * 0.015 + 0.985;
+                float scanline2 = sin(vUv.x * 80.0 - uTime * 1.5) * 0.01 + 0.99;
 
-                // Corner highlights
-                float corner = (1.0 - vUv.x) * (1.0 - vUv.y) + vUv.x * vUv.y;
-                corner += (1.0 - vUv.x) * vUv.y + vUv.x * (1.0 - vUv.y);
-                corner = pow(1.0 - corner * 0.5, 4.0);
-                finalColor += corner * glowColor * 0.3;
+                // Combine crystalline layers
+                vec3 finalColor = baseColor * scanline * scanline2;
 
-                // Depth effect
-                finalColor += vElevation * 0.03 * uColor;
+                // Fresnel rim lighting
+                finalColor += fresnel * glowColor * (0.6 + uHover * 0.8);
 
-                // Selection pulse
-                float pulse = sin(uTime * 4.0) * 0.5 + 0.5;
-                finalColor += uSelected * glowColor * (0.2 + pulse * 0.15);
+                // Holographic effect on edges
+                finalColor += crystalEdge * holoColor * (0.15 + uHover * 0.25);
 
-                // Hover brightness boost
-                finalColor *= 1.0 + uHover * 0.2;
+                // Sharp crystalline rim
+                finalColor += sharpRim * uColor * (1.2 + uSelected * 0.8);
 
-                float alpha = 0.9 + uHover * 0.08;
+                // Chromatic aberration overlay
+                finalColor += chromatic * uHover;
+
+                // Inner glow
+                float innerGlow = smoothstep(0.5, 0.0, length(vUv - 0.5));
+                finalColor += innerGlow * glowColor * 0.08;
+
+                // Corner crystals
+                float corner = pow(max(0.0, 1.0 - length(vUv) * 0.7), 3.0);
+                corner += pow(max(0.0, 1.0 - length(vUv - vec2(1.0, 0.0)) * 0.7), 3.0);
+                corner += pow(max(0.0, 1.0 - length(vUv - vec2(0.0, 1.0)) * 0.7), 3.0);
+                corner += pow(max(0.0, 1.0 - length(vUv - vec2(1.0, 1.0)) * 0.7), 3.0);
+                finalColor += corner * glowColor * 0.2;
+
+                // Momentum-based motion streak
+                float motionStreak = abs(uMomentum) * smoothstep(0.5, 0.0, abs(vUv.x - 0.5));
+                finalColor += motionStreak * uColor * 0.3;
+
+                // Selection energy pulse
+                float pulse = sin(uTime * 5.0) * 0.5 + 0.5;
+                float pulse2 = sin(uTime * 7.0 + 1.0) * 0.5 + 0.5;
+                finalColor += uSelected * glowColor * (0.25 + pulse * 0.2 + pulse2 * 0.1);
+
+                // Depth luminance
+                finalColor += vElevation * 0.05 * uColor;
+
+                // Hover energy boost
+                finalColor *= 1.0 + uHover * 0.25;
+
+                // Glass-like transparency with depth
+                float alpha = 0.92 + uHover * 0.06 + fresnel * 0.02;
 
                 gl_FragColor = vec4(finalColor, alpha);
             }
@@ -863,15 +918,18 @@
         // ═══════════════════════════════════════════════════════════════════
         // CARD OBJECT
         // ═══════════════════════════════════════════════════════════════════
+        // CRYSTALLINE 3D CARD CLASS
+        // ═══════════════════════════════════════════════════════════════════
         class Card3D {
             constructor(data, index, total) {
                 this.data = data;
                 this.index = index;
+                this.momentum = 0; // For motion effects
 
-                // Create geometry
-                const geometry = new THREE.PlaneGeometry(16, 10, 32, 32);
+                // Create 3D crystalline geometry (BoxGeometry for depth)
+                const geometry = new THREE.BoxGeometry(16, 10, 0.5, 32, 32, 1);
 
-                // Create material
+                // Create crystalline holographic material
                 this.material = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
@@ -879,12 +937,15 @@
                         uSelected: { value: 0 },
                         uMouse: { value: new THREE.Vector2(0.5, 0.5) },
                         uColor: { value: CONFIG.colors.brand },
-                        uAccentColor: { value: CONFIG.colors.accent }
+                        uAccentColor: { value: CONFIG.colors.accent },
+                        uMomentum: { value: 0 },
+                        uIOR: { value: 1.45 } // Index of refraction
                     },
                     vertexShader: cardVertexShader,
                     fragmentShader: cardFragmentShader,
                     transparent: true,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    depthWrite: true
                 });
 
                 this.mesh = new THREE.Mesh(geometry, this.material);
@@ -995,6 +1056,11 @@
                 this.material.uniforms.uTime.value = time;
                 this.material.uniforms.uHover.value += (this.isHovered ? 1 : 0 - this.material.uniforms.uHover.value) * 0.1;
 
+                // Calculate momentum from velocity
+                const speed = this.velocity.length();
+                this.momentum = this.momentum * 0.95 + speed * 0.5; // Smooth momentum
+                this.material.uniforms.uMomentum.value = Math.min(this.momentum, 5.0);
+
                 if (!this.isDragging) {
                     // NO spring-back - cards stay where dropped
                     // Only apply friction to slow down thrown cards
@@ -1007,20 +1073,28 @@
                     this.mesh.position.y = Math.max(-bounds.y, Math.min(bounds.y, this.mesh.position.y));
                     this.mesh.position.z = Math.max(-bounds.z, Math.min(bounds.z, this.mesh.position.z));
 
-                    // Reset rotation smoothly
-                    this.mesh.rotation.x += (0 - this.mesh.rotation.x) * 0.1;
-                    this.mesh.rotation.y += (0 - this.mesh.rotation.y) * 0.1;
+                    // Smooth rotation reset with momentum influence
+                    const targetRotX = this.velocity.y * 0.03;
+                    const targetRotY = -this.velocity.x * 0.03;
+                    this.mesh.rotation.x += (targetRotX - this.mesh.rotation.x) * 0.08;
+                    this.mesh.rotation.y += (targetRotY - this.mesh.rotation.y) * 0.08;
+
+                    // Z-axis lift on hover
+                    const targetZ = this.isHovered ? 3 : 0;
+                    this.mesh.position.z += (this.restPosition.z + targetZ - this.mesh.position.z) * 0.1;
 
                     // Conatus regeneration - striving to persist
                     if (!this.isChild && this.conatus < CONFIG.conatus.initialEnergy) {
                         this.conatus = Math.min(CONFIG.conatus.initialEnergy, this.conatus + CONFIG.conatus.regenRate);
                     }
                 } else {
-                    // Tilt based on velocity during drag
-                    const tiltX = this.velocity.y * 0.015;
-                    const tiltY = -this.velocity.x * 0.015;
-                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.15;
-                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.15;
+                    // Tilt based on velocity during drag - more dramatic
+                    const tiltX = this.velocity.y * 0.04;
+                    const tiltY = -this.velocity.x * 0.04;
+                    const tiltZ = this.velocity.x * 0.02; // Add Z rotation for depth effect
+                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.2;
+                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.2;
+                    this.mesh.rotation.z += (tiltZ - this.mesh.rotation.z) * 0.15;
                 }
 
                 // Store velocity for drag tilt
