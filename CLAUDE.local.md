@@ -1,7 +1,7 @@
 # NeuraByte Labs - LLM Navigation Index
 
 > **Project:** NeuraByte Labs Portfolio Site
-> **Version:** 10.0.0 (Modular Architecture)
+> **Version:** 11.1.3 (Refik Anadol Era)
 > **Stack:** Vite + Three.js r169 + GSAP + GLSL
 
 ---
@@ -33,7 +33,7 @@ labs-site/
     │   └── LabsApp.js      # Main app controller
     ├── shaders/
     │   ├── index.js        # Shader exports
-    │   ├── spinozaos.glsl  # Design system grid
+    │   ├── spinozaos.glsl  # Fluid/Volumetric Data (Refik Anadol Style)
     │   ├── lithosphere.glsl # N-body physics
     │   ├── boardroom.glsl  # AI personas
     │   ├── nexus.glsl      # Forge energy
@@ -58,6 +58,7 @@ labs-site/
 | Animation | GSAP + ScrollTrigger | Industry standard, performant |
 | Styling | CSS Variables | Design tokens, theming |
 | **Corners** | **Sharp (0-2px)** | **NeuraByte brand identity** |
+| **Visuals** | **Generative Data Art** | **Refik Anadol inspired aesthetics** |
 
 ---
 
@@ -79,7 +80,7 @@ Main application controller. Handles:
 
 ### `/src/shaders/*.glsl`
 Each project has a unique fragment shader:
-- `spinozaos.glsl` - 8pt grid, orbiting tokens
+- `spinozaos.glsl` - **NEW:** 3D Curl Noise, Volumetric Density, Synaptic Flashes.
 - `lithosphere.glsl` - 3-body gravitational dance
 - `boardroom.glsl` - 5 AI personas, speaking indicator
 - `nexus.glsl` - Digital forge, energy streams
