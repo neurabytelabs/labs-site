@@ -136,6 +136,8 @@
             text-align: center;
             padding: 0 32px;
             pointer-events: none;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+            will-change: opacity, filter;
         }
 
         .hero-badge {
@@ -532,9 +534,12 @@
             uniform float uTime;
             uniform vec2 uMouse;
             uniform float uMouseRadius;
+            uniform vec3 uCardPositions[4];
+            uniform float uDragIntensity;
 
             varying float vAlpha;
             varying float vElevation;
+            varying float vCardInfluence;
 
             void main() {
                 vec3 pos = position + aOffset;
@@ -549,13 +554,29 @@
                 pos.z += repulsion * 15.0;
                 pos.xy += normalize(diff + 0.001) * repulsion * 5.0;
 
+                // Card attraction - grid cubes are attracted to nearby cards
+                float totalCardInfluence = 0.0;
+                for (int i = 0; i < 4; i++) {
+                    vec3 cardPos = uCardPositions[i];
+                    vec2 cardDiff = pos.xy - cardPos.xy;
+                    float cardDist = length(cardDiff);
+                    float cardAttraction = smoothstep(25.0, 0.0, cardDist);
+
+                    // Pull towards card and elevate
+                    pos.z += cardAttraction * (10.0 + cardPos.z * 0.5);
+                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * 2.0 * uDragIntensity;
+
+                    totalCardInfluence += cardAttraction;
+                }
+
                 // Organic wave
                 float wave = sin(uTime * 0.5 + aRandom * 6.28 + pos.x * 0.1) *
                              cos(uTime * 0.3 + pos.y * 0.1);
                 pos.z += wave * 2.0;
 
                 vElevation = pos.z + 50.0;
-                vAlpha = 0.15 + repulsion * 0.6;
+                vAlpha = 0.15 + repulsion * 0.6 + totalCardInfluence * 0.4;
+                vCardInfluence = totalCardInfluence;
 
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
@@ -565,15 +586,23 @@
             uniform vec3 uColor;
             uniform vec3 uAccentColor;
             uniform float uTime;
+            uniform float uDragIntensity;
 
             varying float vAlpha;
             varying float vElevation;
+            varying float vCardInfluence;
 
             void main() {
                 float colorMix = sin(uTime * 0.2 + vElevation * 0.02) * 0.5 + 0.5;
-                vec3 color = mix(uColor, uAccentColor, colorMix * 0.3);
 
-                gl_FragColor = vec4(color, vAlpha * 0.4);
+                // More accent color near cards
+                float accentMix = colorMix * 0.3 + vCardInfluence * 0.5;
+                vec3 color = mix(uColor, uAccentColor, accentMix);
+
+                // Brighter during drag
+                color += uDragIntensity * uColor * 0.2;
+
+                gl_FragColor = vec4(color, vAlpha * 0.5);
             }
         `;
 
@@ -998,7 +1027,14 @@
                         uMouse: { value: new THREE.Vector2(0.5, 0.5) },
                         uMouseRadius: { value: 20 },
                         uColor: { value: CONFIG.colors.brand },
-                        uAccentColor: { value: CONFIG.colors.accent }
+                        uAccentColor: { value: CONFIG.colors.accent },
+                        uCardPositions: { value: [
+                            new THREE.Vector3(0, 0, 0),
+                            new THREE.Vector3(0, 0, 0),
+                            new THREE.Vector3(0, 0, 0),
+                            new THREE.Vector3(0, 0, 0)
+                        ]},
+                        uDragIntensity: { value: 0 }
                     },
                     vertexShader: gridVertexShader,
                     fragmentShader: gridFragmentShader,
@@ -1200,8 +1236,28 @@
 
                 const time = this.clock.getElapsedTime();
 
-                // Update grid
+                // Update grid time
                 this.gridMaterial.uniforms.uTime.value = time;
+
+                // Update card positions in grid shader for attraction effect
+                const cardPositions = this.cards.map(card => card.mesh.position.clone());
+                this.gridMaterial.uniforms.uCardPositions.value = cardPositions;
+
+                // Smooth drag intensity transition
+                const targetDragIntensity = this.draggedCard ? 1.0 : 0.0;
+                this.currentDragIntensity = this.currentDragIntensity || 0;
+                this.currentDragIntensity += (targetDragIntensity - this.currentDragIntensity) * 0.1;
+                this.gridMaterial.uniforms.uDragIntensity.value = this.currentDragIntensity;
+
+                // Fade hero text during drag
+                const heroContent = document.querySelector('.center-content');
+                if (heroContent) {
+                    const targetOpacity = this.draggedCard ? 0 : 1;
+                    const currentOpacity = parseFloat(heroContent.style.opacity) || 1;
+                    const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * 0.15;
+                    heroContent.style.opacity = newOpacity;
+                    heroContent.style.filter = this.draggedCard ? 'blur(4px)' : 'blur(0px)';
+                }
 
                 // Update cards
                 this.cards.forEach(card => {
