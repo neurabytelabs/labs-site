@@ -788,10 +788,10 @@
                     pPos[3] = vec2(0.25, 0.25);
                     pPos[4] = vec2(0.75, 0.25);
 
-                    int active = int(mod(uTime * 0.5, 5.0));
+                    int activeIdx = int(mod(uTime * 0.5, 5.0));
 
                     for (int i = 0; i < 5; i++) {
-                        float isActive = (i == active) ? 1.0 : 0.0;
+                        float isActive = (i == activeIdx) ? 1.0 : 0.0;
                         float dist = length(vUv - pPos[i]);
                         float node = exp(-dist * 30.0);
                         color += pColors[i] * node * (0.4 + isActive * 0.6 + uHover * 0.3);
