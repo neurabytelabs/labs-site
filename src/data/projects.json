@@ -6,7 +6,9 @@
     "description": "Enterprise-grade cognitive architecture for autonomous agents. Self-improving codebase with i18n support.",
     "tech": ["Python", "LangChain", "Cognitive Arch"],
     "status": "live",
-    "url": "https://forge.neurabytelabs.com"
+    "url": "https://forge.neurabytelabs.com",
+    "gradient": "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+    "icon": "brain"
   },
   {
     "id": "spinozaos",
@@ -15,7 +17,9 @@
     "description": "Award-winning design system for the Age of Superintelligence. \"More Geometrico\" philosophy.",
     "tech": ["Design Tokens", "React", "Motion"],
     "status": "live",
-    "url": "https://github.com/mrsarac/spinozaos"
+    "url": "https://github.com/mrsarac/spinozaos",
+    "gradient": "linear-gradient(135deg, #fac023 0%, #b45309 100%)",
+    "icon": "sun"
   },
   {
     "id": "lithosphere",
@@ -24,7 +28,9 @@
     "description": "N-body gravitational physics simulation with Newton, Artistic, and Magnetic modes.",
     "tech": ["Three.js", "WebGPU", "Physics"],
     "status": "live",
-    "url": "https://lithosphere.mustafasarac.com"
+    "url": "https://lithosphere.mustafasarac.com",
+    "gradient": "linear-gradient(135deg, #64748b 0%, #334155 100%)",
+    "icon": "globe"
   },
   {
     "id": "boardroom",
@@ -33,7 +39,9 @@
     "description": "AI-powered boardroom simulator with 5 personas. System 2 thinking in action.",
     "tech": ["Gemini AI", "React", "Real-time"],
     "status": "live",
-    "url": "https://board.phinote.com"
+    "url": "https://board.phinote.com",
+    "gradient": "linear-gradient(135deg, #8b5cf6 0%, #4c1d95 100%)",
+    "icon": "users"
   },
   {
     "id": "nexus",
@@ -42,7 +50,9 @@
     "description": "Ultimate AI-augmented developer tool. Cross-platform, Rust-powered, multi-model AI.",
     "tech": ["Rust", "Multi-AI", "CLI"],
     "status": "live",
-    "url": "https://github.com/mrsarac/NEXUS-AI-Forge"
+    "url": "https://github.com/mrsarac/NEXUS-AI-Forge",
+    "gradient": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    "icon": "terminal"
   },
   {
     "id": "oracle",
@@ -51,7 +61,9 @@
     "description": "Strategic decision simulation platform. Gemini AI-powered scenario analysis.",
     "tech": ["Gemini AI", "Python", "Strategy"],
     "status": "live",
-    "url": "https://github.com/mrsarac/ORACLE-Engine"
+    "url": "https://github.com/mrsarac/ORACLE-Engine",
+    "gradient": "linear-gradient(135deg, #d946ef 0%, #be185d 100%)",
+    "icon": "eye"
   },
   {
     "id": "engram",
@@ -60,7 +72,9 @@
     "description": "Cyberpunk memory prosthetic. AI-powered flashcards with FSRS spaced repetition.",
     "tech": ["FSRS", "AI", "Cyberpunk"],
     "status": "dev",
-    "url": null
+    "url": null,
+    "gradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+    "icon": "chip"
   },
   {
     "id": "manifesto",
@@ -69,7 +83,9 @@
     "description": "Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.",
     "tech": ["AI Education", "Philosophy", "Manifesto"],
     "status": "live",
-    "url": "https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/"
+    "url": "https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/",
+    "gradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    "icon": "book"
   },
   {
     "id": "voice",
@@ -78,6 +94,8 @@
     "description": "Zero-latency voice-to-text for macOS & iOS. Push-to-talk with premium animations.",
     "tech": ["Swift", "macOS", "iOS"],
     "status": "dev",
-    "url": null
+    "url": null,
+    "gradient": "linear-gradient(135deg, #71717a 0%, #27272a 100%)",
+    "icon": "mic"
   }
 ]
