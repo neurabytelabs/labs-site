@@ -1,5 +1,14 @@
 [
   {
+    "id": "metalogos",
+    "title": "META-LOGOS: The Cognitive Forge",
+    "category": "AI Framework",
+    "description": "Enterprise-grade cognitive architecture for autonomous agents. Self-improving codebase with i18n support.",
+    "tech": ["Python", "LangChain", "Cognitive Arch"],
+    "status": "live",
+    "url": "https://forge.neurabytelabs.com"
+  },
+  {
     "id": "spinozaos",
     "title": "SpinozaOS",
     "category": "Design Systems",

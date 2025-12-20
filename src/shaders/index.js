@@ -4,6 +4,7 @@
  */
 
 import spinozaos from './spinozaos.glsl';
+import metalogos from './metalogos.glsl';
 import lithosphere from './lithosphere.glsl';
 import boardroom from './boardroom.glsl';
 import nexus from './nexus.glsl';
@@ -23,6 +24,7 @@ export const vertexShader = `
 
 // Map project IDs to their shaders
 export const shaders = {
+  metalogos,
   spinozaos,
   lithosphere,
   boardroom,

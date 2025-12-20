@@ -9,7 +9,7 @@ import { Background } from './components/Background.js';
 
 // Initialize app
 function init() {
-  console.log('[Labs] NeuraByte Labs v11.1.4');
+  console.log('[Labs] NeuraByte Labs v11.2.0');
   console.log('[Labs] Masterpiece Shader Edition - Generative Data Art Visuals');
 
   // Initialize background

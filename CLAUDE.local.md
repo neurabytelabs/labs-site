@@ -1,7 +1,7 @@
 # NeuraByte Labs - LLM Navigation Index
 
 > **Project:** NeuraByte Labs Portfolio Site
-> **Version:** 11.1.4 (Unified Card Era)
+> **Version:** 11.2.0 (Cognitive Forge Era)
 > **Stack:** Vite + Three.js r169 + GSAP + GLSL
 
 ---
