@@ -3,88 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuraByte Labs | Cyber-Kinetic Experiment Hub</title>
-    <meta name="description" content="NeuraByte Labs - Interactive 3D experiment hub. Physics simulations, AI demos, and manipulable experiences.">
-    <meta name="robots" content="noindex, nofollow">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+    <title>NeuraByte Labs - Experimental Projects</title>
+    <meta name="description" content="Explore cutting-edge AI and software experiments from NeuraByte Labs">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- GSAP for micro-interactions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Three.js for shader animations -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+    }
+    </script>
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════
-           NEURABYTE LABS - UNIFIED CARD EXPERIENCE v6.0
-           Neural Network Background + Three.js + WebGL + Physics
-           "More Geometrico" - Spinoza's Vision Made Digital
+           NEURABYTE LABS v9.0 - USER-FRIENDLY REDESIGN
+           Clean, scrollable, professional
            ═══════════════════════════════════════════════════════════════════ */
 
         :root {
-            --void: #020617;
-            --surface: #111113;
-            --surface-elevated: #1a1a1d;
-            --spinoza-yellow: #fbbf24;
-            --spinoza-yellow-rgb: 251, 191, 36;
-            --spinoza-indigo: #6366f1;
-            --spinoza-indigo-rgb: 99, 102, 241;
-            --neutral-50: #fafafa;
-            --neutral-400: #a1a1aa;
-            --neutral-500: #71717a;
-            --neutral-600: #52525b;
-            --success: #22c55e;
-            --font-serif: 'Cinzel', Georgia, serif;
-            --font-sans: 'Inter', system-ui, sans-serif;
+            --color-bg: #0a0a0b;
+            --color-surface: #111113;
+            --color-surface-hover: #18181b;
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-hover: rgba(251, 191, 36, 0.3);
+            --color-text: #fafafa;
+            --color-text-muted: #a1a1aa;
+            --color-text-dim: #71717a;
+            --color-accent: #fbbf24;
+            --color-accent-hover: #fde68a;
+            --color-live: #22c55e;
+            --color-dev: #f97316;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --shadow-card-hover: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--color-border-hover);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
             font-family: var(--font-sans);
-            background: var(--void);
-            color: var(--neutral-50);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* WebGL Canvas */
-        #webgl-canvas {
+        /* ═══ HEADER ═══ */
+        .header {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 24px;
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-border);
+            transition: var(--transition-fast);
         }
 
-        /* UI Overlay */
-        #ui-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            flex-direction: column;
-        }
-
-        #ui-overlay > * {
-            pointer-events: auto;
-        }
-
-        /* Header */
-        header {
-            padding: 24px 32px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), transparent);
+            justify-content: space-between;
         }
 
         .logo {
@@ -92,2717 +99,1179 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            color: var(--neutral-50);
+            color: var(--color-text);
         }
 
         .logo-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--spinoza-yellow), #d97706);
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--color-accent), #f97316);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: var(--font-serif);
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: var(--void);
+            font-size: 18px;
         }
 
         .logo-text {
-            font-family: var(--font-serif);
             font-weight: 600;
             font-size: 1.1rem;
+            letter-spacing: -0.02em;
         }
 
-        .logo-text span { color: var(--spinoza-yellow); }
-
-        .back-link {
-            color: var(--neutral-400);
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-family: var(--font-mono);
-            transition: color 0.15s;
+        .logo-text span {
+            color: var(--color-accent);
         }
 
-        .back-link:hover { color: var(--spinoza-yellow); }
-
-        /* Center Content - Non-interactive overlay */
-        .center-content {
-            flex: 1;
+        .nav {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 0 32px;
-            pointer-events: none;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            transition: opacity 0.3s ease, filter 0.3s ease;
-            will-change: opacity, filter;
+            gap: 8px;
         }
 
-        .center-content * {
+        .nav-link {
+            padding: 8px 16px;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--color-text);
+            background: var(--color-surface);
+        }
+
+        .nav-cta {
+            background: var(--color-accent);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-accent-hover);
+            color: #000;
+        }
+
+        /* ═══ HERO SECTION ═══ */
+        .hero {
+            padding: 140px 24px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(251, 191, 36, 0.08) 0%, transparent 70%);
             pointer-events: none;
-            user-select: none;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 16px;
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            padding: 6px 14px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
             border-radius: 100px;
-            font-size: 0.75rem;
-            color: var(--spinoza-yellow);
-            font-family: var(--font-mono);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
             margin-bottom: 24px;
         }
 
-        .hero-badge::before {
-            content: '';
+        .hero-badge-dot {
             width: 6px;
             height: 6px;
-            background: var(--spinoza-yellow);
+            background: var(--color-live);
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 8px var(--spinoza-yellow);
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            50% { opacity: 0.5; }
         }
 
-        h1 {
-            font-family: var(--font-serif);
-            font-size: clamp(2rem, 5vw, 3.5rem);
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
             font-weight: 700;
-            margin-bottom: 16px;
-            letter-spacing: 0.02em;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 20px;
         }
 
-        h1 .highlight {
-            color: var(--spinoza-yellow);
-            text-shadow: 0 0 40px rgba(251, 191, 36, 0.4);
+        .hero-title span {
+            background: linear-gradient(135deg, var(--color-accent), #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .subtitle {
-            font-size: 1rem;
-            color: var(--neutral-400);
-            max-width: 500px;
-            line-height: 1.6;
-            margin-bottom: 32px;
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
         }
 
-        .drag-hint {
-            font-size: 0.75rem;
-            color: var(--neutral-500);
-            font-family: var(--font-mono);
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            color: var(--color-text-dim);
+            margin-top: 4px;
+        }
+
+        /* ═══ PROJECTS SECTION ═══ */
+        .projects {
+            padding: 60px 24px 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .section-filter {
+            display: flex;
             gap: 8px;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 2s forwards;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        .filter-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: var(--transition-fast);
         }
 
-        /* Footer */
-        footer {
-            padding: 24px 32px;
-            text-align: center;
-            background: linear-gradient(to top, rgba(2, 6, 23, 0.9), transparent);
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--color-surface);
+            border-color: var(--color-border-hover);
+            color: var(--color-text);
         }
 
-        .footer-text {
-            font-size: 0.75rem;
-            color: var(--neutral-500);
+        /* ═══ CARD GRID ═══ */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
         }
 
-        .footer-text a {
-            color: var(--neutral-400);
-            text-decoration: none;
+        /* ═══ PROJECT CARD ═══ */
+        .project-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            cursor: grab;
+            transition: var(--transition-smooth);
+            will-change: transform, box-shadow;
         }
 
-        .footer-text a:hover { color: var(--spinoza-yellow); }
+        .project-card:hover {
+            border-color: var(--color-border-hover);
+            box-shadow: var(--shadow-card-hover);
+        }
 
-        /* Card Labels (CSS3D alternative - HTML overlay) */
-        .card-labels {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .project-card:active {
+            cursor: grabbing;
+        }
+
+        .project-card.is-dragging {
+            z-index: 10;
+        }
+
+        /* Card Scene (Shader Animation) */
+        .card-scene {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+        }
+
+        .card-canvas {
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 5;
+            display: block;
         }
 
-        /* ═══ UNIFIED CARD LABELS v6.0 ═══ */
-        .card-label {
+        .scene-overlay {
             position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to top, var(--color-surface), transparent);
             pointer-events: none;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-            transform-origin: center center;
-            will-change: transform, left, top, opacity;
         }
 
-        .card-label-inner {
-            background: transparent;
-            border-radius: 12px;
-            padding: 0;
-            min-width: 260px;
-            max-width: 300px;
+        /* Card Body */
+        .card-body {
+            padding: 20px 24px 24px;
         }
 
-        /* Spacer for shader header area */
-        .label-spacer {
-            height: 140px;
-        }
-
-        /* Card content area */
-        .card-content {
-            padding: 16px 20px 20px 20px;
-            background: rgba(17, 17, 19, 0.92);
-            border-radius: 0 0 12px 12px;
-            border: 1px solid rgba(251, 191, 36, 0.12);
-            border-top: none;
-        }
-
-        /* Header row with status and category */
-        .card-header-row {
+        .card-meta {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-status.live {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-live);
+        }
+
+        .card-status.dev {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--color-dev);
+        }
+
+        .card-status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
         }
 
         .card-category {
-            font-size: 0.65rem;
-            color: var(--spinoza-yellow);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            font-family: var(--font-mono);
-            margin-bottom: 8px;
+            font-size: 0.75rem;
+            color: var(--color-text-dim);
+            font-weight: 500;
         }
 
         .card-title {
-            font-family: var(--font-serif);
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            letter-spacing: -0.01em;
             margin-bottom: 8px;
+            color: var(--color-text);
         }
 
         .card-description {
-            font-size: 0.8rem;
-            color: var(--neutral-400);
-            line-height: 1.5;
-            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
 
         .card-tech {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
 
         .tech-tag {
-            padding: 3px 8px;
+            padding: 4px 10px;
             background: rgba(251, 191, 36, 0.1);
-            border-radius: 4px;
-            font-size: 0.65rem;
-            color: var(--spinoza-yellow);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
             font-family: var(--font-mono);
-            border: 1px solid rgba(251, 191, 36, 0.1);
+            color: var(--color-accent);
         }
 
-        /* Status badge */
-        .card-status {
-            font-size: 0.65rem;
-            font-weight: 500;
-            font-family: var(--font-mono);
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .status-live {
-            color: var(--success);
-        }
-
-        .status-coming {
-            color: var(--neutral-500);
-        }
-
-        /* Launch button - THE ONLY CLICKABLE ELEMENT */
-        .card-link {
+        .card-launch {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 12px;
             padding: 10px 20px;
-            color: var(--spinoza-yellow);
+            background: var(--color-accent);
+            color: #000;
             text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            font-family: var(--font-mono);
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.25);
-            border-radius: 8px;
-            cursor: pointer;
-            pointer-events: auto !important; /* Force clickable */
-            transition: all 0.25s ease;
-        }
-
-        .card-link:hover {
-            gap: 14px;
-            color: #fff;
-            background: rgba(251, 191, 36, 0.25);
-            border-color: rgba(251, 191, 36, 0.5);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
-        }
-
-        .card-link-disabled {
-            color: var(--neutral-500);
-            background: rgba(113, 113, 122, 0.1);
-            border-color: rgba(113, 113, 122, 0.15);
-            cursor: default;
-            pointer-events: none;
-        }
-
-        /* v6.0: Conatus bars removed for cleaner design */
-
-        /* Child Card Styling */
-        .card-label.is-child {
-            opacity: 0.9;
-        }
-
-        .card-label.is-child .card-label-inner {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .card-label.is-child .card-status {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--spinoza-indigo);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .card-label.is-child .conatus-bar {
-            display: none;
-        }
-
-        /* Loading */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--void);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: opacity 0.5s ease;
-        }
-
-        #loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 2px solid rgba(251, 191, 36, 0.1);
-            border-top-color: var(--spinoza-yellow);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            margin-top: 20px;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--neutral-500);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--void); }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--spinoza-yellow); }
-
-        /* ═══ CONTROL PANEL ═══ */
-        .control-toggle {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 50;
-            width: 44px;
-            height: 44px;
-            background: rgba(17, 17, 19, 0.9);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--spinoza-yellow);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(8px);
-        }
-
-        .control-toggle:hover {
-            border-color: rgba(251, 191, 36, 0.5);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
-        }
-
-        .control-toggle.active {
-            right: 340px;
-        }
-
-        .control-panel {
-            position: fixed;
-            right: -320px;
-            top: 0;
-            width: 320px;
-            height: 100%;
-            background: rgba(17, 17, 19, 0.95);
-            border-left: 1px solid rgba(251, 191, 36, 0.15);
-            z-index: 45;
-            padding: 24px;
-            overflow-y: auto;
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(12px);
-        }
-
-        .control-panel.open {
-            right: 0;
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
-        }
-
-        .panel-title {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            color: var(--spinoza-yellow);
-        }
-
-        .panel-version {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--neutral-500);
-        }
-
-        .panel-section {
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--neutral-500);
-            margin-bottom: 12px;
-        }
-
-        .control-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .control-label {
             font-size: 0.85rem;
-            color: var(--neutral-50);
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
         }
 
-        .fps-counter {
-            font-family: var(--font-mono);
-            color: var(--success);
-            font-weight: 500;
+        .card-launch:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-1px);
         }
 
-        .fps-counter.warning {
-            color: #f59e0b;
+        .card-launch.disabled {
+            background: var(--color-surface-hover);
+            color: var(--color-text-dim);
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
-        .fps-counter.danger {
-            color: #ef4444;
+        .card-launch-arrow {
+            transition: transform var(--transition-fast);
         }
 
-        .control-toggle-switch {
-            width: 44px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
+        .card-launch:hover .card-launch-arrow {
+            transform: translateX(4px);
         }
 
-        .control-toggle-switch.active {
-            background: rgba(251, 191, 36, 0.3);
-        }
-
-        .control-toggle-switch::after {
-            content: '';
-            position: absolute;
-            left: 2px;
-            top: 2px;
-            width: 20px;
-            height: 20px;
-            background: var(--neutral-400);
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-
-        .control-toggle-switch.active::after {
-            left: 22px;
-            background: var(--spinoza-yellow);
-        }
-
-        .control-slider {
-            width: 100%;
-            margin-top: 8px;
-            -webkit-appearance: none;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .control-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--spinoza-yellow);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .changelog-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .changelog-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            border-left: 2px solid var(--spinoza-yellow);
-        }
-
-        .changelog-version {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--spinoza-yellow);
-            margin-bottom: 4px;
-        }
-
-        .changelog-date {
-            font-size: 0.65rem;
-            color: var(--neutral-600);
-            margin-bottom: 6px;
-        }
-
-        .changelog-text {
-            font-size: 0.8rem;
-            color: var(--neutral-400);
-            line-height: 1.4;
-        }
-
-        .panel-footer {
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(251, 191, 36, 0.1);
+        /* ═══ FOOTER ═══ */
+        .footer {
+            padding: 40px 24px;
+            border-top: 1px solid var(--color-border);
             text-align: center;
         }
 
-        .panel-footer-text {
-            font-size: 0.7rem;
-            color: var(--neutral-600);
-            font-family: var(--font-mono);
+        .footer-text {
+            font-size: 0.85rem;
+            color: var(--color-text-dim);
+        }
+
+        .footer-text a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .hero {
+                padding: 120px 16px 60px;
+            }
+
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .projects {
+                padding: 40px 16px 80px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-scene {
+                height: 140px;
+            }
+        }
+
+        /* ═══ SCROLL ANIMATIONS ═══ */
+        .card-grid .project-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .card-grid .project-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading">
-        <div class="loader"></div>
-        <div class="loading-text">Initializing WebGL...</div>
-    </div>
-
-    <!-- WebGL Canvas -->
-    <canvas id="webgl-canvas"></canvas>
-
-    <!-- UI Overlay -->
-    <div id="ui-overlay">
-        <header>
-            <a href="https://neurabytelabs.com" class="logo">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">
                 <div class="logo-icon">N</div>
                 <div class="logo-text">NeuraByte <span>Labs</span></div>
             </a>
-            <a href="https://neurabytelabs.com" class="back-link">&larr; neurabytelabs.com</a>
-        </header>
+            <nav class="nav">
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="https://neurabytelabs.com" class="nav-link" target="_blank">Main Site</a>
+                <a href="https://github.com/mrsarac" class="nav-link nav-cta" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
 
-        <div class="center-content">
-            <div class="hero-badge">Cyber-Kinetic Hub</div>
-            <h1>Manipulate the <span class="highlight">Experiments</span></h1>
-            <p class="subtitle">Drag, throw, and interact with our experimental projects. Each card is a portal to innovation.</p>
-            <div class="drag-hint">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>
-                </svg>
-                Drag cards to interact
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Experimental Projects
+        </div>
+        <h1 class="hero-title">
+            Building the <span>Future</span><br>of Intelligence
+        </h1>
+        <p class="hero-subtitle">
+            A collection of experimental AI projects, tools, and research from NeuraByte Labs.
+            Each project pushes the boundaries of what's possible.
+        </p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">8</div>
+                <div class="hero-stat-label">Projects</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">5</div>
+                <div class="hero-stat-label">Live</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">3</div>
+                <div class="hero-stat-label">In Development</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
+        <div class="section-header">
+            <h2 class="section-title">All Projects</h2>
+            <div class="section-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="live">Live</button>
+                <button class="filter-btn" data-filter="dev">In Dev</button>
             </div>
         </div>
 
-        <footer>
-            <p class="footer-text">
-                Part of <a href="https://neurabytelabs.com">NeuraByte Labs</a> &middot;
-                Built in Germany &middot; 50 Year Vision
-            </p>
-        </footer>
-    </div>
-
-    <!-- Card Labels Container -->
-    <div class="card-labels" id="card-labels"></div>
-
-    <!-- Control Panel Toggle -->
-    <button class="control-toggle" id="control-toggle" aria-label="Toggle Control Panel">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-    </button>
-
-    <!-- Control Panel -->
-    <div class="control-panel" id="control-panel">
-        <div class="panel-header">
-            <div class="panel-title">Experience Controls</div>
-            <div class="panel-version">v6.0</div>
+        <div class="card-grid" id="card-grid">
+            <!-- Cards will be generated by JavaScript -->
         </div>
+    </section>
 
-        <div class="panel-section">
-            <div class="section-title">Visual Effects</div>
-
-            <div class="control-item">
-                <span class="control-label">Neural Network</span>
-                <div class="control-toggle-switch active" data-setting="neuralNetwork"></div>
-            </div>
-
-            <div class="control-item">
-                <span class="control-label">Card Scenes</span>
-                <div class="control-toggle-switch active" data-setting="cardScenes"></div>
-            </div>
-
-            <div class="control-item">
-                <span class="control-label">Bloom Effect</span>
-                <div class="control-toggle-switch active" data-setting="bloom"></div>
-            </div>
-
-            <div class="control-item">
-                <span class="control-label">Particles</span>
-                <div class="control-toggle-switch active" data-setting="particles"></div>
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <div class="section-title">Animation</div>
-
-            <div class="control-item" style="flex-direction: column; align-items: stretch;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span class="control-label">Animation Speed</span>
-                    <span class="control-label" id="speed-value">1.0x</span>
-                </div>
-                <input type="range" class="control-slider" id="animation-speed" min="0.1" max="2" step="0.1" value="1">
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <div class="section-title">Performance</div>
-            <div class="control-item">
-                <span class="control-label">FPS</span>
-                <span class="control-label fps-counter" id="fps-counter">60</span>
-            </div>
-            <div class="control-item">
-                <span class="control-label">Cards</span>
-                <span class="control-label" id="card-count">8</span>
-            </div>
-            <div class="control-item">
-                <span class="control-label">Neurons</span>
-                <span class="control-label" id="neuron-count">200</span>
-            </div>
-        </div>
-
-        <div class="panel-section">
-            <div class="section-title">Changelog</div>
-            <div class="changelog-list">
-                <div class="changelog-item">
-                    <div class="changelog-version">v6.0 "Unified Cards"</div>
-                    <div class="changelog-date">December 2025</div>
-                    <div class="changelog-text">8 projects: NEXUS, ORACLE, Engram, Manifesto, Voice. Unique 3D scenes per card.</div>
-                </div>
-                <div class="changelog-item">
-                    <div class="changelog-version">v4.0 "More Geometrico"</div>
-                    <div class="changelog-date">December 2025</div>
-                    <div class="changelog-text">Neural network background, card emergence, Inner Cosmos scenes, control panel</div>
-                </div>
-                <div class="changelog-item">
-                    <div class="changelog-version">v3.0 "Cyber-Kinetic"</div>
-                    <div class="changelog-date">December 2025</div>
-                    <div class="changelog-text">Crystalline 3D cards, Spinoza Conatus system, holographic shaders</div>
-                </div>
-                <div class="changelog-item">
-                    <div class="changelog-version">v2.0</div>
-                    <div class="changelog-date">November 2025</div>
-                    <div class="changelog-text">Physics-based card interactions, particle effects</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel-footer">
-            <div class="panel-footer-text">NeuraByte Labs &middot; 50 Year Vision</div>
-        </div>
-    </div>
-
-    <!-- Three.js + Dependencies -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            2025 NeuraByte Labs. Built with passion by <a href="https://mustafasarac.com" target="_blank">Mustafa Sarac</a>
+        </p>
+    </footer>
 
     <script type="module">
         import * as THREE from 'three';
-        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
         // ═══════════════════════════════════════════════════════════════════
-        // CONFIGURATION
+        // PROJECT DATA
         // ═══════════════════════════════════════════════════════════════════
-        const CONFIG = {
-            colors: {
-                void: new THREE.Color(0x020617),
-                brand: new THREE.Color(0xfbbf24),
-                accent: new THREE.Color(0x6366f1),
-                surface: new THREE.Color(0x111113)
+        const PROJECTS = [
+            {
+                id: 'spinozaos',
+                title: 'SpinozaOS',
+                category: 'Design Systems',
+                description: 'Award-winning design system for the Age of Superintelligence. "More Geometrico" philosophy.',
+                tech: ['Design Tokens', 'React', 'Motion'],
+                status: 'live',
+                url: 'https://github.com/mrsarac/spinozaos'
             },
-            grid: {
-                count: 40,
-                spacing: 2.5,
-                depth: -50
+            {
+                id: 'lithosphere',
+                title: 'Lithosphere',
+                category: 'Physics & Visualization',
+                description: 'N-body gravitational physics simulation with Newton, Artistic, and Magnetic modes.',
+                tech: ['Three.js', 'WebGPU', 'Physics'],
+                status: 'live',
+                url: 'https://lithosphere.mustafasarac.com'
             },
-            cards: [
-                {
-                    id: 'spinozaos',
-                    title: 'SpinozaOS',
-                    category: 'Design Systems',
-                    description: 'Award-winning design system for the Age of Superintelligence. "More Geometrico" philosophy.',
-                    tech: ['Design Tokens', 'React', 'Motion'],
-                    status: 'live',
-                    url: 'https://github.com/mrsarac/spinozaos',
-                    icon: '⚛️'
-                },
-                {
-                    id: 'lithosphere',
-                    title: 'Lithosphere',
-                    category: 'Physics & Visualization',
-                    description: 'N-body gravitational physics simulation with Newton, Artistic, and Magnetic modes.',
-                    tech: ['Three.js', 'WebGPU', 'Physics'],
-                    status: 'live',
-                    url: 'https://lithosphere.mustafasarac.com',
-                    icon: '🌌'
-                },
-                {
-                    id: 'boardroom',
-                    title: 'Cognitive Boardroom',
-                    category: 'AI Experiments',
-                    description: 'AI-powered boardroom simulator with 5 personas. System 2 thinking in action.',
-                    tech: ['Gemini AI', 'React', 'Real-time'],
-                    status: 'live',
-                    url: 'https://board.phinote.com',
-                    icon: '🧠'
-                },
-                {
-                    id: 'nexus',
-                    title: 'NEXUS AI Forge',
-                    category: 'Developer Tools',
-                    description: 'Ultimate AI-augmented developer tool. Cross-platform, Rust-powered, multi-model AI.',
-                    tech: ['Rust', 'Multi-AI', 'CLI'],
-                    status: 'live',
-                    url: 'https://github.com/mrsarac/NEXUS-AI-Forge',
-                    icon: '⚡'
-                },
-                {
-                    id: 'oracle',
-                    title: 'ORACLE Engine',
-                    category: 'AI Simulation',
-                    description: 'Strategic decision simulation platform. Gemini AI-powered scenario analysis.',
-                    tech: ['Gemini AI', 'Python', 'Strategy'],
-                    status: 'live',
-                    url: 'https://github.com/mrsarac/ORACLE-Engine',
-                    icon: '🔮'
-                },
-                {
-                    id: 'engram',
-                    title: 'Engram Memory',
-                    category: 'Learning & Memory',
-                    description: 'Cyberpunk memory prosthetic. AI-powered flashcards with FSRS spaced repetition.',
-                    tech: ['FSRS', 'AI', 'Cyberpunk'],
-                    status: 'dev',
-                    url: null,
-                    icon: '🧬'
-                },
-                {
-                    id: 'manifesto',
-                    title: 'Digital Renaissance',
-                    category: 'Philosophy & Education',
-                    description: 'Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.',
-                    tech: ['AI Education', 'Philosophy', 'Manifesto'],
-                    status: 'live',
-                    url: 'https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/',
-                    icon: '📜'
-                },
-                {
-                    id: 'voice',
-                    title: 'NeuraByte Voice',
-                    category: 'Native Apps',
-                    description: 'Zero-latency voice-to-text for macOS & iOS. Push-to-talk with premium animations.',
-                    tech: ['Swift', 'macOS', 'iOS'],
-                    status: 'dev',
-                    url: null,
-                    icon: '🎤'
-                }
-            ],
-            physics: {
-                damping: 0.95,
-                restitution: 0.6,
-                attraction: 0.001,
-                throwMultiplier: 5
+            {
+                id: 'boardroom',
+                title: 'Cognitive Boardroom',
+                category: 'AI Experiments',
+                description: 'AI-powered boardroom simulator with 5 personas. System 2 thinking in action.',
+                tech: ['Gemini AI', 'React', 'Real-time'],
+                status: 'live',
+                url: 'https://board.phinote.com'
             },
-            // Spinoza's Conatus - the striving to persist in being
-            conatus: {
-                initialEnergy: 1.0,
-                spawnThreshold: 0.3,      // Minimum energy to spawn
-                spawnCost: 0.25,          // Energy cost per spawn
-                regenRate: 0.002,         // Energy regeneration per frame
-                maxChildren: 3,           // Max spawned cards per parent
-                childScale: 0.6,          // Child card scale
-                childLifespan: 15000      // Child lifespan in ms
+            {
+                id: 'nexus',
+                title: 'NEXUS AI Forge',
+                category: 'Developer Tools',
+                description: 'Ultimate AI-augmented developer tool. Cross-platform, Rust-powered, multi-model AI.',
+                tech: ['Rust', 'Multi-AI', 'CLI'],
+                status: 'live',
+                url: 'https://github.com/mrsarac/NEXUS-AI-Forge'
+            },
+            {
+                id: 'oracle',
+                title: 'ORACLE Engine',
+                category: 'AI Simulation',
+                description: 'Strategic decision simulation platform. Gemini AI-powered scenario analysis.',
+                tech: ['Gemini AI', 'Python', 'Strategy'],
+                status: 'live',
+                url: 'https://github.com/mrsarac/ORACLE-Engine'
+            },
+            {
+                id: 'engram',
+                title: 'Engram Memory',
+                category: 'Learning & Memory',
+                description: 'Cyberpunk memory prosthetic. AI-powered flashcards with FSRS spaced repetition.',
+                tech: ['FSRS', 'AI', 'Cyberpunk'],
+                status: 'dev',
+                url: null
+            },
+            {
+                id: 'manifesto',
+                title: 'Digital Renaissance',
+                category: 'Philosophy & Education',
+                description: 'Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.',
+                tech: ['AI Education', 'Philosophy', 'Manifesto'],
+                status: 'live',
+                url: 'https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/'
+            },
+            {
+                id: 'voice',
+                title: 'NeuraByte Voice',
+                category: 'Native Apps',
+                description: 'Zero-latency voice-to-text for macOS & iOS. Push-to-talk with premium animations.',
+                tech: ['Swift', 'macOS', 'iOS'],
+                status: 'dev',
+                url: null
             }
+        ];
+
+        // ═══════════════════════════════════════════════════════════════════
+        // SHADER SCENES - Project-specific animations
+        // ═══════════════════════════════════════════════════════════════════
+        const SCENE_SHADERS = {
+            spinozaos: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    vec3 color = vec3(0.02, 0.02, 0.03);
+
+                    // 8pt grid
+                    float gridPulse = sin(uTime * 1.5) * 0.3 + 0.7;
+                    float gridX = smoothstep(0.015, 0.0, abs(fract(vUv.x * 8.0) - 0.5));
+                    float gridY = smoothstep(0.015, 0.0, abs(fract(vUv.y * 6.0) - 0.5));
+                    color += vec3(0.98, 0.75, 0.14) * (gridX + gridY) * 0.1 * gridPulse;
+
+                    // Token dots
+                    for (float i = 0.0; i < 6.0; i++) {
+                        float orbitRadius = 0.15 + mod(i, 3.0) * 0.08;
+                        vec2 tokenPos = vec2(0.5, 0.5) + vec2(
+                            cos(uTime * 0.5 + i * 1.047),
+                            sin(uTime * 0.5 + i * 1.047)
+                        ) * orbitRadius;
+                        float token = exp(-length(vUv - tokenPos) * 40.0);
+                        color += vec3(0.98, 0.75, 0.14) * token * (0.5 + uHover * 0.5);
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            lithosphere: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    vec3 color = vec3(0.01, 0.01, 0.02);
+
+                    // Three bodies
+                    vec3 colors[3];
+                    colors[0] = vec3(0.98, 0.45, 0.09);
+                    colors[1] = vec3(0.23, 0.51, 0.96);
+                    colors[2] = vec3(0.66, 0.33, 0.97);
+
+                    for (int i = 0; i < 3; i++) {
+                        float phase = float(i) * 2.094;
+                        float t = uTime * (0.5 + float(i) * 0.2);
+                        vec2 pos = vec2(
+                            sin(t + phase) * 0.2,
+                            cos(t * 0.7 + phase) * 0.15
+                        );
+                        float dist = length(center - pos);
+                        float body = exp(-dist * 20.0);
+                        color += colors[i] * body * (0.6 + uHover * 0.4);
+                    }
+
+                    // Stars
+                    for (float i = 0.0; i < 20.0; i++) {
+                        vec2 starPos = vec2(
+                            fract(sin(i * 12.34) * 4567.89) - 0.5,
+                            fract(cos(i * 56.78) * 1234.56) - 0.5
+                        );
+                        float star = exp(-length(center - starPos) * 100.0);
+                        color += vec3(0.9, 0.95, 1.0) * star * 0.3;
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            boardroom: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    vec3 color = vec3(0.02, 0.02, 0.03);
+
+                    // Decision table
+                    vec2 tableUv = center * vec2(1.0, 1.5);
+                    float table = smoothstep(0.2, 0.15, length(tableUv));
+                    color += vec3(0.98, 0.75, 0.14) * table * 0.1;
+
+                    // 5 personas
+                    vec3 pColors[5];
+                    pColors[0] = vec3(0.98, 0.75, 0.14);
+                    pColors[1] = vec3(0.13, 0.77, 0.37);
+                    pColors[2] = vec3(0.23, 0.51, 0.96);
+                    pColors[3] = vec3(0.66, 0.33, 0.97);
+                    pColors[4] = vec3(0.98, 0.45, 0.09);
+
+                    vec2 pPos[5];
+                    pPos[0] = vec2(0.5, 0.8);
+                    pPos[1] = vec2(0.2, 0.55);
+                    pPos[2] = vec2(0.8, 0.55);
+                    pPos[3] = vec2(0.25, 0.25);
+                    pPos[4] = vec2(0.75, 0.25);
+
+                    int active = int(mod(uTime * 0.5, 5.0));
+
+                    for (int i = 0; i < 5; i++) {
+                        float isActive = (i == active) ? 1.0 : 0.0;
+                        float dist = length(vUv - pPos[i]);
+                        float node = exp(-dist * 30.0);
+                        color += pColors[i] * node * (0.4 + isActive * 0.6 + uHover * 0.3);
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            nexus: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec3 color = vec3(0.02, 0.02, 0.03);
+
+                    // Fire at top
+                    float fireY = vUv.y - 0.6;
+                    if (fireY > 0.0) {
+                        float flameNoise = sin(vUv.x * 20.0 + uTime * 5.0) * 0.1;
+                        float flame = smoothstep(0.4, 0.0, fireY - flameNoise);
+                        vec3 fireColor = mix(vec3(1.0, 0.3, 0.05), vec3(1.0, 0.7, 0.1), smoothstep(0.2, 0.0, fireY));
+                        color += fireColor * flame * (0.6 + uHover * 0.4);
+                    }
+
+                    // Terminal lines
+                    float lineY = fract(vUv.y * 8.0 - uTime * 0.3);
+                    float line = smoothstep(0.1, 0.05, abs(lineY - 0.5)) * step(vUv.y, 0.6);
+                    float lineWidth = 0.3 + sin(floor(vUv.y * 8.0 - uTime * 0.3) * 5.0) * 0.15;
+                    line *= step(vUv.x, 0.1 + lineWidth) * step(0.1, vUv.x);
+                    color += vec3(0.13, 0.85, 0.35) * line * 0.6;
+
+                    // Progress bar
+                    float progress = fract(uTime * 0.1);
+                    float inBar = step(abs(vUv.y - 0.1), 0.02) * step(0.15, vUv.x) * step(vUv.x, 0.85);
+                    float filled = step((vUv.x - 0.15) / 0.7, progress) * inBar;
+                    color += vec3(0.98, 0.55, 0.1) * filled * 0.8;
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            oracle: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    float dist = length(center);
+                    vec3 color = vec3(0.02, 0.01, 0.04);
+
+                    // Eye
+                    float eyePulse = sin(uTime * 2.0) * 0.02;
+                    float eye = smoothstep(0.15 + eyePulse, 0.1 + eyePulse, dist);
+                    float pupil = exp(-dist * 20.0);
+                    color += vec3(0.55, 0.36, 0.96) * eye * (0.5 + uHover * 0.5);
+                    color += vec3(0.1, 0.05, 0.2) * pupil;
+
+                    // Rays
+                    float angle = atan(center.y, center.x);
+                    for (float i = 0.0; i < 8.0; i++) {
+                        float a = i * 0.785 + uTime * 0.2;
+                        float beam = smoothstep(0.1, 0.0, abs(mod(angle + a, 0.785) - 0.3925));
+                        beam *= smoothstep(0.15, 0.25, dist) * smoothstep(0.5, 0.3, dist);
+                        color += vec3(0.98, 0.75, 0.14) * beam * 0.3;
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            engram: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    vec3 color = vec3(0.02, 0.02, 0.04);
+
+                    // Memory cards floating
+                    for (float i = 0.0; i < 5.0; i++) {
+                        float phase = i * 1.257;
+                        vec2 cardPos = vec2(0.5, 0.5) + vec2(
+                            cos(uTime * 0.3 + phase),
+                            sin(uTime * 0.2 + phase)
+                        ) * (0.15 + i * 0.05);
+
+                        vec2 cardUv = (vUv - cardPos) * 10.0;
+                        float card = smoothstep(0.1, 0.0, max(abs(cardUv.x) - 0.8, abs(cardUv.y) - 0.5));
+
+                        vec3 cardColor = i < 2.0 ? vec3(0.0, 1.0, 1.0) : vec3(1.0, 0.0, 0.6);
+                        color += cardColor * card * 0.3 * (0.6 + uHover * 0.4);
+                    }
+
+                    // Brain node
+                    float brain = exp(-length(center) * 10.0);
+                    color += vec3(0.8, 0.2, 0.9) * brain * 0.6;
+
+                    // Scanline
+                    float scan = smoothstep(0.02, 0.0, abs(fract(vUv.y * 2.0 - uTime * 0.3) - 0.5));
+                    color += vec3(0.0, 1.0, 0.8) * scan * 0.1;
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            manifesto: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec3 color = vec3(0.04, 0.035, 0.03);
+
+                    // Parchment texture
+                    color += vec3(0.02) * sin(vUv.x * 50.0) * sin(vUv.y * 50.0);
+
+                    // Book pages
+                    float leftPage = step(0.1, vUv.x) * step(vUv.x, 0.48) * step(0.15, vUv.y) * step(vUv.y, 0.85);
+                    float rightPage = step(0.52, vUv.x) * step(vUv.x, 0.9) * step(0.15, vUv.y) * step(vUv.y, 0.85);
+                    color += vec3(0.99, 0.96, 0.90) * leftPage * 0.15;
+                    color += vec3(0.98, 0.95, 0.88) * rightPage * 0.12;
+
+                    // Drop cap
+                    vec2 dropCapPos = vec2(0.18, 0.7);
+                    float dropCap = smoothstep(0.1, 0.06, length(vUv - dropCapPos));
+                    float goldPulse = sin(uTime * 2.0) * 0.2 + 0.8;
+                    color += vec3(0.98, 0.75, 0.14) * dropCap * 0.5 * goldPulse * (0.7 + uHover * 0.3);
+
+                    // Text lines
+                    for (float i = 2.0; i < 8.0; i++) {
+                        float lineY = 0.75 - i * 0.06;
+                        float line = smoothstep(0.008, 0.003, abs(vUv.y - lineY));
+                        line *= step(0.14, vUv.x) * step(vUv.x, 0.4) * leftPage;
+                        color += vec3(0.3, 0.2, 0.1) * line * 0.3;
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            voice: `
+                uniform float uTime;
+                uniform float uHover;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vUv - 0.5;
+                    vec3 color = vec3(0.02, 0.02, 0.04);
+
+                    // Central microphone
+                    float mic = exp(-length(center) * 12.0);
+                    color += vec3(0.98, 0.75, 0.14) * mic * (0.8 + uHover * 0.4);
+
+                    // Sound waves
+                    for (float i = 1.0; i < 5.0; i++) {
+                        float radius = i * 0.08;
+                        float wave = sin(uTime * 3.0 - i * 0.5);
+                        float ring = smoothstep(0.02, 0.0, abs(length(center) - radius - wave * 0.02));
+                        float fade = 1.0 - i / 5.0;
+                        color += vec3(0.55, 0.36, 0.96) * ring * fade * 0.5;
+                    }
+
+                    // Frequency bars
+                    for (float i = 0.0; i < 7.0; i++) {
+                        float x = -0.3 + i * 0.1;
+                        float h = 0.06 + sin(uTime * 4.0 + i * 1.2) * 0.04;
+                        float bar = smoothstep(0.02, 0.01, abs(center.x - x));
+                        bar *= step(-0.3, center.y) * step(center.y, -0.3 + h);
+                        color += mix(vec3(0.55, 0.36, 0.96), vec3(0.23, 0.51, 0.96), i / 7.0) * bar * 0.6;
+                    }
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `
         };
 
-        // ═══════════════════════════════════════════════════════════════════
-        // SHADER CODE - NEURAL NETWORK SYSTEM
-        // ═══════════════════════════════════════════════════════════════════
-
-        // Neural Node Vertex Shader - Living neurons in golden spiral
-        const neuralNodeVertexShader = `
-            attribute vec3 aOffset;
-            attribute float aRandom;
-            attribute float aPhase;
-
-            uniform float uTime;
-            uniform vec2 uMouse;
-            uniform float uMouseRadius;
-            uniform vec3 uCardPositions[8];
-            uniform float uDragIntensity;
-            uniform float uGlobalPulse;
-            uniform vec3 uRippleOrigin;
-            uniform float uRippleTime;
-            uniform float uRippleIntensity;
-
-            varying float vAlpha;
-            varying float vPulse;
-            varying float vCardInfluence;
-            varying float vSynapticFire;
-
-            void main() {
-                vec3 pos = position * 0.8 + aOffset; // Smaller nodes
-
-                // Neural oscillation - each neuron has its own phase
-                float neuralPhase = aPhase * 6.28318;
-                float oscillation = sin(uTime * 2.0 + neuralPhase) * 0.5 + 0.5;
-
-                // Breathing effect - synchronized with global pulse
-                float breathe = uGlobalPulse * 0.3;
-                pos *= 1.0 + breathe * oscillation * 0.3;
-
-                // Mouse interaction - neurons attract slightly then repel
-                vec2 mouseWorld = (uMouse - 0.5) * 100.0;
-                vec2 diff = pos.xy - mouseWorld;
-                float dist = length(diff);
-                float mouseInfluence = smoothstep(uMouseRadius * 1.5, 0.0, dist);
-
-                // Synaptic firing when mouse nearby
-                float synapticTrigger = smoothstep(15.0, 5.0, dist);
-                vSynapticFire = synapticTrigger * (sin(uTime * 10.0 + aRandom * 20.0) * 0.5 + 0.5);
-
-                // Gentle push away from mouse (neurons are sensitive)
-                pos.z += mouseInfluence * 8.0;
-                pos.xy += normalize(diff + 0.001) * mouseInfluence * 3.0;
-
-                // Card influence - neurons cluster around cards
-                float totalCardInfluence = 0.0;
-                for (int i = 0; i < 8; i++) {
-                    vec3 cardPos = uCardPositions[i];
-                    vec2 cardDiff = pos.xy - cardPos.xy;
-                    float cardDist = length(cardDiff);
-
-                    // Neurons are drawn to cards (like thoughts to ideas)
-                    float cardAttraction = smoothstep(35.0, 10.0, cardDist);
-
-                    // Move towards card when dragging
-                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * uDragIntensity * 2.0;
-                    pos.z += cardAttraction * 5.0;
-
-                    totalCardInfluence += cardAttraction;
-                }
-
-                // Ripple response - neurons fire in waves
-                float rippleDist = length(pos.xy - uRippleOrigin.xy);
-                float rippleWave = sin(rippleDist * 0.3 - uRippleTime * 6.0) *
-                                   exp(-rippleDist * 0.03) *
-                                   exp(-uRippleTime * 1.5) *
-                                   uRippleIntensity;
-                pos.z += rippleWave * 8.0;
-
-                // Add ripple to synaptic fire
-                vSynapticFire += abs(rippleWave) * 2.0;
-
-                // Organic drift - neurons float gently
-                float drift = sin(uTime * 0.3 + aRandom * 10.0) *
-                              cos(uTime * 0.2 + aPhase * 5.0);
-                pos.xy += vec2(
-                    sin(uTime * 0.4 + aRandom * 8.0),
-                    cos(uTime * 0.35 + aPhase * 6.0)
-                ) * drift * 1.5;
-
-                vAlpha = 0.3 + oscillation * 0.3 + mouseInfluence * 0.4 + totalCardInfluence * 0.3;
-                vPulse = oscillation;
-                vCardInfluence = totalCardInfluence;
-
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-
-                // Size varies with pulse and proximity
-                gl_PointSize = (2.0 + oscillation * 1.5 + vSynapticFire * 2.0) *
-                               (300.0 / length(modelViewMatrix * vec4(pos, 1.0)));
-            }
-        `;
-
-        const neuralNodeFragmentShader = `
-            uniform vec3 uColor;
-            uniform vec3 uAccentColor;
-            uniform float uTime;
-            uniform float uChromaticPhase;
-            uniform float uDragIntensity;
-
-            varying float vAlpha;
-            varying float vPulse;
-            varying float vCardInfluence;
-            varying float vSynapticFire;
-
-            void main() {
-                // Circular node with soft glow
-                vec2 center = gl_PointCoord - 0.5;
-                float dist = length(center);
-                if (dist > 0.5) discard;
-
-                // Core glow
-                float core = smoothstep(0.5, 0.0, dist);
-                float glow = smoothstep(0.5, 0.2, dist);
-
-                // Chromatic color evolution
-                float phase = uChromaticPhase * 6.28318;
-                vec3 chromaticColor = vec3(
-                    sin(phase + vPulse * 2.0) * 0.3 + 0.7,
-                    sin(phase + 2.094 + vPulse * 2.0) * 0.3 + 0.7,
-                    sin(phase + 4.188 + vPulse * 2.0) * 0.3 + 0.7
-                );
-
-                // Base neuron color
-                vec3 baseColor = mix(uColor, uAccentColor, vCardInfluence * 0.5);
-                baseColor = mix(baseColor, chromaticColor * uColor, 0.3);
-
-                // Synaptic fire brightens the core
-                vec3 fireColor = vec3(1.0, 0.9, 0.7); // Warm white flash
-                baseColor = mix(baseColor, fireColor, vSynapticFire * core);
-
-                // Final color with glow falloff
-                vec3 finalColor = baseColor * (core * 1.5 + glow * 0.5);
-
-                // Drag intensity boost
-                finalColor += uDragIntensity * uColor * 0.2 * core;
-
-                float alpha = vAlpha * core * (0.8 + vSynapticFire * 0.4);
-
-                gl_FragColor = vec4(finalColor, alpha);
-            }
-        `;
-
-        // Neural Connection Shader - Lines between nearby neurons
-        const neuralConnectionVertexShader = `
-            attribute vec3 aStart;
-            attribute vec3 aEnd;
-            attribute float aStrength;
-            attribute float aPhase;
-
-            uniform float uTime;
-            uniform float uGlobalPulse;
-            uniform float uDragIntensity;
-            uniform vec3 uRippleOrigin;
-            uniform float uRippleTime;
-            uniform float uRippleIntensity;
-
-            varying float vStrength;
-            varying float vPulse;
-            varying float vProgress;
-
-            void main() {
-                // Interpolate between start and end based on vertex position
-                float t = position.x; // 0 = start, 1 = end
-                vProgress = t;
-
-                vec3 pos = mix(aStart, aEnd, t);
-
-                // Signal pulse traveling along connection
-                float signalSpeed = 3.0;
-                float signalPhase = fract(uTime * signalSpeed * 0.1 + aPhase);
-                float signalPulse = smoothstep(0.0, 0.1, t - signalPhase + 0.1) *
-                                    smoothstep(0.2, 0.1, t - signalPhase + 0.1);
-
-                // Ripple effect on connections
-                float rippleDist = length(pos.xy - uRippleOrigin.xy);
-                float rippleEffect = sin(rippleDist * 0.2 - uRippleTime * 5.0) *
-                                     exp(-rippleDist * 0.02) *
-                                     exp(-uRippleTime * 1.5) *
-                                     uRippleIntensity;
-
-                vStrength = aStrength * (0.5 + uGlobalPulse * 0.3 + signalPulse * 0.5);
-                vStrength += abs(rippleEffect) * 0.5;
-                vStrength *= (1.0 + uDragIntensity * 0.3);
-                vPulse = signalPulse + rippleEffect * 0.5;
-
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            }
-        `;
-
-        const neuralConnectionFragmentShader = `
-            uniform vec3 uColor;
-            uniform vec3 uAccentColor;
-            uniform float uTime;
-            uniform float uChromaticPhase;
-
-            varying float vStrength;
-            varying float vPulse;
-            varying float vProgress;
-
-            void main() {
-                // Chromatic connection color
-                float phase = uChromaticPhase * 6.28318 + vProgress * 0.5;
-                vec3 connectionColor = mix(uColor, uAccentColor, sin(phase) * 0.5 + 0.5);
-
-                // Signal pulse adds brightness
-                vec3 pulseColor = vec3(1.0, 0.95, 0.8);
-                connectionColor = mix(connectionColor, pulseColor, vPulse * 0.6);
-
-                // Fade at endpoints for organic look
-                float endFade = smoothstep(0.0, 0.1, vProgress) * smoothstep(1.0, 0.9, vProgress);
-
-                float alpha = vStrength * endFade * 0.4;
-
-                gl_FragColor = vec4(connectionColor, alpha);
-            }
-        `;
-
-        // Legacy grid shader kept for fallback (unused but preserved)
-        const gridVertexShader = neuralNodeVertexShader;
-        const gridFragmentShader = neuralNodeFragmentShader;
-
-        // ═══════════════════════════════════════════════════════════════════
-        // CRYSTALLINE CARD SHADERS (Award-Winning Quality)
-        // ═══════════════════════════════════════════════════════════════════
-        const cardVertexShader = `
-            uniform float uTime;
-            uniform float uHover;
-            uniform vec2 uMouse;
-            uniform float uMomentum;
-
+        const VERTEX_SHADER = `
             varying vec2 vUv;
-            varying float vElevation;
-            varying vec3 vNormal;
-            varying vec3 vPosition;
-            varying vec3 vWorldPosition;
-            varying vec3 vViewDirection;
-
             void main() {
                 vUv = uv;
-                vNormal = normalize(normalMatrix * normal);
-
-                vec3 pos = position;
-
-                // Crystalline surface displacement
-                float crystalWave = sin(pos.x * 8.0 + uTime * 1.5) * cos(pos.y * 8.0 + uTime * 1.2);
-                pos.z += crystalWave * uHover * 0.15;
-
-                // Edge beveling effect (v6.0: updated for taller 16x20 card)
-                float edgeDist = min(min(abs(pos.x) - 7.5, abs(pos.y) - 9.5), 0.0);
-                pos.z += edgeDist * 0.3;
-
-                // Momentum-based deformation
-                pos.x += uMomentum * pos.z * 0.05;
-
-                vElevation = pos.z;
-                vPosition = pos;
-
-                vec4 worldPos = modelMatrix * vec4(pos, 1.0);
-                vWorldPosition = worldPos.xyz;
-                vViewDirection = normalize(cameraPosition - worldPos.xyz);
-
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            }
-        `;
-
-        const cardFragmentShader = `
-            uniform vec3 uColor;
-            uniform vec3 uAccentColor;
-            uniform float uTime;
-            uniform float uHover;
-            uniform float uSelected;
-            uniform float uMomentum;
-            uniform float uIOR;
-            uniform float uGlobalPulse;
-            uniform float uChromaticPhase;
-            uniform float uEmergence;
-            uniform int uSceneType; // 0=SpinozaOS, 1=Lithosphere, 2=Boardroom, 3=NEXUS, 4=ORACLE, 5=Engram, 6=Manifesto, 7=Voice
-
-            varying vec2 vUv;
-            varying float vElevation;
-            varying vec3 vNormal;
-            varying vec3 vPosition;
-            varying vec3 vWorldPosition;
-            varying vec3 vViewDirection;
-
-            // Holographic rainbow function with chromatic phase sync
-            vec3 holographic(float angle, float time) {
-                float phase = uChromaticPhase * 6.28;
-                return vec3(
-                    sin(angle + time + phase) * 0.5 + 0.5,
-                    sin(angle + time + phase + 2.094) * 0.5 + 0.5,
-                    sin(angle + time + phase + 4.188) * 0.5 + 0.5
-                );
-            }
-
-            // ═══ INNER COSMOS v6.0 - Enhanced Card Scene Functions ═══
-
-            // SpinozaOS: Sacred Geometry with Pulsing Energy
-            vec3 sceneSpinoza(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
-                float dist = length(center);
-                float angle = atan(center.y, center.x);
-
-                vec3 color = vec3(0.0);
-                float phi = 1.618033988749895;
-
-                // Pulsing concentric rings
-                for (float i = 1.0; i < 6.0; i++) {
-                    float r = i / (phi * 2.5);
-                    float pulse = sin(time * 2.0 - i * 0.5) * 0.3 + 0.7;
-                    float ring = smoothstep(0.02, 0.0, abs(dist - r * pulse));
-                    color += uColor * ring * (1.0 - i * 0.15);
-                }
-
-                // Rotating sacred pattern
-                float pattern = 0.0;
-                for (float i = 0.0; i < 6.0; i++) {
-                    float a = angle + time * 0.3 + i * 1.047;
-                    pattern += smoothstep(0.03, 0.0, abs(sin(a * 3.0) * dist - 0.2));
-                }
-                color += uAccentColor * pattern * 0.4;
-
-                // Central glow
-                float glow = exp(-dist * 6.0) * (sin(time * 3.0) * 0.3 + 0.7);
-                color += uColor * glow * 0.8;
-
-                return color * 0.6;
-            }
-
-            // Lithosphere: Dynamic Orbital System
-            vec3 sceneLithosphere(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
-                vec3 color = vec3(0.0);
-
-                // Glowing central body
-                float core = exp(-length(center) * 8.0);
-                color += uColor * core * 1.5;
-
-                // Multiple orbiting bodies with trails
-                for (float i = 0.0; i < 4.0; i++) {
-                    float radius = 0.1 + i * 0.08;
-                    float speed = 1.2 - i * 0.2;
-                    float phase = i * 1.57;
-
-                    vec2 pos = vec2(cos(time * speed + phase), sin(time * speed + phase)) * radius;
-                    float body = exp(-length(center - pos) * 25.0);
-                    color += mix(uColor, uAccentColor, i / 4.0) * body;
-
-                    // Orbit glow
-                    float orbit = smoothstep(0.015, 0.0, abs(length(center) - radius));
-                    color += uAccentColor * orbit * 0.15;
-                }
-
-                return color * 0.7;
-            }
-
-            // Boardroom: Neural Network Pulse
-            vec3 sceneBoardroom(vec2 uv, float time) {
-                vec3 color = vec3(0.0);
-
-                // Animated neural grid
-                vec2 gridUv = fract(uv * 5.0) - 0.5;
-                vec2 gridId = floor(uv * 5.0);
-
-                // Pulsing nodes
-                float wave = sin(time * 2.5 + gridId.x * 0.8 + gridId.y * 1.2);
-                float node = exp(-length(gridUv) * 8.0) * (wave * 0.4 + 0.6);
-                color += uColor * node;
-
-                // Flowing connections
-                float connX = smoothstep(0.03, 0.0, abs(gridUv.y)) * step(abs(gridUv.x), 0.4);
-                float connY = smoothstep(0.03, 0.0, abs(gridUv.x)) * step(abs(gridUv.y), 0.4);
-                float flow = sin(time * 4.0 - length(gridId) * 1.5) * 0.5 + 0.5;
-                color += uAccentColor * (connX + connY) * flow * 0.4;
-
-                // Background energy
-                float energy = sin(uv.x * 10.0 + time) * sin(uv.y * 10.0 - time * 0.7) * 0.1;
-                color += uColor * max(0.0, energy);
-
-                return color * 0.6;
-            }
-
-            // NEXUS AI Forge: Digital Rain
-            vec3 sceneNexus(vec2 uv, float time) {
-                vec3 color = vec3(0.0);
-
-                // Falling code streams
-                for (float i = 0.0; i < 10.0; i++) {
-                    float x = fract(sin(i * 73.156) * 43758.5453);
-                    float speed = 0.4 + fract(cos(i * 45.67) * 12345.6) * 0.4;
-                    float y = fract(time * speed + sin(i * 12.34) * 100.0);
-
-                    vec2 pos = vec2(x, 1.0 - y);
-                    float d = length(uv - pos);
-
-                    // Bright head
-                    color += vec3(0.2, 1.0, 0.4) * exp(-d * 30.0);
-
-                    // Fading trail
-                    float trail = step(uv.y, pos.y) * smoothstep(0.3, 0.0, pos.y - uv.y);
-                    trail *= smoothstep(0.04, 0.0, abs(uv.x - pos.x));
-                    color += vec3(0.0, 0.6, 0.3) * trail * 0.5;
-                }
-
-                // Orange core glow
-                float core = exp(-length(uv - 0.5) * 4.0);
-                color += vec3(1.0, 0.5, 0.1) * core * (sin(time * 2.5) * 0.2 + 0.4);
-
-                return color * 0.7;
-            }
-
-            // ORACLE Engine: Mystical Eye
-            vec3 sceneOracle(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
-                float dist = length(center);
-                vec3 color = vec3(0.0);
-
-                // Pulsing oracle eye
-                float eyePulse = sin(time * 2.0) * 0.02;
-                float eye = smoothstep(0.12 + eyePulse, 0.08 + eyePulse, dist);
-                float pupil = exp(-dist * 20.0);
-                color += uAccentColor * eye;
-                color += vec3(0.1, 0.05, 0.2) * pupil;
-
-                // Radiating insight beams
-                float angle = atan(center.y, center.x);
-                for (float i = 0.0; i < 8.0; i++) {
-                    float a = i * 0.785 + time * 0.3;
-                    float beam = smoothstep(0.08, 0.0, abs(mod(angle + a, 0.785) - 0.3925));
-                    beam *= smoothstep(0.15, 0.25, dist) * smoothstep(0.5, 0.35, dist);
-                    float pulse = sin(time * 3.0 + i) * 0.3 + 0.7;
-                    color += uColor * beam * pulse * 0.4;
-                }
-
-                // Energy ripples
-                float ripple = sin(dist * 25.0 - time * 4.0) * 0.5 + 0.5;
-                ripple *= smoothstep(0.5, 0.2, dist) * smoothstep(0.1, 0.2, dist);
-                color += uAccentColor * ripple * 0.2;
-
-                return color * 0.7;
-            }
-
-            // Engram Memory: Holographic Data Cubes
-            vec3 sceneEngram(vec2 uv, float time) {
-                vec3 color = vec3(0.0);
-
-                vec2 gridUv = fract(uv * 4.0) - 0.5;
-                vec2 gridId = floor(uv * 4.0);
-
-                // Animated cube phase
-                float phase = sin(time * 2.0 + gridId.x * 1.5 + gridId.y * 2.0) * 0.5 + 0.5;
-                float size = 0.12 + phase * 0.08;
-
-                // Glowing cube
-                float cube = smoothstep(size + 0.02, size, max(abs(gridUv.x), abs(gridUv.y)));
-
-                // Cyberpunk gradient
-                vec3 cubeColor = mix(
-                    vec3(0.0, 0.9, 1.0),
-                    vec3(1.0, 0.1, 0.6),
-                    phase
-                );
-                color += cubeColor * cube * 0.6;
-
-                // Edge glow
-                float edge = smoothstep(0.03, 0.0, abs(max(abs(gridUv.x), abs(gridUv.y)) - size));
-                color += vec3(1.0) * edge * 0.8;
-
-                // Scanning line
-                float scan = smoothstep(0.02, 0.0, abs(fract(uv.y * 2.0 - time * 0.5) - 0.5));
-                color += vec3(0.0, 1.0, 0.8) * scan * 0.15;
-
-                return color * 0.6;
-            }
-
-            // Digital Renaissance Manifesto: Flowing Knowledge
-            vec3 sceneManifesto(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
-                vec3 color = vec3(0.0);
-
-                // Elegant flowing lines
-                for (float i = 0.0; i < 8.0; i++) {
-                    float y = -0.3 + i * 0.08;
-                    float wave = sin(uv.x * 12.0 + time * 1.5 + i * 0.8) * 0.015;
-                    float line = smoothstep(0.012, 0.0, abs(center.y - y - wave));
-                    line *= smoothstep(0.45, 0.15, abs(center.x));
-
-                    float reveal = sin(time + i * 0.4) * 0.5 + 0.5;
-                    color += uColor * line * reveal * 0.5;
-                }
-
-                // Central light source
-                float light = exp(-length(center + vec2(0.0, 0.15)) * 5.0);
-                color += uAccentColor * light * 0.8;
-
-                // Radiating wisdom
-                float angle = atan(center.y + 0.15, center.x);
-                float rays = sin(angle * 8.0 + time) * 0.5 + 0.5;
-                rays *= exp(-length(center + vec2(0.0, 0.15)) * 3.0);
-                color += uColor * rays * 0.3;
-
-                return color * 0.7;
-            }
-
-            // NeuraByte Voice: Sound Waves
-            vec3 sceneVoice(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
-                vec3 color = vec3(0.0);
-
-                // Central sound source
-                float source = exp(-length(center) * 10.0);
-                color += uColor * source * 1.2;
-
-                // Expanding sound waves
-                for (float i = 1.0; i < 6.0; i++) {
-                    float radius = i * 0.08;
-                    float wave = sin(time * 3.0 - i * 0.5);
-                    float ring = smoothstep(0.025, 0.0, abs(length(center) - radius - wave * 0.02));
-                    float fade = 1.0 - i / 6.0;
-                    color += uAccentColor * ring * fade * 0.6;
-                }
-
-                // Frequency bars
-                for (float i = 0.0; i < 9.0; i++) {
-                    float x = -0.4 + i * 0.1;
-                    float h = 0.08 + sin(time * 5.0 + i * 1.3) * 0.06;
-                    float bar = smoothstep(0.025, 0.01, abs(center.x - x));
-                    bar *= step(-0.35, center.y) * step(center.y, -0.35 + h);
-                    color += mix(uColor, uAccentColor, i / 9.0) * bar * 0.7;
-                }
-
-                return color * 0.7;
-            }
-
-            void main() {
-                // ═══ UNIFIED CARD LAYOUT v6.0 ═══
-                // Header (top 40%): Project-specific shader scene
-                // Body (bottom 60%): Dark surface for HTML content overlay
-
-                float headerHeight = 0.4; // 40% of card = header region
-                float transitionZone = 0.05; // Smooth transition between regions
-
-                // Determine if we're in header or body region
-                float headerMask = smoothstep(1.0 - headerHeight - transitionZone, 1.0 - headerHeight, vUv.y);
-
-                // ═══ HEADER REGION - Shader Scene ═══
-                vec3 headerColor = vec3(0.0);
-                if (vUv.y > (1.0 - headerHeight)) {
-                    // Map UV to header texture space (0-1 within header)
-                    vec2 headerUv = vec2(
-                        vUv.x,
-                        (vUv.y - (1.0 - headerHeight)) / headerHeight
-                    );
-
-                    // Edge mask for header (don't render scene at very edges)
-                    float headerEdgeMask = smoothstep(0.05, 0.12, headerUv.x) * smoothstep(0.95, 0.88, headerUv.x) *
-                                          smoothstep(0.05, 0.15, headerUv.y) * smoothstep(0.95, 0.85, headerUv.y);
-
-                    // Select project-specific scene
-                    vec3 sceneColor = vec3(0.0);
-                    if (uSceneType == 0) {
-                        sceneColor = sceneSpinoza(headerUv, uTime);
-                    } else if (uSceneType == 1) {
-                        sceneColor = sceneLithosphere(headerUv, uTime);
-                    } else if (uSceneType == 2) {
-                        sceneColor = sceneBoardroom(headerUv, uTime);
-                    } else if (uSceneType == 3) {
-                        sceneColor = sceneNexus(headerUv, uTime);
-                    } else if (uSceneType == 4) {
-                        sceneColor = sceneOracle(headerUv, uTime);
-                    } else if (uSceneType == 5) {
-                        sceneColor = sceneEngram(headerUv, uTime);
-                    } else if (uSceneType == 6) {
-                        sceneColor = sceneManifesto(headerUv, uTime);
-                    } else {
-                        sceneColor = sceneVoice(headerUv, uTime);
-                    }
-
-                    // Apply scene with hover enhancement
-                    headerColor = sceneColor * headerEdgeMask * (0.6 + uHover * 0.6) * uEmergence;
-                }
-
-                // ═══ BODY REGION - Dark Surface ═══
-                vec3 bodyColor = vec3(0.067, 0.067, 0.075); // #111113 equivalent
-
-                // Subtle grid pattern in body
-                float gridX = smoothstep(0.02, 0.0, abs(fract(vUv.x * 20.0) - 0.5));
-                float gridY = smoothstep(0.02, 0.0, abs(fract(vUv.y * 40.0) - 0.5));
-                bodyColor += vec3(0.03) * (gridX + gridY) * 0.1 * (1.0 - headerMask);
-
-                // ═══ COMBINE REGIONS ═══
-                vec3 baseColor = mix(bodyColor, headerColor + vec3(0.02, 0.02, 0.03), headerMask);
-
-                // Fresnel effect - glass-like edge illumination
-                float fresnel = pow(1.0 - max(dot(vViewDirection, vNormal), 0.0), 3.0);
-
-                // Multi-layer crystalline edges
-                float edgeX = smoothstep(0.0, 0.06, vUv.x) * smoothstep(1.0, 0.94, vUv.x);
-                float edgeY = smoothstep(0.0, 0.06, vUv.y) * smoothstep(1.0, 0.94, vUv.y);
-                float crystalEdge = 1.0 - (edgeX * edgeY);
-
-                // Sharp outer rim
-                float rimX = smoothstep(0.0, 0.015, vUv.x) * smoothstep(1.0, 0.985, vUv.x);
-                float rimY = smoothstep(0.0, 0.015, vUv.y) * smoothstep(1.0, 0.985, vUv.y);
-                float sharpRim = 1.0 - (rimX * rimY);
-
-                // Holographic bands - animated rainbow refraction
-                float holoAngle = vUv.y * 30.0 + vUv.x * 10.0;
-                vec3 holoColor = holographic(holoAngle, uTime * 2.0);
-
-                // Chromatic aberration simulation
-                float chromaR = smoothstep(0.3, 0.0, length(vUv - 0.5 + vec2(0.02, 0.0)));
-                float chromaB = smoothstep(0.3, 0.0, length(vUv - 0.5 - vec2(0.02, 0.0)));
-                vec3 chromatic = vec3(chromaR * 0.1, 0.0, chromaB * 0.1);
-
-                // Animated gradient flow
-                float flowGradient = sin(vUv.x * 3.14159 + uTime * 0.3) * 0.5 + 0.5;
-                float vertFlow = cos(vUv.y * 2.5 + uTime * 0.4) * 0.5 + 0.5;
-                vec3 glowColor = mix(uColor, uAccentColor, flowGradient * vertFlow);
-
-                // Scanlines with depth
-                float scanline = sin(vUv.y * 150.0 + uTime * 3.0) * 0.015 + 0.985;
-                float scanline2 = sin(vUv.x * 80.0 - uTime * 1.5) * 0.01 + 0.99;
-
-                // Combine crystalline layers
-                vec3 finalColor = baseColor * scanline * scanline2;
-
-                // Fresnel rim lighting
-                finalColor += fresnel * glowColor * (0.6 + uHover * 0.8);
-
-                // Holographic effect on edges
-                finalColor += crystalEdge * holoColor * (0.15 + uHover * 0.25);
-
-                // Sharp crystalline rim
-                finalColor += sharpRim * uColor * (1.2 + uSelected * 0.8);
-
-                // Chromatic aberration overlay
-                finalColor += chromatic * uHover;
-
-                // Inner glow
-                float innerGlow = smoothstep(0.5, 0.0, length(vUv - 0.5));
-                finalColor += innerGlow * glowColor * 0.08;
-
-                // Corner crystals
-                float corner = pow(max(0.0, 1.0 - length(vUv) * 0.7), 3.0);
-                corner += pow(max(0.0, 1.0 - length(vUv - vec2(1.0, 0.0)) * 0.7), 3.0);
-                corner += pow(max(0.0, 1.0 - length(vUv - vec2(0.0, 1.0)) * 0.7), 3.0);
-                corner += pow(max(0.0, 1.0 - length(vUv - vec2(1.0, 1.0)) * 0.7), 3.0);
-                finalColor += corner * glowColor * 0.2;
-
-                // Momentum-based motion streak
-                float motionStreak = abs(uMomentum) * smoothstep(0.5, 0.0, abs(vUv.x - 0.5));
-                finalColor += motionStreak * uColor * 0.3;
-
-                // Selection energy pulse - synced with global heartbeat
-                float globalBeat = uGlobalPulse * 0.5 + 0.5;
-                float pulse = sin(uTime * 5.0 + globalBeat * 3.14159) * 0.5 + 0.5;
-                float pulse2 = sin(uTime * 7.0 + 1.0) * 0.5 + 0.5;
-                finalColor += uSelected * glowColor * (0.25 + pulse * 0.2 + pulse2 * 0.1 + globalBeat * 0.15);
-
-                // Depth luminance
-                finalColor += vElevation * 0.05 * uColor;
-
-                // Hover energy boost
-                finalColor *= 1.0 + uHover * 0.25;
-
-                // Glass-like transparency with depth
-                float alpha = 0.92 + uHover * 0.06 + fresnel * 0.02;
-
-                // ═══ EMERGENCE EFFECT ═══
-                // During emergence, add extra ethereal glow
-                float emergenceGlow = (1.0 - uEmergence) * 0.5;
-                finalColor += glowColor * emergenceGlow;
-                // Slightly lower alpha during emergence for ghostly appearance
-                alpha *= (0.7 + uEmergence * 0.3);
-
-                gl_FragColor = vec4(finalColor, alpha);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
         `;
 
         // ═══════════════════════════════════════════════════════════════════
-        // PARTICLE SYSTEM
+        // CARD SCENE RENDERER
         // ═══════════════════════════════════════════════════════════════════
-        class ParticleEmitter {
-            constructor(scene, color) {
-                this.particles = [];
-                this.scene = scene;
-                this.color = color;
-                this.maxParticles = 500;
+        class CardScene {
+            constructor(canvas, projectId) {
+                this.canvas = canvas;
+                this.projectId = projectId;
+                this.isHovered = false;
+                this.hoverValue = 0;
 
-                // Geometry
-                const geometry = new THREE.BufferGeometry();
-                const positions = new Float32Array(this.maxParticles * 3);
-                const alphas = new Float32Array(this.maxParticles);
+                this.init();
+            }
 
-                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                geometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
-
-                // Material
-                const material = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uColor: { value: color },
-                        uTime: { value: 0 }
-                    },
-                    vertexShader: `
-                        attribute float alpha;
-                        varying float vAlpha;
-                        void main() {
-                            vAlpha = alpha;
-                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                            gl_PointSize = 3.0 * (1.0 / -mvPosition.z) * 50.0;
-                            gl_Position = projectionMatrix * mvPosition;
-                        }
-                    `,
-                    fragmentShader: `
-                        uniform vec3 uColor;
-                        varying float vAlpha;
-                        void main() {
-                            float dist = length(gl_PointCoord - 0.5);
-                            if (dist > 0.5) discard;
-                            float alpha = smoothstep(0.5, 0.0, dist) * vAlpha;
-                            gl_FragColor = vec4(uColor, alpha);
-                        }
-                    `,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false
+            init() {
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: this.canvas,
+                    alpha: true,
+                    antialias: true
                 });
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-                this.mesh = new THREE.Points(geometry, material);
-                scene.add(this.mesh);
-            }
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-            emit(position, count = 10) {
-                for (let i = 0; i < count; i++) {
-                    if (this.particles.length >= this.maxParticles) {
-                        this.particles.shift();
-                    }
-
-                    this.particles.push({
-                        position: position.clone(),
-                        velocity: new THREE.Vector3(
-                            (Math.random() - 0.5) * 2,
-                            (Math.random() - 0.5) * 2,
-                            Math.random() * 2
-                        ),
-                        life: 1.0,
-                        decay: 0.02 + Math.random() * 0.02
-                    });
-                }
-            }
-
-            update() {
-                const positions = this.mesh.geometry.attributes.position.array;
-                const alphas = this.mesh.geometry.attributes.alpha.array;
-
-                for (let i = this.particles.length - 1; i >= 0; i--) {
-                    const p = this.particles[i];
-                    p.position.add(p.velocity);
-                    p.velocity.multiplyScalar(0.98);
-                    p.life -= p.decay;
-
-                    if (p.life <= 0) {
-                        this.particles.splice(i, 1);
-                    }
-                }
-
-                // Update buffers
-                for (let i = 0; i < this.maxParticles; i++) {
-                    if (i < this.particles.length) {
-                        const p = this.particles[i];
-                        positions[i * 3] = p.position.x;
-                        positions[i * 3 + 1] = p.position.y;
-                        positions[i * 3 + 2] = p.position.z;
-                        alphas[i] = p.life;
-                    } else {
-                        positions[i * 3] = 0;
-                        positions[i * 3 + 1] = 0;
-                        positions[i * 3 + 2] = -1000;
-                        alphas[i] = 0;
-                    }
-                }
-
-                this.mesh.geometry.attributes.position.needsUpdate = true;
-                this.mesh.geometry.attributes.alpha.needsUpdate = true;
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════════
-        // CARD OBJECT
-        // ═══════════════════════════════════════════════════════════════════
-        // CRYSTALLINE 3D CARD CLASS
-        // ═══════════════════════════════════════════════════════════════════
-        class Card3D {
-            constructor(data, index, total) {
-                this.data = data;
-                this.index = index;
-                this.total = total;
-                this.momentum = 0; // For motion effects
-
-                // ═══ EMERGENCE SYSTEM ═══
-                // Cards crystallize from the void with staggered timing
-                this.emergence = 0;           // 0 = hidden, 1 = fully emerged
-                this.emergenceDelay = index * 0.25; // Stagger by 250ms per card
-                this.emergenceSpeed = 0.015;  // Smooth emergence
-                this.hasEmerged = false;
-
-                // Create 3D crystalline geometry (BoxGeometry for depth)
-                // v6.0: Taller card to accommodate shader header (40%) + content body (60%)
-                const geometry = new THREE.BoxGeometry(16, 20, 0.5, 32, 32, 1);
-
-                // Create crystalline holographic material
                 this.material = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
-                        uHover: { value: 0 },
-                        uSelected: { value: 0 },
-                        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-                        uColor: { value: CONFIG.colors.brand },
-                        uAccentColor: { value: CONFIG.colors.accent },
-                        uMomentum: { value: 0 },
-                        uIOR: { value: 1.45 }, // Index of refraction
-                        uGlobalPulse: { value: 0 },
-                        uChromaticPhase: { value: 0 },
-                        uEmergence: { value: 0 }, // emergence animation
-                        uSceneType: { value: index } // Inner Cosmos scene type (0-4)
+                        uHover: { value: 0 }
                     },
-                    vertexShader: cardVertexShader,
-                    fragmentShader: cardFragmentShader,
-                    transparent: true,
-                    side: THREE.DoubleSide,
-                    depthWrite: true
+                    vertexShader: VERTEX_SHADER,
+                    fragmentShader: SCENE_SHADERS[this.projectId] || SCENE_SHADERS.spinozaos
                 });
 
+                const geometry = new THREE.PlaneGeometry(2, 2);
                 this.mesh = new THREE.Mesh(geometry, this.material);
+                this.scene.add(this.mesh);
 
-                // Position in 3D space - spread cards dynamically for 8 cards
-                const positions = [
-                    { x: 0, y: 20, z: 6 },     // 0: SpinozaOS (featured top center)
-                    { x: -26, y: 8, z: 2 },    // 1: Lithosphere (top left)
-                    { x: 26, y: 10, z: -2 },   // 2: Boardroom (top right)
-                    { x: -28, y: -6, z: -3 },  // 3: NEXUS AI Forge (mid left)
-                    { x: 0, y: -2, z: 8 },     // 4: ORACLE Engine (center front)
-                    { x: 28, y: -4, z: -1 },   // 5: Engram Memory (mid right)
-                    { x: -22, y: -18, z: 4 },  // 6: Digital Renaissance (bottom left)
-                    { x: 24, y: -16, z: 3 }    // 7: NeuraByte Voice (bottom right)
-                ];
-
-                const pos = positions[index] || { x: 0, y: 0, z: 0 };
-
-                this.restPosition = new THREE.Vector3(
-                    pos.x,
-                    pos.y,
-                    pos.z
-                );
-
-                // Start cards deep in void, they will emerge forward
-                this.mesh.position.set(
-                    this.restPosition.x * 0.3,  // Start closer to center
-                    this.restPosition.y * 0.3,
-                    -60 // Deep in the void
-                );
-                this.mesh.scale.setScalar(0.01); // Start tiny
-                this.mesh.rotation.set(
-                    Math.random() * 0.5 - 0.25,
-                    Math.random() * 0.5 - 0.25,
-                    Math.random() * 0.3 - 0.15
-                );
-
-                // Physics state
-                this.velocity = new THREE.Vector3();
-                this.isDragging = false;
-                this.isHovered = false;
-
-                // Spinoza's Conatus - energy to persist and create
-                this.conatus = CONFIG.conatus.initialEnergy;
-                this.children = [];
-                this.isChild = false;
-                this.birthTime = Date.now();
-                this.scale = 1.0;
-
-                // Create HTML label (initially hidden)
-                this.createLabel();
-                this.labelElement.style.opacity = '0';
-                this.labelElement.style.transform = 'translate(-50%, -50%) scale(0.5)';
+                this.resize();
             }
 
-            createLabel() {
-                const container = document.getElementById('card-labels');
-
-                const label = document.createElement('div');
-                label.className = 'card-label';
-                label.id = `label-${this.data.id}-${Date.now()}`;
-
-                // v6.0: Clean card structure - header spacer + content
-                label.innerHTML = `
-                    <div class="card-label-inner">
-                        <div class="label-spacer"></div>
-                        <div class="card-content">
-                            <div class="card-header-row">
-                                <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
-                                    ${this.data.status === 'live' ? '● Live' : '○ Coming'}
-                                </span>
-                                <span class="card-category">${this.data.category}</span>
-                            </div>
-                            <h3 class="card-title">${this.data.title}</h3>
-                            <p class="card-description">${this.data.description}</p>
-                            <div class="card-tech">
-                                ${this.data.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
-                            </div>
-                            ${this.data.url
-                                ? `<a href="${this.data.url}" class="card-link" target="_blank" rel="noopener">Launch →</a>`
-                                : `<span class="card-link card-link-disabled">Coming Soon</span>`
-                            }
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(label);
-                this.labelElement = label;
+            resize() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.renderer.setSize(rect.width, rect.height, false);
             }
 
-            updateLabel(camera) {
-                // Project 3D position to 2D screen coordinates
-                const pos = this.mesh.position.clone();
-                pos.project(camera);
+            update(time) {
+                // Smooth hover
+                const target = this.isHovered ? 1 : 0;
+                this.hoverValue += (target - this.hoverValue) * 0.1;
 
-                // Convert NDC (-1 to 1) to screen pixels
-                // Use window dimensions, not canvas (which is scaled by devicePixelRatio)
-                const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
-                const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
-
-                // Position label (centered via CSS transform)
-                this.labelElement.style.left = `${x}px`;
-                this.labelElement.style.top = `${y}px`;
-
-                // Scale based on distance and card scale (for children)
-                const depth = Math.max(0, Math.min(1, pos.z));
-                const baseScale = (1.0 - depth * 0.2) * this.scale;
-
-                // Apply transform for centering and scaling
-                this.labelElement.style.transform = `translate(-50%, -50%) scale(${baseScale})`;
-
-                // Opacity based on visibility (hide if behind camera)
-                this.labelElement.style.opacity = pos.z < 1 ? 1 : 0;
-
-                // Child styling
-                if (this.isChild && !this.labelElement.classList.contains('is-child')) {
-                    this.labelElement.classList.add('is-child');
-                }
-            }
-
-            update(time, mouseWorld) {
-                // Update uniforms
                 this.material.uniforms.uTime.value = time;
-                this.material.uniforms.uHover.value += (this.isHovered ? 1 : 0 - this.material.uniforms.uHover.value) * 0.1;
+                this.material.uniforms.uHover.value = this.hoverValue;
 
-                // ═══ EMERGENCE ANIMATION ═══
-                // Cards crystallize from the void with beautiful easing
-                if (!this.hasEmerged && !this.isChild) {
-                    // Check if delay has passed
-                    if (time > this.emergenceDelay) {
-                        // Smooth emergence with easing
-                        this.emergence += this.emergenceSpeed;
-
-                        // Ease-out cubic for smooth deceleration
-                        const easedEmergence = 1 - Math.pow(1 - Math.min(this.emergence, 1), 3);
-
-                        // Animate position from void to rest
-                        const startX = this.restPosition.x * 0.3;
-                        const startY = this.restPosition.y * 0.3;
-                        const startZ = -60;
-
-                        this.mesh.position.x = startX + (this.restPosition.x - startX) * easedEmergence;
-                        this.mesh.position.y = startY + (this.restPosition.y - startY) * easedEmergence;
-                        this.mesh.position.z = startZ + (this.restPosition.z - startZ) * easedEmergence;
-
-                        // Animate scale with slight overshoot
-                        const scaleEase = easedEmergence * (1 + 0.1 * Math.sin(easedEmergence * Math.PI));
-                        this.mesh.scale.setScalar(Math.min(scaleEase, 1.0) * this.scale);
-
-                        // Animate rotation to zero
-                        this.mesh.rotation.x *= (1 - easedEmergence * 0.1);
-                        this.mesh.rotation.y *= (1 - easedEmergence * 0.1);
-                        this.mesh.rotation.z *= (1 - easedEmergence * 0.1);
-
-                        // Update shader uniform
-                        this.material.uniforms.uEmergence.value = easedEmergence;
-
-                        // Label fades in during later part of emergence
-                        if (easedEmergence > 0.5) {
-                            const labelOpacity = (easedEmergence - 0.5) * 2;
-                            this.labelElement.style.opacity = labelOpacity;
-                            this.labelElement.style.transform = `translate(-50%, -50%) scale(${0.5 + labelOpacity * 0.5})`;
-                        }
-
-                        // Mark as fully emerged
-                        if (this.emergence >= 1) {
-                            this.hasEmerged = true;
-                            this.mesh.position.copy(this.restPosition);
-                            this.mesh.scale.setScalar(this.scale);
-                            this.mesh.rotation.set(0, 0, 0);
-                            this.material.uniforms.uEmergence.value = 1;
-                        }
-                    }
-                    return; // Don't process physics during emergence
-                }
-
-                // Calculate momentum from velocity
-                const speed = this.velocity.length();
-                this.momentum = this.momentum * 0.95 + speed * 0.5; // Smooth momentum
-                this.material.uniforms.uMomentum.value = Math.min(this.momentum, 5.0);
-
-                if (!this.isDragging) {
-                    // NO spring-back - cards stay where dropped
-                    // Only apply friction to slow down thrown cards
-                    this.velocity.multiplyScalar(CONFIG.physics.damping);
-                    this.mesh.position.add(this.velocity);
-
-                    // Boundary constraints - keep cards in view
-                    const bounds = { x: 45, y: 30, z: 20 };
-                    this.mesh.position.x = Math.max(-bounds.x, Math.min(bounds.x, this.mesh.position.x));
-                    this.mesh.position.y = Math.max(-bounds.y, Math.min(bounds.y, this.mesh.position.y));
-                    this.mesh.position.z = Math.max(-bounds.z, Math.min(bounds.z, this.mesh.position.z));
-
-                    // Smooth rotation reset with momentum influence
-                    const targetRotX = this.velocity.y * 0.03;
-                    const targetRotY = -this.velocity.x * 0.03;
-                    this.mesh.rotation.x += (targetRotX - this.mesh.rotation.x) * 0.08;
-                    this.mesh.rotation.y += (targetRotY - this.mesh.rotation.y) * 0.08;
-
-                    // Z-axis lift on hover
-                    const targetZ = this.isHovered ? 3 : 0;
-                    this.mesh.position.z += (this.restPosition.z + targetZ - this.mesh.position.z) * 0.1;
-
-                    // Conatus regeneration - striving to persist
-                    if (!this.isChild && this.conatus < CONFIG.conatus.initialEnergy) {
-                        this.conatus = Math.min(CONFIG.conatus.initialEnergy, this.conatus + CONFIG.conatus.regenRate);
-                    }
-                } else {
-                    // Tilt based on velocity during drag - more dramatic
-                    const tiltX = this.velocity.y * 0.04;
-                    const tiltY = -this.velocity.x * 0.04;
-                    const tiltZ = this.velocity.x * 0.02; // Add Z rotation for depth effect
-                    this.mesh.rotation.x += (tiltX - this.mesh.rotation.x) * 0.2;
-                    this.mesh.rotation.y += (tiltY - this.mesh.rotation.y) * 0.2;
-                    this.mesh.rotation.z += (tiltZ - this.mesh.rotation.z) * 0.15;
-                }
-
-                // Store velocity for drag tilt
-                if (this.isDragging && this.lastPosition) {
-                    this.velocity.x = this.mesh.position.x - this.lastPosition.x;
-                    this.velocity.y = this.mesh.position.y - this.lastPosition.y;
-                }
-                this.lastPosition = this.mesh.position.clone();
-
-                // Child card lifespan check
-                if (this.isChild) {
-                    const age = Date.now() - this.birthTime;
-                    const lifeProgress = age / CONFIG.conatus.childLifespan;
-
-                    // Fade out as lifespan ends
-                    if (lifeProgress > 0.7) {
-                        const fadeProgress = (lifeProgress - 0.7) / 0.3;
-                        this.material.uniforms.uHover.value = 1 - fadeProgress;
-                        this.labelElement.style.opacity = 1 - fadeProgress;
-                    }
-
-                    if (age > CONFIG.conatus.childLifespan) {
-                        this.shouldRemove = true;
-                    }
-                }
+                this.renderer.render(this.scene, this.camera);
             }
 
-            // Spawn a child card - Spinoza's causa sui
-            spawnChild(scene, allCards) {
-                if (this.conatus < CONFIG.conatus.spawnThreshold) return null;
-                if (this.children.length >= CONFIG.conatus.maxChildren) return null;
-                if (this.isChild) return null; // Children can't spawn
-
-                // Spend conatus energy
-                this.conatus -= CONFIG.conatus.spawnCost;
-
-                // Create child card with same data but smaller
-                const childIndex = allCards.length;
-                const child = new Card3D(this.data, childIndex, allCards.length + 1);
-                child.isChild = true;
-                child.scale = CONFIG.conatus.childScale;
-                child.birthTime = Date.now();
-                child.conatus = 0; // Children have no conatus
-
-                // Position near parent with offset
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 12 + Math.random() * 8;
-                child.mesh.position.copy(this.mesh.position);
-                child.mesh.position.x += Math.cos(angle) * distance;
-                child.mesh.position.y += Math.sin(angle) * distance;
-                child.mesh.position.z += (Math.random() - 0.5) * 10;
-
-                // Scale down the mesh
-                child.mesh.scale.setScalar(CONFIG.conatus.childScale);
-
-                // Initial velocity away from parent
-                child.velocity.set(
-                    Math.cos(angle) * 2,
-                    Math.sin(angle) * 2,
-                    0
-                );
-
-                // Update rest position to current position (no spring-back)
-                child.restPosition.copy(child.mesh.position);
-
-                this.children.push(child);
-                scene.add(child.mesh);
-
-                return child;
-            }
-
-            startDrag() {
-                this.isDragging = true;
-                this.material.uniforms.uSelected.value = 1;
-            }
-
-            endDrag(throwVelocity) {
-                this.isDragging = false;
-                this.material.uniforms.uSelected.value = 0;
-                this.velocity.copy(throwVelocity.multiplyScalar(CONFIG.physics.throwMultiplier));
+            dispose() {
+                this.renderer.dispose();
+                this.material.dispose();
             }
         }
 
         // ═══════════════════════════════════════════════════════════════════
         // MAIN APPLICATION
         // ═══════════════════════════════════════════════════════════════════
-        class CyberKineticLabs {
+        class LabsApp {
             constructor() {
-                this.canvas = document.getElementById('webgl-canvas');
-                this.mouse = new THREE.Vector2(0.5, 0.5);
-                this.mouseWorld = new THREE.Vector3();
-                this.prevMouse = new THREE.Vector2();
-                this.mouseVelocity = new THREE.Vector2();
-                this.raycaster = new THREE.Raycaster();
-                this.cards = [];
-                this.draggedCard = null;
-                this.dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-                this.dragOffset = new THREE.Vector3();
-                this.clock = new THREE.Clock();
-
-                // Ripple system for cohesive interaction
-                this.rippleTime = 0;
-                this.rippleOrigin = new THREE.Vector3();
-                this.rippleIntensity = 0;
-
-                // Settings with localStorage persistence
-                this.settings = this.loadSettings();
-                this.animationSpeed = this.settings.animationSpeed || 1.0;
-
-                // Cache DOM elements for performance
-                this.heroContent = document.querySelector('.center-content');
-                this.heroOpacity = 1;
-                this.hoveredCard = null;
-
-                // FPS monitoring
-                this.fpsCounter = null;
-                this.cardCounter = null;
-                this.lastFrameTime = performance.now();
-                this.frameCount = 0;
-                this.fps = 60;
+                this.cardGrid = document.getElementById('card-grid');
+                this.scenes = new Map();
+                this.currentFilter = 'all';
 
                 this.init();
             }
 
-            loadSettings() {
-                try {
-                    const saved = localStorage.getItem('labs-settings');
-                    return saved ? JSON.parse(saved) : {
-                        neuralNetwork: true,
-                        cardScenes: true,
-                        bloom: true,
-                        particles: true,
-                        animationSpeed: 1.0
-                    };
-                } catch (e) {
-                    return {
-                        neuralNetwork: true,
-                        cardScenes: true,
-                        bloom: true,
-                        particles: true,
-                        animationSpeed: 1.0
-                    };
-                }
-            }
-
-            saveSettings() {
-                try {
-                    localStorage.setItem('labs-settings', JSON.stringify(this.settings));
-                } catch (e) {
-                    console.warn('Could not save settings to localStorage');
-                }
-            }
-
             init() {
-                this.setupRenderer();
-                this.setupScene();
-                this.setupCamera();
-                this.setupLights();
-                this.setupGrid();
-                this.setupCards();
-                this.setupParticles();
-                this.setupPostProcessing();
-                this.setupEventListeners();
-                this.setupControlPanel();
-                this.hideLoading();
+                this.renderCards();
+                this.setupFilters();
+                this.setupScrollAnimations();
                 this.animate();
             }
 
-            setupControlPanel() {
-                const toggle = document.getElementById('control-toggle');
-                const panel = document.getElementById('control-panel');
-                const speedSlider = document.getElementById('animation-speed');
-                const speedValue = document.getElementById('speed-value');
+            renderCards() {
+                this.cardGrid.innerHTML = '';
 
-                // Cache performance counters
-                this.fpsCounter = document.getElementById('fps-counter');
-                this.cardCounter = document.getElementById('card-count');
-
-                // Toggle panel
-                toggle.addEventListener('click', () => {
-                    panel.classList.toggle('open');
-                    toggle.classList.toggle('active');
+                PROJECTS.forEach((project, index) => {
+                    const card = this.createCard(project, index);
+                    this.cardGrid.appendChild(card);
                 });
+            }
 
-                // Toggle switches
-                document.querySelectorAll('.control-toggle-switch').forEach(sw => {
-                    const setting = sw.dataset.setting;
+            createCard(project, index) {
+                const card = document.createElement('article');
+                card.className = 'project-card';
+                card.dataset.status = project.status;
+                card.dataset.index = index;
 
-                    // Initialize from settings
-                    if (this.settings[setting]) {
-                        sw.classList.add('active');
-                    } else {
-                        sw.classList.remove('active');
-                    }
+                card.innerHTML = `
+                    <div class="card-scene">
+                        <canvas class="card-canvas" data-project="${project.id}"></canvas>
+                        <div class="scene-overlay"></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-status ${project.status}">
+                                <span class="card-status-dot"></span>
+                                ${project.status === 'live' ? 'Live' : 'In Development'}
+                            </span>
+                            <span class="card-category">${project.category}</span>
+                        </div>
+                        <h3 class="card-title">${project.title}</h3>
+                        <p class="card-description">${project.description}</p>
+                        <div class="card-tech">
+                            ${project.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+                        </div>
+                        <div class="card-actions">
+                            ${project.url
+                                ? `<a href="${project.url}" class="card-launch" target="_blank" rel="noopener">
+                                       Launch <span class="card-launch-arrow">→</span>
+                                   </a>`
+                                : `<span class="card-launch disabled">Coming Soon</span>`
+                            }
+                        </div>
+                    </div>
+                `;
 
-                    sw.addEventListener('click', () => {
-                        sw.classList.toggle('active');
-                        this.settings[setting] = sw.classList.contains('active');
-                        this.saveSettings();
-                        this.applySettings();
+                // Setup shader scene
+                const canvas = card.querySelector('.card-canvas');
+                const scene = new CardScene(canvas, project.id);
+                this.scenes.set(project.id, scene);
+
+                // Setup micro-interactions with GSAP
+                this.setupCardInteractions(card, scene);
+
+                return card;
+            }
+
+            setupCardInteractions(card, scene) {
+                let isDragging = false;
+                let startX, startY;
+                let currentX = 0, currentY = 0;
+
+                // Hover
+                card.addEventListener('mouseenter', () => {
+                    scene.isHovered = true;
+                    gsap.to(card, {
+                        y: -8,
+                        duration: 0.4,
+                        ease: 'power2.out'
                     });
                 });
 
-                // Speed slider
-                speedSlider.value = this.settings.animationSpeed || 1.0;
-                speedValue.textContent = `${speedSlider.value}x`;
-
-                speedSlider.addEventListener('input', (e) => {
-                    this.animationSpeed = parseFloat(e.target.value);
-                    speedValue.textContent = `${this.animationSpeed.toFixed(1)}x`;
-                    this.settings.animationSpeed = this.animationSpeed;
-                    this.saveSettings();
+                card.addEventListener('mouseleave', () => {
+                    scene.isHovered = false;
+                    if (!isDragging) {
+                        gsap.to(card, {
+                            x: 0,
+                            y: 0,
+                            rotateX: 0,
+                            rotateY: 0,
+                            duration: 0.6,
+                            ease: 'elastic.out(1, 0.5)'
+                        });
+                    }
                 });
 
-                // Apply initial settings
-                this.applySettings();
-            }
+                // Drag micro-interaction (subtle movement)
+                card.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('.card-launch')) return; // Don't drag on button
 
-            applySettings() {
-                // Neural Network visibility
-                if (this.gridMesh) {
-                    this.gridMesh.visible = this.settings.neuralNetwork;
-                }
-                if (this.connectionMesh) {
-                    this.connectionMesh.visible = this.settings.neuralNetwork;
-                }
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    card.classList.add('is-dragging');
+                });
 
-                // Particle system visibility
-                if (this.particleEmitter && this.particleEmitter.mesh) {
-                    this.particleEmitter.mesh.visible = this.settings.particles;
-                }
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
 
-                // Bloom effect
-                if (this.bloomPass) {
-                    this.bloomPass.enabled = this.settings.bloom;
-                }
+                    const deltaX = (e.clientX - startX) * 0.15; // Reduced movement
+                    const deltaY = (e.clientY - startY) * 0.15;
 
-                // Card scenes (update shader uniform)
-                this.cards.forEach(card => {
-                    // If cardScenes is disabled, set sceneType to -1 (or use a flag)
-                    card.material.uniforms.uSceneType.value = this.settings.cardScenes ? card.index : -1;
+                    // Clamp movement
+                    currentX = Math.max(-20, Math.min(20, deltaX));
+                    currentY = Math.max(-20, Math.min(20, deltaY));
+
+                    gsap.to(card, {
+                        x: currentX,
+                        y: currentY,
+                        rotateY: currentX * 0.3,
+                        rotateX: -currentY * 0.3,
+                        duration: 0.1,
+                        ease: 'power1.out'
+                    });
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    card.classList.remove('is-dragging');
+
+                    // Spring back
+                    gsap.to(card, {
+                        x: 0,
+                        y: 0,
+                        rotateX: 0,
+                        rotateY: 0,
+                        duration: 0.8,
+                        ease: 'elastic.out(1, 0.4)'
+                    });
+                });
+
+                // Mouse follow tilt (subtle 3D effect)
+                card.addEventListener('mousemove', (e) => {
+                    if (isDragging) return;
+
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                    gsap.to(card, {
+                        rotateY: x * 8,
+                        rotateX: -y * 8,
+                        duration: 0.3,
+                        ease: 'power1.out'
+                    });
                 });
             }
 
-            setupRenderer() {
-                this.renderer = new THREE.WebGLRenderer({
-                    canvas: this.canvas,
-                    antialias: true,
-                    alpha: true
+            setupFilters() {
+                const filterBtns = document.querySelectorAll('.filter-btn');
+
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        this.currentFilter = btn.dataset.filter;
+                        this.filterCards();
+                    });
                 });
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                this.renderer.setClearColor(CONFIG.colors.void, 1);
             }
 
-            setupScene() {
-                this.scene = new THREE.Scene();
-                this.scene.fog = new THREE.Fog(CONFIG.colors.void, 50, 150);
-            }
+            filterCards() {
+                const cards = document.querySelectorAll('.project-card');
 
-            setupCamera() {
-                this.camera = new THREE.PerspectiveCamera(
-                    50,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    200
-                );
-                this.camera.position.z = 60;
-            }
+                cards.forEach(card => {
+                    const status = card.dataset.status;
+                    const shouldShow = this.currentFilter === 'all' || status === this.currentFilter;
 
-            setupLights() {
-                const ambient = new THREE.AmbientLight(0xffffff, 0.3);
-                this.scene.add(ambient);
-
-                const point1 = new THREE.PointLight(CONFIG.colors.brand, 1, 100);
-                point1.position.set(30, 30, 30);
-                this.scene.add(point1);
-
-                const point2 = new THREE.PointLight(CONFIG.colors.accent, 0.5, 100);
-                point2.position.set(-30, -30, 20);
-                this.scene.add(point2);
-            }
-
-            setupGrid() {
-                // ═══ NEURAL NETWORK BACKGROUND ═══
-                // Golden spiral distribution for organic, natural feel
-                const nodeCount = 200;
-                const goldenRatio = 1.618033988749895;
-                const goldenAngle = Math.PI * 2 / (goldenRatio * goldenRatio);
-
-                // Node positions in golden spiral
-                const positions = new Float32Array(nodeCount * 3);
-                const offsets = new Float32Array(nodeCount * 3);
-                const randoms = new Float32Array(nodeCount);
-                const phases = new Float32Array(nodeCount);
-
-                // Store node positions for connection calculation
-                this.neuralNodes = [];
-
-                for (let i = 0; i < nodeCount; i++) {
-                    // Golden spiral distribution
-                    const t = i / nodeCount;
-                    const radius = Math.sqrt(t) * 55; // Spread radius
-                    const angle = i * goldenAngle;
-
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    const z = -40 + Math.random() * 15; // Depth variation
-
-                    positions[i * 3] = 0;     // Point at origin (will be offset)
-                    positions[i * 3 + 1] = 0;
-                    positions[i * 3 + 2] = 0;
-
-                    offsets[i * 3] = x;
-                    offsets[i * 3 + 1] = y;
-                    offsets[i * 3 + 2] = z;
-
-                    randoms[i] = Math.random();
-                    phases[i] = Math.random();
-
-                    // Store for connections
-                    this.neuralNodes.push(new THREE.Vector3(x, y, z));
-                }
-
-                // Create point cloud geometry for neurons
-                const nodeGeometry = new THREE.BufferGeometry();
-                nodeGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                nodeGeometry.setAttribute('aOffset', new THREE.BufferAttribute(offsets, 3));
-                nodeGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
-                nodeGeometry.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
-
-                // Neural node material
-                this.gridMaterial = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uTime: { value: 0 },
-                        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-                        uMouseRadius: { value: 25 },
-                        uColor: { value: CONFIG.colors.brand },
-                        uAccentColor: { value: CONFIG.colors.accent },
-                        uCardPositions: { value: [
-                            new THREE.Vector3(0, 0, 0),
-                            new THREE.Vector3(0, 0, 0),
-                            new THREE.Vector3(0, 0, 0),
-                            new THREE.Vector3(0, 0, 0),
-                            new THREE.Vector3(0, 0, 0)
-                        ]},
-                        uDragIntensity: { value: 0 },
-                        uGlobalPulse: { value: 0 },
-                        uChromaticPhase: { value: 0 },
-                        uRippleOrigin: { value: new THREE.Vector3(0, 0, 0) },
-                        uRippleTime: { value: 0 },
-                        uRippleIntensity: { value: 0 }
-                    },
-                    vertexShader: neuralNodeVertexShader,
-                    fragmentShader: neuralNodeFragmentShader,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false
+                    gsap.to(card, {
+                        opacity: shouldShow ? 1 : 0.3,
+                        scale: shouldShow ? 1 : 0.95,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
                 });
-
-                this.gridMesh = new THREE.Points(nodeGeometry, this.gridMaterial);
-                this.gridMesh.frustumCulled = false;
-                this.scene.add(this.gridMesh);
-
-                // ═══ NEURAL CONNECTIONS ═══
-                // Create dynamic connections between nearby neurons
-                this.setupNeuralConnections();
             }
 
-            setupNeuralConnections() {
-                const connectionThreshold = 18; // Max distance for connection
-                const connections = [];
+            setupScrollAnimations() {
+                const cards = document.querySelectorAll('.project-card');
 
-                // Find nearby neuron pairs
-                for (let i = 0; i < this.neuralNodes.length; i++) {
-                    for (let j = i + 1; j < this.neuralNodes.length; j++) {
-                        const dist = this.neuralNodes[i].distanceTo(this.neuralNodes[j]);
-                        if (dist < connectionThreshold) {
-                            connections.push({
-                                start: this.neuralNodes[i],
-                                end: this.neuralNodes[j],
-                                strength: 1.0 - dist / connectionThreshold,
-                                phase: Math.random()
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry, i) => {
+                        if (entry.isIntersecting) {
+                            gsap.to(entry.target, {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.6,
+                                delay: parseInt(entry.target.dataset.index) * 0.1,
+                                ease: 'power2.out'
                             });
+                            entry.target.classList.add('visible');
                         }
-                    }
-                }
-
-                // Limit connections for performance
-                const maxConnections = Math.min(connections.length, 400);
-                connections.sort((a, b) => b.strength - a.strength);
-                const topConnections = connections.slice(0, maxConnections);
-
-                // Create line geometry for connections
-                const lineCount = topConnections.length;
-                const linePositions = new Float32Array(lineCount * 6); // 2 vertices per line
-                const lineStarts = new Float32Array(lineCount * 6);
-                const lineEnds = new Float32Array(lineCount * 6);
-                const lineStrengths = new Float32Array(lineCount * 2);
-                const linePhases = new Float32Array(lineCount * 2);
-
-                for (let i = 0; i < lineCount; i++) {
-                    const conn = topConnections[i];
-
-                    // Start vertex
-                    linePositions[i * 6] = 0;     // t = 0
-                    linePositions[i * 6 + 1] = 0;
-                    linePositions[i * 6 + 2] = 0;
-
-                    // End vertex
-                    linePositions[i * 6 + 3] = 1; // t = 1
-                    linePositions[i * 6 + 4] = 0;
-                    linePositions[i * 6 + 5] = 0;
-
-                    // Start/end positions for both vertices
-                    lineStarts[i * 6] = conn.start.x;
-                    lineStarts[i * 6 + 1] = conn.start.y;
-                    lineStarts[i * 6 + 2] = conn.start.z;
-                    lineStarts[i * 6 + 3] = conn.start.x;
-                    lineStarts[i * 6 + 4] = conn.start.y;
-                    lineStarts[i * 6 + 5] = conn.start.z;
-
-                    lineEnds[i * 6] = conn.end.x;
-                    lineEnds[i * 6 + 1] = conn.end.y;
-                    lineEnds[i * 6 + 2] = conn.end.z;
-                    lineEnds[i * 6 + 3] = conn.end.x;
-                    lineEnds[i * 6 + 4] = conn.end.y;
-                    lineEnds[i * 6 + 5] = conn.end.z;
-
-                    lineStrengths[i * 2] = conn.strength;
-                    lineStrengths[i * 2 + 1] = conn.strength;
-
-                    linePhases[i * 2] = conn.phase;
-                    linePhases[i * 2 + 1] = conn.phase;
-                }
-
-                const connectionGeometry = new THREE.BufferGeometry();
-                connectionGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-                connectionGeometry.setAttribute('aStart', new THREE.BufferAttribute(lineStarts, 3));
-                connectionGeometry.setAttribute('aEnd', new THREE.BufferAttribute(lineEnds, 3));
-                connectionGeometry.setAttribute('aStrength', new THREE.BufferAttribute(lineStrengths, 1));
-                connectionGeometry.setAttribute('aPhase', new THREE.BufferAttribute(linePhases, 1));
-
-                this.connectionMaterial = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uTime: { value: 0 },
-                        uColor: { value: CONFIG.colors.brand },
-                        uAccentColor: { value: CONFIG.colors.accent },
-                        uGlobalPulse: { value: 0 },
-                        uChromaticPhase: { value: 0 },
-                        uDragIntensity: { value: 0 },
-                        uRippleOrigin: { value: new THREE.Vector3(0, 0, 0) },
-                        uRippleTime: { value: 0 },
-                        uRippleIntensity: { value: 0 }
-                    },
-                    vertexShader: neuralConnectionVertexShader,
-                    fragmentShader: neuralConnectionFragmentShader,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false
-                });
-
-                this.connectionMesh = new THREE.LineSegments(connectionGeometry, this.connectionMaterial);
-                this.connectionMesh.frustumCulled = false;
-                this.scene.add(this.connectionMesh);
-            }
-
-            setupCards() {
-                CONFIG.cards.forEach((cardData, index) => {
-                    const card = new Card3D(cardData, index, CONFIG.cards.length);
-                    this.cards.push(card);
-                    this.scene.add(card.mesh);
-                });
-            }
-
-            setupParticles() {
-                this.particleEmitter = new ParticleEmitter(this.scene, CONFIG.colors.brand);
-            }
-
-            setupPostProcessing() {
-                this.composer = new EffectComposer(this.renderer);
-
-                const renderPass = new RenderPass(this.scene, this.camera);
-                this.composer.addPass(renderPass);
-
-                const bloomPass = new UnrealBloomPass(
-                    new THREE.Vector2(window.innerWidth, window.innerHeight),
-                    0.6,    // strength - reduced for tighter glow
-                    0.25,   // radius - smaller for sharper edges
-                    0.88    // threshold - higher = only brightest elements bloom
-                );
-                this.bloomPass = bloomPass; // Store reference for control panel toggle
-                this.composer.addPass(bloomPass);
-            }
-
-            setupEventListeners() {
-                window.addEventListener('resize', () => this.onResize());
-                window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-                window.addEventListener('mousedown', (e) => this.onMouseDown(e));
-                window.addEventListener('mouseup', (e) => this.onMouseUp(e));
-
-                // Touch support
-                window.addEventListener('touchstart', (e) => this.onTouchStart(e));
-                window.addEventListener('touchmove', (e) => this.onTouchMove(e));
-                window.addEventListener('touchend', (e) => this.onTouchEnd(e));
-            }
-
-            onResize() {
-                const width = window.innerWidth;
-                const height = window.innerHeight;
-
-                this.camera.aspect = width / height;
-                this.camera.updateProjectionMatrix();
-
-                this.renderer.setSize(width, height);
-                this.composer.setSize(width, height);
-            }
-
-            onMouseMove(e) {
-                this.prevMouse.copy(this.mouse);
-
-                this.mouse.x = e.clientX / window.innerWidth;
-                this.mouse.y = e.clientY / window.innerHeight;
-
-                this.mouseVelocity.set(
-                    this.mouse.x - this.prevMouse.x,
-                    this.mouse.y - this.prevMouse.y
-                );
-
-                // Update grid uniform
-                this.gridMaterial.uniforms.uMouse.value.copy(this.mouse);
-
-                // Raycasting for hover
-                const mouseNDC = new THREE.Vector2(
-                    this.mouse.x * 2 - 1,
-                    -(this.mouse.y * 2 - 1)
-                );
-
-                this.raycaster.setFromCamera(mouseNDC, this.camera);
-
-                // Check card intersections
-                const cardMeshes = this.cards.map(c => c.mesh);
-                const intersects = this.raycaster.intersectObjects(cardMeshes);
-
-                this.cards.forEach(card => {
-                    card.isHovered = false;
-                });
-
-                if (intersects.length > 0) {
-                    const card = this.cards.find(c => c.mesh === intersects[0].object);
-                    if (card) {
-                        card.isHovered = true;
-                        card.material.uniforms.uMouse.value.copy(intersects[0].uv);
-                        this.hoveredCard = card;
-                    }
-                } else {
-                    this.hoveredCard = null;
-                }
-
-                // Drag
-                if (this.draggedCard) {
-                    const intersection = new THREE.Vector3();
-                    this.raycaster.ray.intersectPlane(this.dragPlane, intersection);
-
-                    if (intersection) {
-                        const prevPos = this.draggedCard.mesh.position.clone();
-                        this.draggedCard.mesh.position.copy(intersection.sub(this.dragOffset));
-
-                        // Calculate drag speed for particle intensity
-                        const dragSpeed = prevPos.distanceTo(this.draggedCard.mesh.position);
-
-                        // Emit particles while dragging - more particles for faster drags
-                        const particleCount = Math.min(8, Math.floor(dragSpeed * 15) + 1);
-                        this.particleEmitter.emit(this.draggedCard.mesh.position, particleCount);
-
-                        // Trail particles at card corners during fast drag
-                        if (dragSpeed > 0.3) {
-                            const corners = [
-                                new THREE.Vector3(-8, 5, 0),
-                                new THREE.Vector3(8, 5, 0),
-                                new THREE.Vector3(-8, -5, 0),
-                                new THREE.Vector3(8, -5, 0)
-                            ];
-                            corners.forEach(offset => {
-                                const cornerPos = this.draggedCard.mesh.position.clone().add(offset);
-                                this.particleEmitter.emit(cornerPos, 1);
-                            });
-                        }
-                    }
-                }
-            }
-
-            onMouseDown(e) {
-                const mouseNDC = new THREE.Vector2(
-                    (e.clientX / window.innerWidth) * 2 - 1,
-                    -(e.clientY / window.innerHeight) * 2 + 1
-                );
-
-                this.raycaster.setFromCamera(mouseNDC, this.camera);
-
-                const cardMeshes = this.cards.map(c => c.mesh);
-                const intersects = this.raycaster.intersectObjects(cardMeshes);
-
-                if (intersects.length > 0) {
-                    const card = this.cards.find(c => c.mesh === intersects[0].object);
-                    if (card) {
-                        this.draggedCard = card;
-                        card.startDrag();
-
-                        // Calculate drag offset
-                        this.dragPlane.setFromNormalAndCoplanarPoint(
-                            new THREE.Vector3(0, 0, 1),
-                            card.mesh.position
-                        );
-
-                        const intersection = new THREE.Vector3();
-                        this.raycaster.ray.intersectPlane(this.dragPlane, intersection);
-                        this.dragOffset.copy(intersection).sub(card.mesh.position);
-
-                        // Burst particles
-                        this.particleEmitter.emit(card.mesh.position, 20);
-
-                        // Trigger ripple wave for cohesive grid response
-                        this.rippleOrigin.copy(card.mesh.position);
-                        this.rippleTime = 0;
-                        this.rippleIntensity = 1.0;
-                    }
-                }
-            }
-
-            onMouseUp(e) {
-                if (this.draggedCard) {
-                    const throwVelocity = new THREE.Vector3(
-                        this.mouseVelocity.x * 100,
-                        -this.mouseVelocity.y * 100,
-                        0
-                    );
-
-                    this.draggedCard.endDrag(throwVelocity);
-
-                    // Release burst
-                    this.particleEmitter.emit(this.draggedCard.mesh.position, 30);
-
-                    // Spinoza's Conatus: Spawn a child card on drop (if has energy)
-                    if (!this.draggedCard.isChild && this.draggedCard.conatus >= CONFIG.conatus.spawnThreshold) {
-                        const child = this.draggedCard.spawnChild(this.scene, this.cards);
-                        if (child) {
-                            this.cards.push(child);
-                            // Spawn burst effect
-                            this.particleEmitter.emit(child.mesh.position, 40);
-                        }
-                    }
-
-                    this.draggedCard = null;
-                }
-            }
-
-            onTouchStart(e) {
-                if (e.touches.length > 0) {
-                    this.onMouseDown({
-                        clientX: e.touches[0].clientX,
-                        clientY: e.touches[0].clientY
                     });
-                }
-            }
+                }, { threshold: 0.1 });
 
-            onTouchMove(e) {
-                if (e.touches.length > 0) {
-                    e.preventDefault();
-                    this.onMouseMove({
-                        clientX: e.touches[0].clientX,
-                        clientY: e.touches[0].clientY
-                    });
-                }
-            }
-
-            onTouchEnd(e) {
-                this.onMouseUp({});
-            }
-
-            hideLoading() {
-                setTimeout(() => {
-                    document.getElementById('loading').classList.add('hidden');
-                }, 500);
+                cards.forEach(card => observer.observe(card));
             }
 
             animate() {
-                requestAnimationFrame(() => this.animate());
+                const time = performance.now() * 0.001;
 
-                const rawTime = this.clock.getElapsedTime();
-                const time = rawTime * this.settings.animationSpeed; // Apply speed setting
-
-                // ═══ COHESION SYSTEM: Synchronized timing ═══
-                // Global heartbeat pulse (1.2Hz for biological resonance)
-                const globalPulse = Math.sin(time * 1.2) * 0.5 + 0.5;
-                // Slow chromatic phase (30 second color evolution cycle)
-                const chromaticPhase = (time * 0.033) % 1.0;
-
-                // Update neural network node uniforms
-                this.gridMaterial.uniforms.uTime.value = time;
-                this.gridMaterial.uniforms.uGlobalPulse.value = globalPulse;
-                this.gridMaterial.uniforms.uChromaticPhase.value = chromaticPhase;
-
-                // Update ripple system
-                this.rippleTime += 0.016; // Approximate frame time
-                this.rippleIntensity *= 0.98; // Decay
-                this.gridMaterial.uniforms.uRippleOrigin.value = this.rippleOrigin;
-                this.gridMaterial.uniforms.uRippleTime.value = this.rippleTime;
-                this.gridMaterial.uniforms.uRippleIntensity.value = this.rippleIntensity;
-
-                // Update neural connection uniforms (synchronized with nodes)
-                if (this.connectionMaterial) {
-                    this.connectionMaterial.uniforms.uTime.value = time;
-                    this.connectionMaterial.uniforms.uGlobalPulse.value = globalPulse;
-                    this.connectionMaterial.uniforms.uChromaticPhase.value = chromaticPhase;
-                    this.connectionMaterial.uniforms.uDragIntensity.value = this.currentDragIntensity;
-                    this.connectionMaterial.uniforms.uRippleOrigin.value = this.rippleOrigin;
-                    this.connectionMaterial.uniforms.uRippleTime.value = this.rippleTime;
-                    this.connectionMaterial.uniforms.uRippleIntensity.value = this.rippleIntensity;
-                }
-
-                // Update card positions in grid shader for attraction effect (first 5 for uniform)
-                const cardPositions = this.cards.slice(0, 8).map(card => card.mesh.position.clone());
-                while (cardPositions.length < 8) {
-                    cardPositions.push(new THREE.Vector3(0, 0, -100)); // Off-screen
-                }
-                this.gridMaterial.uniforms.uCardPositions.value = cardPositions;
-
-                // Smooth drag intensity transition
-                const targetDragIntensity = this.draggedCard ? 1.0 : 0.0;
-                this.currentDragIntensity = this.currentDragIntensity || 0;
-                this.currentDragIntensity += (targetDragIntensity - this.currentDragIntensity) * 0.1;
-                this.gridMaterial.uniforms.uDragIntensity.value = this.currentDragIntensity;
-
-                // Hero text UX: fade on drag, dim on hover (cached element for performance)
-                if (this.heroContent) {
-                    // Calculate target opacity based on interaction state
-                    let targetOpacity = 1;
-                    let targetBlur = 0;
-
-                    if (this.draggedCard) {
-                        targetOpacity = 0;
-                        targetBlur = 6;
-                    } else if (this.hoveredCard) {
-                        targetOpacity = 0.4;
-                        targetBlur = 2;
-                    }
-
-                    // Smooth transition
-                    this.heroOpacity += (targetOpacity - this.heroOpacity) * 0.12;
-                    const currentBlur = parseFloat(this.heroContent.style.filter?.replace(/[^\d.]/g, '')) || 0;
-                    const newBlur = currentBlur + (targetBlur - currentBlur) * 0.15;
-
-                    this.heroContent.style.opacity = this.heroOpacity;
-                    this.heroContent.style.filter = `blur(${newBlur}px)`;
-                }
-
-                // Update cards with synchronized cohesion uniforms
-                this.cards.forEach(card => {
-                    card.material.uniforms.uGlobalPulse.value = globalPulse;
-                    card.material.uniforms.uChromaticPhase.value = chromaticPhase;
-                    card.update(time, this.mouseWorld);
-                    card.updateLabel(this.camera);
+                this.scenes.forEach(scene => {
+                    scene.update(time);
                 });
 
-                // Remove dead child cards (Spinoza: finite modes have finite duration)
-                for (let i = this.cards.length - 1; i >= 0; i--) {
-                    const card = this.cards[i];
-                    if (card.shouldRemove) {
-                        // Death burst
-                        this.particleEmitter.emit(card.mesh.position, 25);
-
-                        // Clean up
-                        this.scene.remove(card.mesh);
-                        card.labelElement.remove();
-
-                        // Remove from parent's children list
-                        this.cards.forEach(parent => {
-                            const childIdx = parent.children.indexOf(card);
-                            if (childIdx > -1) {
-                                parent.children.splice(childIdx, 1);
-                            }
-                        });
-
-                        this.cards.splice(i, 1);
-                    }
-                }
-
-                // Update particles
-                this.particleEmitter.update();
-
-                // Subtle camera movement
-                this.camera.position.x += (this.mouse.x * 4 - 2 - this.camera.position.x) * 0.02;
-                this.camera.position.y += (-this.mouse.y * 4 + 2 - this.camera.position.y) * 0.02;
-                this.camera.lookAt(0, 0, 0);
-
-                // FPS monitoring (update every 500ms for stability)
-                this.frameCount++;
-                const now = performance.now();
-                if (now - this.lastFrameTime >= 500) {
-                    this.fps = Math.round((this.frameCount * 1000) / (now - this.lastFrameTime));
-                    this.frameCount = 0;
-                    this.lastFrameTime = now;
-
-                    // Update UI
-                    if (this.fpsCounter) {
-                        this.fpsCounter.textContent = this.fps;
-                        this.fpsCounter.className = 'control-label fps-counter';
-                        if (this.fps < 30) {
-                            this.fpsCounter.classList.add('danger');
-                        } else if (this.fps < 50) {
-                            this.fpsCounter.classList.add('warning');
-                        }
-                    }
-                    if (this.cardCounter) {
-                        this.cardCounter.textContent = this.cards.length;
-                    }
-                }
-
-                // Render
-                this.composer.render();
+                requestAnimationFrame(() => this.animate());
             }
         }
 
         // Initialize
-        new CyberKineticLabs();
+        window.addEventListener('DOMContentLoaded', () => {
+            new LabsApp();
+        });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.card-canvas').forEach(canvas => {
+                const rect = canvas.getBoundingClientRect();
+                const scene = window.labsApp?.scenes?.get(canvas.dataset.project);
+                if (scene) scene.resize();
+            });
+        });
     </script>
 </body>
 </html>
