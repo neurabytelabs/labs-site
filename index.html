@@ -263,12 +263,12 @@
         .card-label-inner {
             background: rgba(17, 17, 19, 0.85);
             backdrop-filter: blur(12px);
-            transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(251, 191, 36, 0.15);
             border-radius: 12px;
             padding: 20px;
             min-width: 280px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .card-label:hover .card-label-inner {
@@ -352,10 +352,16 @@
             font-size: 0.8rem;
             font-weight: 500;
             font-family: var(--font-mono);
-            transition: gap 0.2s;
+            transition: gap 0.2s, color 0.2s;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
         }
 
-        .card-link:hover { gap: 10px; }
+        .card-link:hover {
+            gap: 10px;
+            color: #fcd34d;
+        }
 
         .card-link-disabled {
             color: var(--neutral-600);
@@ -1867,6 +1873,16 @@
                 container.appendChild(label);
                 this.labelElement = label;
                 this.conatusBar = label.querySelector('.conatus-fill');
+
+                // Make entire card clickable (if has URL)
+                if (this.data.url) {
+                    const cardInner = label.querySelector('.card-label-inner');
+                    cardInner.addEventListener('click', (e) => {
+                        // Don't trigger if clicking on the link itself (it will handle its own click)
+                        if (e.target.classList.contains('card-link')) return;
+                        window.open(this.data.url, '_blank');
+                    });
+                }
             }
 
             updateLabel(camera) {
