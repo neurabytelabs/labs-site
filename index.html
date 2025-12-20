@@ -17,8 +17,9 @@
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════
-           NEURABYTE LABS - CYBER-KINETIC EXPERIENCE v3.0
-           Three.js + WebGL + Physics-based Interaction
+           NEURABYTE LABS - CYBER-KINETIC EXPERIENCE v4.0
+           Neural Network Background + Three.js + WebGL + Physics
+           "More Geometrico" - Spinoza's Vision Made Digital
            ═══════════════════════════════════════════════════════════════════ */
 
         :root {
@@ -524,6 +525,16 @@
             },
             cards: [
                 {
+                    id: 'spinozaos',
+                    title: 'SpinozaOS',
+                    category: 'Design Systems',
+                    description: 'Award-winning design system for the Age of Superintelligence. "More Geometrico" philosophy.',
+                    tech: ['Design Tokens', 'React', 'Motion'],
+                    status: 'live',
+                    url: 'https://github.com/mrsarac/spinozaos',
+                    icon: '⚛️'
+                },
+                {
                     id: 'lithosphere',
                     title: 'Lithosphere',
                     category: 'Physics & Visualization',
@@ -583,16 +594,19 @@
         };
 
         // ═══════════════════════════════════════════════════════════════════
-        // SHADER CODE
+        // SHADER CODE - NEURAL NETWORK SYSTEM
         // ═══════════════════════════════════════════════════════════════════
-        const gridVertexShader = `
+
+        // Neural Node Vertex Shader - Living neurons in golden spiral
+        const neuralNodeVertexShader = `
             attribute vec3 aOffset;
             attribute float aRandom;
+            attribute float aPhase;
 
             uniform float uTime;
             uniform vec2 uMouse;
             uniform float uMouseRadius;
-            uniform vec3 uCardPositions[4];
+            uniform vec3 uCardPositions[5];
             uniform float uDragIntensity;
             uniform float uGlobalPulse;
             uniform vec3 uRippleOrigin;
@@ -600,103 +614,211 @@
             uniform float uRippleIntensity;
 
             varying float vAlpha;
-            varying float vElevation;
+            varying float vPulse;
             varying float vCardInfluence;
+            varying float vSynapticFire;
 
             void main() {
-                vec3 pos = position + aOffset;
+                vec3 pos = position * 0.8 + aOffset; // Smaller nodes
 
-                // Mouse repulsion
+                // Neural oscillation - each neuron has its own phase
+                float neuralPhase = aPhase * 6.28318;
+                float oscillation = sin(uTime * 2.0 + neuralPhase) * 0.5 + 0.5;
+
+                // Breathing effect - synchronized with global pulse
+                float breathe = uGlobalPulse * 0.3;
+                pos *= 1.0 + breathe * oscillation * 0.3;
+
+                // Mouse interaction - neurons attract slightly then repel
                 vec2 mouseWorld = (uMouse - 0.5) * 100.0;
                 vec2 diff = pos.xy - mouseWorld;
                 float dist = length(diff);
-                float repulsion = smoothstep(uMouseRadius, 0.0, dist);
+                float mouseInfluence = smoothstep(uMouseRadius * 1.5, 0.0, dist);
 
-                // Push away from mouse
-                pos.z += repulsion * 15.0;
-                pos.xy += normalize(diff + 0.001) * repulsion * 5.0;
+                // Synaptic firing when mouse nearby
+                float synapticTrigger = smoothstep(15.0, 5.0, dist);
+                vSynapticFire = synapticTrigger * (sin(uTime * 10.0 + aRandom * 20.0) * 0.5 + 0.5);
 
-                // Card attraction - grid cubes are attracted to nearby cards
-                // Card dimensions: 16x10 units, so use tighter radius matching card edges
+                // Gentle push away from mouse (neurons are sensitive)
+                pos.z += mouseInfluence * 8.0;
+                pos.xy += normalize(diff + 0.001) * mouseInfluence * 3.0;
+
+                // Card influence - neurons cluster around cards
                 float totalCardInfluence = 0.0;
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 5; i++) {
                     vec3 cardPos = uCardPositions[i];
                     vec2 cardDiff = pos.xy - cardPos.xy;
+                    float cardDist = length(cardDiff);
 
-                    // Calculate distance from card EDGE, not center
-                    // Card is 16x10, so half-width=8, half-height=5
-                    float distFromEdgeX = max(0.0, abs(cardDiff.x) - 8.0);
-                    float distFromEdgeY = max(0.0, abs(cardDiff.y) - 5.0);
-                    float edgeDist = length(vec2(distFromEdgeX, distFromEdgeY));
+                    // Neurons are drawn to cards (like thoughts to ideas)
+                    float cardAttraction = smoothstep(35.0, 10.0, cardDist);
 
-                    // Tighter glow radius (12 units from card edge)
-                    float cardAttraction = smoothstep(12.0, 0.0, edgeDist);
-
-                    // Stronger effect when directly under card
-                    float underCard = 1.0 - step(8.0, abs(cardDiff.x)) * step(5.0, abs(cardDiff.y));
-                    cardAttraction = max(cardAttraction, underCard * 0.8);
-
-                    // Pull towards card and elevate - closer to card = more elevation
-                    pos.z += cardAttraction * (8.0 + cardPos.z * 0.3);
-                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * 1.5 * uDragIntensity;
+                    // Move towards card when dragging
+                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * uDragIntensity * 2.0;
+                    pos.z += cardAttraction * 5.0;
 
                     totalCardInfluence += cardAttraction;
                 }
 
-                // Organic wave with synchronized heartbeat pulse
-                float heartbeat = uGlobalPulse * sin(uTime * 1.2);
-                float wave = sin(uTime * 0.5 + aRandom * 6.28 + pos.x * 0.1 + heartbeat * 3.0) *
-                             cos(uTime * 0.3 + pos.y * 0.1 + heartbeat * 2.0);
-                pos.z += wave * (2.0 + heartbeat * 4.0);
-
-                // Interaction ripple wave - emanates from drag origin
+                // Ripple response - neurons fire in waves
                 float rippleDist = length(pos.xy - uRippleOrigin.xy);
-                float rippleWave = sin(rippleDist * 0.5 - uRippleTime * 8.0) *
-                                   exp(-rippleDist * 0.05) *
-                                   exp(-uRippleTime * 2.0) *
+                float rippleWave = sin(rippleDist * 0.3 - uRippleTime * 6.0) *
+                                   exp(-rippleDist * 0.03) *
+                                   exp(-uRippleTime * 1.5) *
                                    uRippleIntensity;
-                pos.z += rippleWave * 10.0;
+                pos.z += rippleWave * 8.0;
 
-                vElevation = pos.z + 50.0;
-                vAlpha = 0.15 + repulsion * 0.6 + totalCardInfluence * 0.4 + rippleWave * 0.5;
+                // Add ripple to synaptic fire
+                vSynapticFire += abs(rippleWave) * 2.0;
+
+                // Organic drift - neurons float gently
+                float drift = sin(uTime * 0.3 + aRandom * 10.0) *
+                              cos(uTime * 0.2 + aPhase * 5.0);
+                pos.xy += vec2(
+                    sin(uTime * 0.4 + aRandom * 8.0),
+                    cos(uTime * 0.35 + aPhase * 6.0)
+                ) * drift * 1.5;
+
+                vAlpha = 0.3 + oscillation * 0.3 + mouseInfluence * 0.4 + totalCardInfluence * 0.3;
+                vPulse = oscillation;
                 vCardInfluence = totalCardInfluence;
+
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+
+                // Size varies with pulse and proximity
+                gl_PointSize = (2.0 + oscillation * 1.5 + vSynapticFire * 2.0) *
+                               (300.0 / length(modelViewMatrix * vec4(pos, 1.0)));
+            }
+        `;
+
+        const neuralNodeFragmentShader = `
+            uniform vec3 uColor;
+            uniform vec3 uAccentColor;
+            uniform float uTime;
+            uniform float uChromaticPhase;
+            uniform float uDragIntensity;
+
+            varying float vAlpha;
+            varying float vPulse;
+            varying float vCardInfluence;
+            varying float vSynapticFire;
+
+            void main() {
+                // Circular node with soft glow
+                vec2 center = gl_PointCoord - 0.5;
+                float dist = length(center);
+                if (dist > 0.5) discard;
+
+                // Core glow
+                float core = smoothstep(0.5, 0.0, dist);
+                float glow = smoothstep(0.5, 0.2, dist);
+
+                // Chromatic color evolution
+                float phase = uChromaticPhase * 6.28318;
+                vec3 chromaticColor = vec3(
+                    sin(phase + vPulse * 2.0) * 0.3 + 0.7,
+                    sin(phase + 2.094 + vPulse * 2.0) * 0.3 + 0.7,
+                    sin(phase + 4.188 + vPulse * 2.0) * 0.3 + 0.7
+                );
+
+                // Base neuron color
+                vec3 baseColor = mix(uColor, uAccentColor, vCardInfluence * 0.5);
+                baseColor = mix(baseColor, chromaticColor * uColor, 0.3);
+
+                // Synaptic fire brightens the core
+                vec3 fireColor = vec3(1.0, 0.9, 0.7); // Warm white flash
+                baseColor = mix(baseColor, fireColor, vSynapticFire * core);
+
+                // Final color with glow falloff
+                vec3 finalColor = baseColor * (core * 1.5 + glow * 0.5);
+
+                // Drag intensity boost
+                finalColor += uDragIntensity * uColor * 0.2 * core;
+
+                float alpha = vAlpha * core * (0.8 + vSynapticFire * 0.4);
+
+                gl_FragColor = vec4(finalColor, alpha);
+            }
+        `;
+
+        // Neural Connection Shader - Lines between nearby neurons
+        const neuralConnectionVertexShader = `
+            attribute vec3 aStart;
+            attribute vec3 aEnd;
+            attribute float aStrength;
+            attribute float aPhase;
+
+            uniform float uTime;
+            uniform float uGlobalPulse;
+            uniform float uDragIntensity;
+            uniform vec3 uRippleOrigin;
+            uniform float uRippleTime;
+            uniform float uRippleIntensity;
+
+            varying float vStrength;
+            varying float vPulse;
+            varying float vProgress;
+
+            void main() {
+                // Interpolate between start and end based on vertex position
+                float t = position.x; // 0 = start, 1 = end
+                vProgress = t;
+
+                vec3 pos = mix(aStart, aEnd, t);
+
+                // Signal pulse traveling along connection
+                float signalSpeed = 3.0;
+                float signalPhase = fract(uTime * signalSpeed * 0.1 + aPhase);
+                float signalPulse = smoothstep(0.0, 0.1, t - signalPhase + 0.1) *
+                                    smoothstep(0.2, 0.1, t - signalPhase + 0.1);
+
+                // Ripple effect on connections
+                float rippleDist = length(pos.xy - uRippleOrigin.xy);
+                float rippleEffect = sin(rippleDist * 0.2 - uRippleTime * 5.0) *
+                                     exp(-rippleDist * 0.02) *
+                                     exp(-uRippleTime * 1.5) *
+                                     uRippleIntensity;
+
+                vStrength = aStrength * (0.5 + uGlobalPulse * 0.3 + signalPulse * 0.5);
+                vStrength += abs(rippleEffect) * 0.5;
+                vStrength *= (1.0 + uDragIntensity * 0.3);
+                vPulse = signalPulse + rippleEffect * 0.5;
 
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
         `;
 
-        const gridFragmentShader = `
+        const neuralConnectionFragmentShader = `
             uniform vec3 uColor;
             uniform vec3 uAccentColor;
             uniform float uTime;
-            uniform float uDragIntensity;
             uniform float uChromaticPhase;
 
-            varying float vAlpha;
-            varying float vElevation;
-            varying float vCardInfluence;
+            varying float vStrength;
+            varying float vPulse;
+            varying float vProgress;
 
             void main() {
-                float colorMix = sin(uTime * 0.2 + vElevation * 0.02 + uChromaticPhase * 6.28) * 0.5 + 0.5;
+                // Chromatic connection color
+                float phase = uChromaticPhase * 6.28318 + vProgress * 0.5;
+                vec3 connectionColor = mix(uColor, uAccentColor, sin(phase) * 0.5 + 0.5);
 
-                // More accent color near cards
-                float accentMix = colorMix * 0.3 + vCardInfluence * 0.5;
-                vec3 color = mix(uColor, uAccentColor, accentMix);
+                // Signal pulse adds brightness
+                vec3 pulseColor = vec3(1.0, 0.95, 0.8);
+                connectionColor = mix(connectionColor, pulseColor, vPulse * 0.6);
 
-                // Chromatic tint based on phase - unified color evolution
-                vec3 chromaticTint = vec3(
-                    sin(uChromaticPhase * 6.28) * 0.5 + 0.5,
-                    sin(uChromaticPhase * 6.28 + 2.094) * 0.5 + 0.5,
-                    sin(uChromaticPhase * 6.28 + 4.188) * 0.5 + 0.5
-                );
-                color = mix(color, chromaticTint * uColor, vCardInfluence * 0.3);
+                // Fade at endpoints for organic look
+                float endFade = smoothstep(0.0, 0.1, vProgress) * smoothstep(1.0, 0.9, vProgress);
 
-                // Brighter during drag
-                color += uDragIntensity * uColor * 0.2;
+                float alpha = vStrength * endFade * 0.4;
 
-                gl_FragColor = vec4(color, vAlpha * 0.5);
+                gl_FragColor = vec4(connectionColor, alpha);
             }
         `;
+
+        // Legacy grid shader kept for fallback (unused but preserved)
+        const gridVertexShader = neuralNodeVertexShader;
+        const gridFragmentShader = neuralNodeFragmentShader;
 
         // ═══════════════════════════════════════════════════════════════════
         // CRYSTALLINE CARD SHADERS (Award-Winning Quality)
@@ -999,12 +1121,13 @@
 
                 this.mesh = new THREE.Mesh(geometry, this.material);
 
-                // Position in 3D space - spread cards more dynamically
+                // Position in 3D space - spread cards dynamically for 5 cards
                 const positions = [
-                    { x: -22, y: 12, z: 5 },   // Top left - forward
-                    { x: 20, y: 14, z: -3 },   // Top right - back
-                    { x: -18, y: -10, z: -5 }, // Bottom left - back
-                    { x: 22, y: -8, z: 8 }     // Bottom right - forward
+                    { x: 0, y: 18, z: 6 },     // Top center - SpinozaOS (featured)
+                    { x: -24, y: 4, z: 3 },    // Left - Lithosphere
+                    { x: 24, y: 6, z: -2 },    // Right - Boardroom
+                    { x: -20, y: -12, z: -4 }, // Bottom left - Emotion Lab
+                    { x: 22, y: -10, z: 5 }    // Bottom right - Particle Lab
                 ];
 
                 const pos = positions[index] || { x: 0, y: 0, z: 0 };
@@ -1306,42 +1429,63 @@
             }
 
             setupGrid() {
-                const { count, spacing, depth } = CONFIG.grid;
-                const total = count * count;
+                // ═══ NEURAL NETWORK BACKGROUND ═══
+                // Golden spiral distribution for organic, natural feel
+                const nodeCount = 200;
+                const goldenRatio = 1.618033988749895;
+                const goldenAngle = Math.PI * 2 / (goldenRatio * goldenRatio);
 
-                // Base geometry
-                const baseGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-                const geometry = new THREE.InstancedBufferGeometry();
-                geometry.index = baseGeometry.index;
-                geometry.attributes.position = baseGeometry.attributes.position;
-                geometry.attributes.normal = baseGeometry.attributes.normal;
+                // Node positions in golden spiral
+                const positions = new Float32Array(nodeCount * 3);
+                const offsets = new Float32Array(nodeCount * 3);
+                const randoms = new Float32Array(nodeCount);
+                const phases = new Float32Array(nodeCount);
 
-                // Instance attributes
-                const offsets = new Float32Array(total * 3);
-                const randoms = new Float32Array(total);
+                // Store node positions for connection calculation
+                this.neuralNodes = [];
 
-                for (let i = 0; i < count; i++) {
-                    for (let j = 0; j < count; j++) {
-                        const idx = i * count + j;
-                        offsets[idx * 3] = (i - count / 2) * spacing;
-                        offsets[idx * 3 + 1] = (j - count / 2) * spacing;
-                        offsets[idx * 3 + 2] = depth;
-                        randoms[idx] = Math.random();
-                    }
+                for (let i = 0; i < nodeCount; i++) {
+                    // Golden spiral distribution
+                    const t = i / nodeCount;
+                    const radius = Math.sqrt(t) * 55; // Spread radius
+                    const angle = i * goldenAngle;
+
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    const z = -40 + Math.random() * 15; // Depth variation
+
+                    positions[i * 3] = 0;     // Point at origin (will be offset)
+                    positions[i * 3 + 1] = 0;
+                    positions[i * 3 + 2] = 0;
+
+                    offsets[i * 3] = x;
+                    offsets[i * 3 + 1] = y;
+                    offsets[i * 3 + 2] = z;
+
+                    randoms[i] = Math.random();
+                    phases[i] = Math.random();
+
+                    // Store for connections
+                    this.neuralNodes.push(new THREE.Vector3(x, y, z));
                 }
 
-                geometry.setAttribute('aOffset', new THREE.InstancedBufferAttribute(offsets, 3));
-                geometry.setAttribute('aRandom', new THREE.InstancedBufferAttribute(randoms, 1));
+                // Create point cloud geometry for neurons
+                const nodeGeometry = new THREE.BufferGeometry();
+                nodeGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                nodeGeometry.setAttribute('aOffset', new THREE.BufferAttribute(offsets, 3));
+                nodeGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+                nodeGeometry.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
 
-                // Material
+                // Neural node material
                 this.gridMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
                         uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-                        uMouseRadius: { value: 20 },
+                        uMouseRadius: { value: 25 },
                         uColor: { value: CONFIG.colors.brand },
                         uAccentColor: { value: CONFIG.colors.accent },
                         uCardPositions: { value: [
+                            new THREE.Vector3(0, 0, 0),
                             new THREE.Vector3(0, 0, 0),
                             new THREE.Vector3(0, 0, 0),
                             new THREE.Vector3(0, 0, 0),
@@ -1354,16 +1498,118 @@
                         uRippleTime: { value: 0 },
                         uRippleIntensity: { value: 0 }
                     },
-                    vertexShader: gridVertexShader,
-                    fragmentShader: gridFragmentShader,
+                    vertexShader: neuralNodeVertexShader,
+                    fragmentShader: neuralNodeFragmentShader,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false
                 });
 
-                this.gridMesh = new THREE.Mesh(geometry, this.gridMaterial);
+                this.gridMesh = new THREE.Points(nodeGeometry, this.gridMaterial);
                 this.gridMesh.frustumCulled = false;
                 this.scene.add(this.gridMesh);
+
+                // ═══ NEURAL CONNECTIONS ═══
+                // Create dynamic connections between nearby neurons
+                this.setupNeuralConnections();
+            }
+
+            setupNeuralConnections() {
+                const connectionThreshold = 18; // Max distance for connection
+                const connections = [];
+
+                // Find nearby neuron pairs
+                for (let i = 0; i < this.neuralNodes.length; i++) {
+                    for (let j = i + 1; j < this.neuralNodes.length; j++) {
+                        const dist = this.neuralNodes[i].distanceTo(this.neuralNodes[j]);
+                        if (dist < connectionThreshold) {
+                            connections.push({
+                                start: this.neuralNodes[i],
+                                end: this.neuralNodes[j],
+                                strength: 1.0 - dist / connectionThreshold,
+                                phase: Math.random()
+                            });
+                        }
+                    }
+                }
+
+                // Limit connections for performance
+                const maxConnections = Math.min(connections.length, 400);
+                connections.sort((a, b) => b.strength - a.strength);
+                const topConnections = connections.slice(0, maxConnections);
+
+                // Create line geometry for connections
+                const lineCount = topConnections.length;
+                const linePositions = new Float32Array(lineCount * 6); // 2 vertices per line
+                const lineStarts = new Float32Array(lineCount * 6);
+                const lineEnds = new Float32Array(lineCount * 6);
+                const lineStrengths = new Float32Array(lineCount * 2);
+                const linePhases = new Float32Array(lineCount * 2);
+
+                for (let i = 0; i < lineCount; i++) {
+                    const conn = topConnections[i];
+
+                    // Start vertex
+                    linePositions[i * 6] = 0;     // t = 0
+                    linePositions[i * 6 + 1] = 0;
+                    linePositions[i * 6 + 2] = 0;
+
+                    // End vertex
+                    linePositions[i * 6 + 3] = 1; // t = 1
+                    linePositions[i * 6 + 4] = 0;
+                    linePositions[i * 6 + 5] = 0;
+
+                    // Start/end positions for both vertices
+                    lineStarts[i * 6] = conn.start.x;
+                    lineStarts[i * 6 + 1] = conn.start.y;
+                    lineStarts[i * 6 + 2] = conn.start.z;
+                    lineStarts[i * 6 + 3] = conn.start.x;
+                    lineStarts[i * 6 + 4] = conn.start.y;
+                    lineStarts[i * 6 + 5] = conn.start.z;
+
+                    lineEnds[i * 6] = conn.end.x;
+                    lineEnds[i * 6 + 1] = conn.end.y;
+                    lineEnds[i * 6 + 2] = conn.end.z;
+                    lineEnds[i * 6 + 3] = conn.end.x;
+                    lineEnds[i * 6 + 4] = conn.end.y;
+                    lineEnds[i * 6 + 5] = conn.end.z;
+
+                    lineStrengths[i * 2] = conn.strength;
+                    lineStrengths[i * 2 + 1] = conn.strength;
+
+                    linePhases[i * 2] = conn.phase;
+                    linePhases[i * 2 + 1] = conn.phase;
+                }
+
+                const connectionGeometry = new THREE.BufferGeometry();
+                connectionGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+                connectionGeometry.setAttribute('aStart', new THREE.BufferAttribute(lineStarts, 3));
+                connectionGeometry.setAttribute('aEnd', new THREE.BufferAttribute(lineEnds, 3));
+                connectionGeometry.setAttribute('aStrength', new THREE.BufferAttribute(lineStrengths, 1));
+                connectionGeometry.setAttribute('aPhase', new THREE.BufferAttribute(linePhases, 1));
+
+                this.connectionMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uColor: { value: CONFIG.colors.brand },
+                        uAccentColor: { value: CONFIG.colors.accent },
+                        uGlobalPulse: { value: 0 },
+                        uChromaticPhase: { value: 0 },
+                        uDragIntensity: { value: 0 },
+                        uRippleOrigin: { value: new THREE.Vector3(0, 0, 0) },
+                        uRippleTime: { value: 0 },
+                        uRippleIntensity: { value: 0 }
+                    },
+                    vertexShader: neuralConnectionVertexShader,
+                    fragmentShader: neuralConnectionFragmentShader,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+
+                this.connectionMesh = new THREE.LineSegments(connectionGeometry, this.connectionMaterial);
+                this.connectionMesh.frustumCulled = false;
+                this.scene.add(this.connectionMesh);
             }
 
             setupCards() {
@@ -1592,7 +1838,7 @@
                 // Slow chromatic phase (30 second color evolution cycle)
                 const chromaticPhase = (time * 0.033) % 1.0;
 
-                // Update grid uniforms
+                // Update neural network node uniforms
                 this.gridMaterial.uniforms.uTime.value = time;
                 this.gridMaterial.uniforms.uGlobalPulse.value = globalPulse;
                 this.gridMaterial.uniforms.uChromaticPhase.value = chromaticPhase;
@@ -1604,9 +1850,20 @@
                 this.gridMaterial.uniforms.uRippleTime.value = this.rippleTime;
                 this.gridMaterial.uniforms.uRippleIntensity.value = this.rippleIntensity;
 
-                // Update card positions in grid shader for attraction effect (first 4 only for uniform)
-                const cardPositions = this.cards.slice(0, 4).map(card => card.mesh.position.clone());
-                while (cardPositions.length < 4) {
+                // Update neural connection uniforms (synchronized with nodes)
+                if (this.connectionMaterial) {
+                    this.connectionMaterial.uniforms.uTime.value = time;
+                    this.connectionMaterial.uniforms.uGlobalPulse.value = globalPulse;
+                    this.connectionMaterial.uniforms.uChromaticPhase.value = chromaticPhase;
+                    this.connectionMaterial.uniforms.uDragIntensity.value = this.currentDragIntensity;
+                    this.connectionMaterial.uniforms.uRippleOrigin.value = this.rippleOrigin;
+                    this.connectionMaterial.uniforms.uRippleTime.value = this.rippleTime;
+                    this.connectionMaterial.uniforms.uRippleIntensity.value = this.rippleIntensity;
+                }
+
+                // Update card positions in grid shader for attraction effect (first 5 for uniform)
+                const cardPositions = this.cards.slice(0, 5).map(card => card.mesh.position.clone());
+                while (cardPositions.length < 5) {
                     cardPositions.push(new THREE.Vector3(0, 0, -100)); // Off-screen
                 }
                 this.gridMaterial.uniforms.uCardPositions.value = cardPositions;
