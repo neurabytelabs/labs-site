@@ -44,6 +44,7 @@ export class CardScene {
     this.uniforms = {
       uTime: { value: 0 },
       uHover: { value: 0 },
+      uClick: { value: 0 },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) }
     };
 
@@ -68,12 +69,25 @@ export class CardScene {
       card.addEventListener('mouseenter', () => this.setHover(true));
       card.addEventListener('mouseleave', () => this.setHover(false));
       card.addEventListener('mousemove', (e) => this.updateMouse(e));
+      
+      const link = card.querySelector('.card-link');
+      if (link) {
+        link.addEventListener('click', (e) => {
+           // Visual pulse
+           this.triggerClick();
+        });
+      }
     }
   }
 
   setHover(isHovered) {
     this.isHovered = isHovered;
     this.targetHover = isHovered ? 1 : 0;
+  }
+
+  triggerClick() {
+    this.uniforms.uClick.value = 1;
+    // Decay is handled in animate
   }
 
   updateMouse(e) {
@@ -107,9 +121,20 @@ export class CardScene {
 
     // Smooth hover transition
     this.currentHover += (this.targetHover - this.currentHover) * 0.1;
+    
+    // Click pulse decay
+    if (this.uniforms.uClick.value > 0.01) {
+        this.uniforms.uClick.value *= 0.92;
+    } else {
+        this.uniforms.uClick.value = 0;
+    }
 
-    // Update uniforms
-    this.uniforms.uTime.value = this.clock.getElapsedTime();
+    // Time management: slow down when not hovered
+    const dt = this.clock.getDelta();
+    // If hovered, normal speed (1.0). If dormant, 0.2 speed.
+    const timeScale = this.isHovered ? 1.0 : 0.2;
+    this.uniforms.uTime.value += dt * timeScale;
+
     this.uniforms.uHover.value = this.currentHover;
     this.uniforms.uMouse.value.copy(this.mouse);
 

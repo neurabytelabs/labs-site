@@ -5,14 +5,19 @@
 
 import './styles/main.css';
 import { LabsApp } from './components/LabsApp.js';
+import { Background } from './components/Background.js';
 
 // Initialize app
 function init() {
-  console.log('[Labs] NeuraByte Labs v11.1.3');
+  console.log('[Labs] NeuraByte Labs v11.1.4');
   console.log('[Labs] Masterpiece Shader Edition - Generative Data Art Visuals');
+
+  // Initialize background
+  new Background();
 
   // Initialize main application
   window.labsApp = new LabsApp();
+
 
   // Initialize UI components
   initVersionModal();

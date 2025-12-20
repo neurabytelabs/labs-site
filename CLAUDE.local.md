@@ -1,7 +1,7 @@
 # NeuraByte Labs - LLM Navigation Index
 
 > **Project:** NeuraByte Labs Portfolio Site
-> **Version:** 11.1.3 (Refik Anadol Era)
+> **Version:** 11.1.4 (Unified Card Era)
 > **Stack:** Vite + Three.js r169 + GSAP + GLSL
 
 ---
@@ -29,6 +29,7 @@ labs-site/
 └── src/
     ├── main.js             # Entry point
     ├── components/
+    │   ├── Background.js   # Subtle particles system
     │   ├── CardScene.js    # Three.js shader renderer
     │   └── LabsApp.js      # Main app controller
     ├── shaders/
@@ -59,6 +60,7 @@ labs-site/
 | Styling | CSS Variables | Design tokens, theming |
 | **Corners** | **Sharp (0-2px)** | **NeuraByte brand identity** |
 | **Visuals** | **Generative Data Art** | **Refik Anadol inspired aesthetics** |
+| **UX** | **Unified Card** | **Embedded interactive shader headers** |
 
 ---
 
@@ -67,9 +69,14 @@ labs-site/
 ### `/src/components/CardScene.js`
 WebGL shader renderer for project cards. Handles:
 - Three.js scene setup (orthographic camera)
-- Shader material with uTime, uHover, uMouse uniforms
-- Smooth hover transitions
-- Canvas resize handling
+- Shader material with uTime, uHover, uClick, uMouse uniforms
+- Smooth hover transitions & dormant state (0.2x speed)
+- Click pulse triggering
+
+### `/src/components/Background.js`
+Global subtle particle system.
+- Three.js PointsMaterial
+- Floating motion logic
 
 ### `/src/components/LabsApp.js`
 Main application controller. Handles:
@@ -80,7 +87,7 @@ Main application controller. Handles:
 
 ### `/src/shaders/*.glsl`
 Each project has a unique fragment shader:
-- `spinozaos.glsl` - **NEW:** 3D Curl Noise, Volumetric Density, Synaptic Flashes.
+- `spinozaos.glsl` - **NEW:** 3D Curl Noise, Volumetric Density, Synaptic Flashes, Click Pulse.
 - `lithosphere.glsl` - 3-body gravitational dance
 - `boardroom.glsl` - 5 AI personas, speaking indicator
 - `nexus.glsl` - Digital forge, energy streams
@@ -115,7 +122,7 @@ Project metadata:
 ### Modify card styling
 Edit `src/styles/main.css`:
 - `.project-card` - Card container
-- `.card-shader` - Canvas wrapper
+- `.card-shader` - Canvas wrapper (200px height)
 - `.card-content` - Text content
 - Design tokens in `:root`
 
@@ -132,6 +139,7 @@ All shaders receive these uniforms:
 ```glsl
 uniform float uTime;   // Elapsed time (seconds)
 uniform float uHover;  // 0.0 to 1.0 (smooth hover)
+uniform float uClick;  // 0.0 to 1.0 (decaying pulse)
 uniform vec2 uMouse;   // Normalized mouse position
 ```
 

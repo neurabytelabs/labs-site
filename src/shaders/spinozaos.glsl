@@ -10,6 +10,7 @@ precision highp float;
 
 uniform float uTime;
 uniform float uHover;
+uniform float uClick;
 uniform vec2 uMouse;
 
 varying vec2 vUv;
@@ -139,6 +140,10 @@ void main() {
     float vignette = 1.0 - length(uv) * 1.2;
     color *= clamp(vignette, 0.0, 1.0);
     
+    // Click Pulse - Explosion from center/mouse
+    float pulse = smoothstep(0.0, 1.0, uClick) * smoothstep(1.0, 0.0, length(uv) - uClick * 2.0);
+    color += vec3(1.0, 0.9, 0.5) * pulse * 2.0;
+
     // Subtle film grain
     float grain = hash33(vec3(uv, t)).x * 0.05;
     color += grain;
