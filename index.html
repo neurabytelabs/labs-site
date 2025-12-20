@@ -126,7 +126,7 @@
 
         .back-link:hover { color: var(--spinoza-yellow); }
 
-        /* Center Content */
+        /* Center Content - Non-interactive overlay */
         .center-content {
             flex: 1;
             display: flex;
@@ -136,8 +136,17 @@
             text-align: center;
             padding: 0 32px;
             pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             transition: opacity 0.3s ease, filter 0.3s ease;
             will-change: opacity, filter;
+        }
+
+        .center-content * {
+            pointer-events: none;
+            user-select: none;
         }
 
         .hero-badge {
@@ -585,6 +594,10 @@
             uniform float uMouseRadius;
             uniform vec3 uCardPositions[4];
             uniform float uDragIntensity;
+            uniform float uGlobalPulse;
+            uniform vec3 uRippleOrigin;
+            uniform float uRippleTime;
+            uniform float uRippleIntensity;
 
             varying float vAlpha;
             varying float vElevation;
@@ -604,27 +617,48 @@
                 pos.xy += normalize(diff + 0.001) * repulsion * 5.0;
 
                 // Card attraction - grid cubes are attracted to nearby cards
+                // Card dimensions: 16x10 units, so use tighter radius matching card edges
                 float totalCardInfluence = 0.0;
                 for (int i = 0; i < 4; i++) {
                     vec3 cardPos = uCardPositions[i];
                     vec2 cardDiff = pos.xy - cardPos.xy;
-                    float cardDist = length(cardDiff);
-                    float cardAttraction = smoothstep(25.0, 0.0, cardDist);
 
-                    // Pull towards card and elevate
-                    pos.z += cardAttraction * (10.0 + cardPos.z * 0.5);
-                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * 2.0 * uDragIntensity;
+                    // Calculate distance from card EDGE, not center
+                    // Card is 16x10, so half-width=8, half-height=5
+                    float distFromEdgeX = max(0.0, abs(cardDiff.x) - 8.0);
+                    float distFromEdgeY = max(0.0, abs(cardDiff.y) - 5.0);
+                    float edgeDist = length(vec2(distFromEdgeX, distFromEdgeY));
+
+                    // Tighter glow radius (12 units from card edge)
+                    float cardAttraction = smoothstep(12.0, 0.0, edgeDist);
+
+                    // Stronger effect when directly under card
+                    float underCard = 1.0 - step(8.0, abs(cardDiff.x)) * step(5.0, abs(cardDiff.y));
+                    cardAttraction = max(cardAttraction, underCard * 0.8);
+
+                    // Pull towards card and elevate - closer to card = more elevation
+                    pos.z += cardAttraction * (8.0 + cardPos.z * 0.3);
+                    pos.xy -= normalize(cardDiff + 0.001) * cardAttraction * 1.5 * uDragIntensity;
 
                     totalCardInfluence += cardAttraction;
                 }
 
-                // Organic wave
-                float wave = sin(uTime * 0.5 + aRandom * 6.28 + pos.x * 0.1) *
-                             cos(uTime * 0.3 + pos.y * 0.1);
-                pos.z += wave * 2.0;
+                // Organic wave with synchronized heartbeat pulse
+                float heartbeat = uGlobalPulse * sin(uTime * 1.2);
+                float wave = sin(uTime * 0.5 + aRandom * 6.28 + pos.x * 0.1 + heartbeat * 3.0) *
+                             cos(uTime * 0.3 + pos.y * 0.1 + heartbeat * 2.0);
+                pos.z += wave * (2.0 + heartbeat * 4.0);
+
+                // Interaction ripple wave - emanates from drag origin
+                float rippleDist = length(pos.xy - uRippleOrigin.xy);
+                float rippleWave = sin(rippleDist * 0.5 - uRippleTime * 8.0) *
+                                   exp(-rippleDist * 0.05) *
+                                   exp(-uRippleTime * 2.0) *
+                                   uRippleIntensity;
+                pos.z += rippleWave * 10.0;
 
                 vElevation = pos.z + 50.0;
-                vAlpha = 0.15 + repulsion * 0.6 + totalCardInfluence * 0.4;
+                vAlpha = 0.15 + repulsion * 0.6 + totalCardInfluence * 0.4 + rippleWave * 0.5;
                 vCardInfluence = totalCardInfluence;
 
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -636,17 +670,26 @@
             uniform vec3 uAccentColor;
             uniform float uTime;
             uniform float uDragIntensity;
+            uniform float uChromaticPhase;
 
             varying float vAlpha;
             varying float vElevation;
             varying float vCardInfluence;
 
             void main() {
-                float colorMix = sin(uTime * 0.2 + vElevation * 0.02) * 0.5 + 0.5;
+                float colorMix = sin(uTime * 0.2 + vElevation * 0.02 + uChromaticPhase * 6.28) * 0.5 + 0.5;
 
                 // More accent color near cards
                 float accentMix = colorMix * 0.3 + vCardInfluence * 0.5;
                 vec3 color = mix(uColor, uAccentColor, accentMix);
+
+                // Chromatic tint based on phase - unified color evolution
+                vec3 chromaticTint = vec3(
+                    sin(uChromaticPhase * 6.28) * 0.5 + 0.5,
+                    sin(uChromaticPhase * 6.28 + 2.094) * 0.5 + 0.5,
+                    sin(uChromaticPhase * 6.28 + 4.188) * 0.5 + 0.5
+                );
+                color = mix(color, chromaticTint * uColor, vCardInfluence * 0.3);
 
                 // Brighter during drag
                 color += uDragIntensity * uColor * 0.2;
@@ -707,6 +750,8 @@
             uniform float uSelected;
             uniform float uMomentum;
             uniform float uIOR;
+            uniform float uGlobalPulse;
+            uniform float uChromaticPhase;
 
             varying vec2 vUv;
             varying float vElevation;
@@ -715,12 +760,13 @@
             varying vec3 vWorldPosition;
             varying vec3 vViewDirection;
 
-            // Holographic rainbow function
+            // Holographic rainbow function with chromatic phase sync
             vec3 holographic(float angle, float time) {
+                float phase = uChromaticPhase * 6.28;
                 return vec3(
-                    sin(angle + time) * 0.5 + 0.5,
-                    sin(angle + time + 2.094) * 0.5 + 0.5,
-                    sin(angle + time + 4.188) * 0.5 + 0.5
+                    sin(angle + time + phase) * 0.5 + 0.5,
+                    sin(angle + time + phase + 2.094) * 0.5 + 0.5,
+                    sin(angle + time + phase + 4.188) * 0.5 + 0.5
                 );
             }
 
@@ -789,10 +835,11 @@
                 float motionStreak = abs(uMomentum) * smoothstep(0.5, 0.0, abs(vUv.x - 0.5));
                 finalColor += motionStreak * uColor * 0.3;
 
-                // Selection energy pulse
-                float pulse = sin(uTime * 5.0) * 0.5 + 0.5;
+                // Selection energy pulse - synced with global heartbeat
+                float globalBeat = uGlobalPulse * 0.5 + 0.5;
+                float pulse = sin(uTime * 5.0 + globalBeat * 3.14159) * 0.5 + 0.5;
                 float pulse2 = sin(uTime * 7.0 + 1.0) * 0.5 + 0.5;
-                finalColor += uSelected * glowColor * (0.25 + pulse * 0.2 + pulse2 * 0.1);
+                finalColor += uSelected * glowColor * (0.25 + pulse * 0.2 + pulse2 * 0.1 + globalBeat * 0.15);
 
                 // Depth luminance
                 finalColor += vElevation * 0.05 * uColor;
@@ -939,7 +986,9 @@
                         uColor: { value: CONFIG.colors.brand },
                         uAccentColor: { value: CONFIG.colors.accent },
                         uMomentum: { value: 0 },
-                        uIOR: { value: 1.45 } // Index of refraction
+                        uIOR: { value: 1.45 }, // Index of refraction
+                        uGlobalPulse: { value: 0 },
+                        uChromaticPhase: { value: 0 }
                     },
                     vertexShader: cardVertexShader,
                     fragmentShader: cardFragmentShader,
@@ -1195,6 +1244,11 @@
                 this.dragOffset = new THREE.Vector3();
                 this.clock = new THREE.Clock();
 
+                // Ripple system for cohesive interaction
+                this.rippleTime = 0;
+                this.rippleOrigin = new THREE.Vector3();
+                this.rippleIntensity = 0;
+
                 this.init();
             }
 
@@ -1293,7 +1347,12 @@
                             new THREE.Vector3(0, 0, 0),
                             new THREE.Vector3(0, 0, 0)
                         ]},
-                        uDragIntensity: { value: 0 }
+                        uDragIntensity: { value: 0 },
+                        uGlobalPulse: { value: 0 },
+                        uChromaticPhase: { value: 0 },
+                        uRippleOrigin: { value: new THREE.Vector3(0, 0, 0) },
+                        uRippleTime: { value: 0 },
+                        uRippleIntensity: { value: 0 }
                     },
                     vertexShader: gridVertexShader,
                     fragmentShader: gridFragmentShader,
@@ -1327,9 +1386,9 @@
 
                 const bloomPass = new UnrealBloomPass(
                     new THREE.Vector2(window.innerWidth, window.innerHeight),
-                    0.8,    // strength
-                    0.4,    // radius
-                    0.85    // threshold
+                    0.6,    // strength - reduced for tighter glow
+                    0.25,   // radius - smaller for sharper edges
+                    0.88    // threshold - higher = only brightest elements bloom
                 );
                 this.composer.addPass(bloomPass);
             }
@@ -1457,6 +1516,11 @@
 
                         // Burst particles
                         this.particleEmitter.emit(card.mesh.position, 20);
+
+                        // Trigger ripple wave for cohesive grid response
+                        this.rippleOrigin.copy(card.mesh.position);
+                        this.rippleTime = 0;
+                        this.rippleIntensity = 1.0;
                     }
                 }
             }
@@ -1522,8 +1586,23 @@
 
                 const time = this.clock.getElapsedTime();
 
-                // Update grid time
+                // ═══ COHESION SYSTEM: Synchronized timing ═══
+                // Global heartbeat pulse (1.2Hz for biological resonance)
+                const globalPulse = Math.sin(time * 1.2) * 0.5 + 0.5;
+                // Slow chromatic phase (30 second color evolution cycle)
+                const chromaticPhase = (time * 0.033) % 1.0;
+
+                // Update grid uniforms
                 this.gridMaterial.uniforms.uTime.value = time;
+                this.gridMaterial.uniforms.uGlobalPulse.value = globalPulse;
+                this.gridMaterial.uniforms.uChromaticPhase.value = chromaticPhase;
+
+                // Update ripple system
+                this.rippleTime += 0.016; // Approximate frame time
+                this.rippleIntensity *= 0.98; // Decay
+                this.gridMaterial.uniforms.uRippleOrigin.value = this.rippleOrigin;
+                this.gridMaterial.uniforms.uRippleTime.value = this.rippleTime;
+                this.gridMaterial.uniforms.uRippleIntensity.value = this.rippleIntensity;
 
                 // Update card positions in grid shader for attraction effect (first 4 only for uniform)
                 const cardPositions = this.cards.slice(0, 4).map(card => card.mesh.position.clone());
@@ -1548,8 +1627,10 @@
                     heroContent.style.filter = this.draggedCard ? 'blur(4px)' : 'blur(0px)';
                 }
 
-                // Update cards
+                // Update cards with synchronized cohesion uniforms
                 this.cards.forEach(card => {
+                    card.material.uniforms.uGlobalPulse.value = globalPulse;
+                    card.material.uniforms.uChromaticPhase.value = chromaticPhase;
                     card.update(time, this.mouseWorld);
                     card.updateLabel(this.camera);
                 });
