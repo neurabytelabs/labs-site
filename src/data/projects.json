@@ -1,0 +1,74 @@
+[
+  {
+    "id": "spinozaos",
+    "title": "SpinozaOS",
+    "category": "Design Systems",
+    "description": "Award-winning design system for the Age of Superintelligence. \"More Geometrico\" philosophy.",
+    "tech": ["Design Tokens", "React", "Motion"],
+    "status": "live",
+    "url": "https://github.com/mrsarac/spinozaos"
+  },
+  {
+    "id": "lithosphere",
+    "title": "Lithosphere",
+    "category": "Physics & Visualization",
+    "description": "N-body gravitational physics simulation with Newton, Artistic, and Magnetic modes.",
+    "tech": ["Three.js", "WebGPU", "Physics"],
+    "status": "live",
+    "url": "https://lithosphere.mustafasarac.com"
+  },
+  {
+    "id": "boardroom",
+    "title": "Cognitive Boardroom",
+    "category": "AI Experiments",
+    "description": "AI-powered boardroom simulator with 5 personas. System 2 thinking in action.",
+    "tech": ["Gemini AI", "React", "Real-time"],
+    "status": "live",
+    "url": "https://board.phinote.com"
+  },
+  {
+    "id": "nexus",
+    "title": "NEXUS AI Forge",
+    "category": "Developer Tools",
+    "description": "Ultimate AI-augmented developer tool. Cross-platform, Rust-powered, multi-model AI.",
+    "tech": ["Rust", "Multi-AI", "CLI"],
+    "status": "live",
+    "url": "https://github.com/mrsarac/NEXUS-AI-Forge"
+  },
+  {
+    "id": "oracle",
+    "title": "ORACLE Engine",
+    "category": "AI Simulation",
+    "description": "Strategic decision simulation platform. Gemini AI-powered scenario analysis.",
+    "tech": ["Gemini AI", "Python", "Strategy"],
+    "status": "live",
+    "url": "https://github.com/mrsarac/ORACLE-Engine"
+  },
+  {
+    "id": "engram",
+    "title": "Engram Memory",
+    "category": "Learning & Memory",
+    "description": "Cyberpunk memory prosthetic. AI-powered flashcards with FSRS spaced repetition.",
+    "tech": ["FSRS", "AI", "Cyberpunk"],
+    "status": "dev",
+    "url": null
+  },
+  {
+    "id": "manifesto",
+    "title": "Digital Renaissance",
+    "category": "Philosophy & Education",
+    "description": "Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.",
+    "tech": ["AI Education", "Philosophy", "Manifesto"],
+    "status": "live",
+    "url": "https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/"
+  },
+  {
+    "id": "voice",
+    "title": "NeuraByte Voice",
+    "category": "Native Apps",
+    "description": "Zero-latency voice-to-text for macOS & iOS. Push-to-talk with premium animations.",
+    "tech": ["Swift", "macOS", "iOS"],
+    "status": "dev",
+    "url": null
+  }
+]
