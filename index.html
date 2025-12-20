@@ -239,16 +239,19 @@
             position: absolute;
             pointer-events: auto;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform-origin: center center;
+            will-change: transform, left, top;
         }
 
-        .card-label:hover {
+        .card-label:hover .card-label-inner {
             transform: scale(1.02);
         }
 
         .card-label-inner {
             background: rgba(17, 17, 19, 0.85);
             backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(251, 191, 36, 0.15);
             border-radius: 12px;
             padding: 20px;
@@ -834,23 +837,28 @@
                 this.labelElement = label;
             }
 
-            updateLabel(camera, canvas) {
-                // Project 3D position to 2D
+            updateLabel(camera) {
+                // Project 3D position to 2D screen coordinates
                 const pos = this.mesh.position.clone();
                 pos.project(camera);
 
-                const x = (pos.x * 0.5 + 0.5) * canvas.width;
-                const y = (-pos.y * 0.5 + 0.5) * canvas.height;
+                // Convert NDC (-1 to 1) to screen pixels
+                // Use window dimensions, not canvas (which is scaled by devicePixelRatio)
+                const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+                const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
 
-                // Position label
-                this.labelElement.style.left = `${x - 140}px`;
-                this.labelElement.style.top = `${y - 120}px`;
+                // Position label (centered via CSS transform)
+                this.labelElement.style.left = `${x}px`;
+                this.labelElement.style.top = `${y}px`;
 
-                // Scale based on Z
-                const scale = 1 - (pos.z * 0.3);
-                this.labelElement.style.transform = `scale(${Math.max(0.5, Math.min(1.2, scale))})`;
+                // Scale based on distance (z in NDC space is 0-1 for visible)
+                const depth = Math.max(0, Math.min(1, pos.z));
+                const scale = 1.0 - depth * 0.2;
 
-                // Opacity based on visibility
+                // Apply transform for centering and scaling
+                this.labelElement.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+                // Opacity based on visibility (hide if behind camera)
                 this.labelElement.style.opacity = pos.z < 1 ? 1 : 0;
             }
 
@@ -1198,7 +1206,7 @@
                 // Update cards
                 this.cards.forEach(card => {
                     card.update(time, this.mouseWorld);
-                    card.updateLabel(this.camera, this.canvas);
+                    card.updateLabel(this.camera);
                 });
 
                 // Update particles
