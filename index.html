@@ -447,6 +447,197 @@
         ::-webkit-scrollbar-track { background: var(--void); }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--spinoza-yellow); }
+
+        /* ═══ CONTROL PANEL ═══ */
+        .control-toggle {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 50;
+            width: 44px;
+            height: 44px;
+            background: rgba(17, 17, 19, 0.9);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--spinoza-yellow);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .control-toggle:hover {
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+        }
+
+        .control-toggle.active {
+            right: 340px;
+        }
+
+        .control-panel {
+            position: fixed;
+            right: -320px;
+            top: 0;
+            width: 320px;
+            height: 100%;
+            background: rgba(17, 17, 19, 0.95);
+            border-left: 1px solid rgba(251, 191, 36, 0.15);
+            z-index: 45;
+            padding: 24px;
+            overflow-y: auto;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
+        }
+
+        .control-panel.open {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+        }
+
+        .panel-title {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--spinoza-yellow);
+        }
+
+        .panel-version {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--neutral-500);
+        }
+
+        .panel-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--neutral-500);
+            margin-bottom: 12px;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            color: var(--neutral-50);
+        }
+
+        .control-toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .control-toggle-switch.active {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        .control-toggle-switch::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--neutral-400);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .control-toggle-switch.active::after {
+            left: 22px;
+            background: var(--spinoza-yellow);
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 8px;
+            -webkit-appearance: none;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--spinoza-yellow);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .changelog-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .changelog-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 2px solid var(--spinoza-yellow);
+        }
+
+        .changelog-version {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--spinoza-yellow);
+            margin-bottom: 4px;
+        }
+
+        .changelog-date {
+            font-size: 0.65rem;
+            color: var(--neutral-600);
+            margin-bottom: 6px;
+        }
+
+        .changelog-text {
+            font-size: 0.8rem;
+            color: var(--neutral-400);
+            line-height: 1.4;
+        }
+
+        .panel-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
+            text-align: center;
+        }
+
+        .panel-footer-text {
+            font-size: 0.7rem;
+            color: var(--neutral-600);
+            font-family: var(--font-mono);
+        }
     </style>
 </head>
 <body>
@@ -491,6 +682,83 @@
 
     <!-- Card Labels Container -->
     <div class="card-labels" id="card-labels"></div>
+
+    <!-- Control Panel Toggle -->
+    <button class="control-toggle" id="control-toggle" aria-label="Toggle Control Panel">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+    </button>
+
+    <!-- Control Panel -->
+    <div class="control-panel" id="control-panel">
+        <div class="panel-header">
+            <div class="panel-title">Experience Controls</div>
+            <div class="panel-version">v4.0</div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">Visual Effects</div>
+
+            <div class="control-item">
+                <span class="control-label">Neural Network</span>
+                <div class="control-toggle-switch active" data-setting="neuralNetwork"></div>
+            </div>
+
+            <div class="control-item">
+                <span class="control-label">Card Scenes</span>
+                <div class="control-toggle-switch active" data-setting="cardScenes"></div>
+            </div>
+
+            <div class="control-item">
+                <span class="control-label">Bloom Effect</span>
+                <div class="control-toggle-switch active" data-setting="bloom"></div>
+            </div>
+
+            <div class="control-item">
+                <span class="control-label">Particles</span>
+                <div class="control-toggle-switch active" data-setting="particles"></div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">Animation</div>
+
+            <div class="control-item" style="flex-direction: column; align-items: stretch;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span class="control-label">Animation Speed</span>
+                    <span class="control-label" id="speed-value">1.0x</span>
+                </div>
+                <input type="range" class="control-slider" id="animation-speed" min="0.1" max="2" step="0.1" value="1">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">Changelog</div>
+            <div class="changelog-list">
+                <div class="changelog-item">
+                    <div class="changelog-version">v4.0 "More Geometrico"</div>
+                    <div class="changelog-date">December 2025</div>
+                    <div class="changelog-text">Neural network background, card emergence animation, Inner Cosmos scenes, control panel</div>
+                </div>
+                <div class="changelog-item">
+                    <div class="changelog-version">v3.0 "Cyber-Kinetic"</div>
+                    <div class="changelog-date">December 2025</div>
+                    <div class="changelog-text">Crystalline 3D cards, Spinoza Conatus system, holographic shaders</div>
+                </div>
+                <div class="changelog-item">
+                    <div class="changelog-version">v2.0</div>
+                    <div class="changelog-date">November 2025</div>
+                    <div class="changelog-text">Physics-based card interactions, particle effects</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <div class="panel-footer-text">NeuraByte Labs &middot; 50 Year Vision</div>
+        </div>
+    </div>
 
     <!-- Three.js + Dependencies -->
     <script type="importmap">
@@ -1625,7 +1893,40 @@
                 this.rippleOrigin = new THREE.Vector3();
                 this.rippleIntensity = 0;
 
+                // Settings with localStorage persistence
+                this.settings = this.loadSettings();
+                this.animationSpeed = this.settings.animationSpeed || 1.0;
+
                 this.init();
+            }
+
+            loadSettings() {
+                try {
+                    const saved = localStorage.getItem('labs-settings');
+                    return saved ? JSON.parse(saved) : {
+                        neuralNetwork: true,
+                        cardScenes: true,
+                        bloom: true,
+                        particles: true,
+                        animationSpeed: 1.0
+                    };
+                } catch (e) {
+                    return {
+                        neuralNetwork: true,
+                        cardScenes: true,
+                        bloom: true,
+                        particles: true,
+                        animationSpeed: 1.0
+                    };
+                }
+            }
+
+            saveSettings() {
+                try {
+                    localStorage.setItem('labs-settings', JSON.stringify(this.settings));
+                } catch (e) {
+                    console.warn('Could not save settings to localStorage');
+                }
             }
 
             init() {
@@ -1638,8 +1939,81 @@
                 this.setupParticles();
                 this.setupPostProcessing();
                 this.setupEventListeners();
+                this.setupControlPanel();
                 this.hideLoading();
                 this.animate();
+            }
+
+            setupControlPanel() {
+                const toggle = document.getElementById('control-toggle');
+                const panel = document.getElementById('control-panel');
+                const speedSlider = document.getElementById('animation-speed');
+                const speedValue = document.getElementById('speed-value');
+
+                // Toggle panel
+                toggle.addEventListener('click', () => {
+                    panel.classList.toggle('open');
+                    toggle.classList.toggle('active');
+                });
+
+                // Toggle switches
+                document.querySelectorAll('.control-toggle-switch').forEach(sw => {
+                    const setting = sw.dataset.setting;
+
+                    // Initialize from settings
+                    if (this.settings[setting]) {
+                        sw.classList.add('active');
+                    } else {
+                        sw.classList.remove('active');
+                    }
+
+                    sw.addEventListener('click', () => {
+                        sw.classList.toggle('active');
+                        this.settings[setting] = sw.classList.contains('active');
+                        this.saveSettings();
+                        this.applySettings();
+                    });
+                });
+
+                // Speed slider
+                speedSlider.value = this.settings.animationSpeed || 1.0;
+                speedValue.textContent = `${speedSlider.value}x`;
+
+                speedSlider.addEventListener('input', (e) => {
+                    this.animationSpeed = parseFloat(e.target.value);
+                    speedValue.textContent = `${this.animationSpeed.toFixed(1)}x`;
+                    this.settings.animationSpeed = this.animationSpeed;
+                    this.saveSettings();
+                });
+
+                // Apply initial settings
+                this.applySettings();
+            }
+
+            applySettings() {
+                // Neural Network visibility
+                if (this.gridMesh) {
+                    this.gridMesh.visible = this.settings.neuralNetwork;
+                }
+                if (this.connectionMesh) {
+                    this.connectionMesh.visible = this.settings.neuralNetwork;
+                }
+
+                // Particle system visibility
+                if (this.particleEmitter && this.particleEmitter.mesh) {
+                    this.particleEmitter.mesh.visible = this.settings.particles;
+                }
+
+                // Bloom effect
+                if (this.bloomPass) {
+                    this.bloomPass.enabled = this.settings.bloom;
+                }
+
+                // Card scenes (update shader uniform)
+                this.cards.forEach(card => {
+                    // If cardScenes is disabled, set sceneType to -1 (or use a flag)
+                    card.material.uniforms.uSceneType.value = this.settings.cardScenes ? card.index : -1;
+                });
             }
 
             setupRenderer() {
@@ -1889,6 +2263,7 @@
                     0.25,   // radius - smaller for sharper edges
                     0.88    // threshold - higher = only brightest elements bloom
                 );
+                this.bloomPass = bloomPass; // Store reference for control panel toggle
                 this.composer.addPass(bloomPass);
             }
 
@@ -2083,7 +2458,8 @@
             animate() {
                 requestAnimationFrame(() => this.animate());
 
-                const time = this.clock.getElapsedTime();
+                const rawTime = this.clock.getElapsedTime();
+                const time = rawTime * this.settings.animationSpeed; // Apply speed setting
 
                 // ═══ COHESION SYSTEM: Synchronized timing ═══
                 // Global heartbeat pulse (1.2Hz for biological resonance)
