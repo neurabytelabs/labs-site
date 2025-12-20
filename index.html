@@ -261,21 +261,32 @@
         }
 
         .card-label-inner {
-            background: rgba(17, 17, 19, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(251, 191, 36, 0.15);
+            /* v6.0: Transparent background - WebGL handles the card surface */
+            background: transparent;
+            backdrop-filter: none;
+            border: none;
             border-radius: 12px;
-            padding: 20px;
+            padding: 0;
             min-width: 280px;
             transition: all 0.3s ease;
-            cursor: pointer;
+            pointer-events: none; /* v6.0: Only specific elements are clickable */
         }
 
+        /* v6.0: Spacer for shader header area */
+        .label-spacer {
+            height: 160px; /* Header height to match shader region */
+            pointer-events: none;
+        }
+
+        /* v6.0: Card content area below header */
+        .card-content {
+            padding: 16px 20px 20px 20px;
+            pointer-events: none;
+        }
+
+        /* v6.0: Hover effect now handled by WebGL shader (uHover uniform) */
         .card-label:hover .card-label-inner {
-            border-color: rgba(251, 191, 36, 0.4);
-            box-shadow:
-                0 0 30px rgba(251, 191, 36, 0.1),
-                inset 0 0 20px rgba(251, 191, 36, 0.03);
+            /* No CSS styles - shader handles glow and border */
         }
 
         .card-category {
@@ -318,10 +329,9 @@
             border: 1px solid rgba(251, 191, 36, 0.1);
         }
 
+        /* v6.0: Status badge - now relative positioning in card-content */
         .card-status {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+            display: inline-block;
             padding: 4px 10px;
             border-radius: 100px;
             font-size: 0.6rem;
@@ -329,6 +339,7 @@
             text-transform: uppercase;
             letter-spacing: 0.08em;
             font-family: var(--font-mono);
+            margin-bottom: 8px;
         }
 
         .status-live {
@@ -343,6 +354,7 @@
             border: 1px solid rgba(113, 113, 122, 0.2);
         }
 
+        /* v6.0: Only Launch button is clickable - enhanced styling */
         .card-link {
             display: inline-flex;
             align-items: center;
@@ -352,31 +364,38 @@
             font-size: 0.8rem;
             font-weight: 500;
             font-family: var(--font-mono);
-            transition: gap 0.2s, color 0.2s;
+            transition: gap 0.2s, color 0.2s, background 0.2s, border-color 0.2s;
             cursor: pointer;
             position: relative;
             z-index: 10;
+            pointer-events: auto; /* v6.0: This is the ONLY clickable element */
+            padding: 8px 16px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
         }
 
         .card-link:hover {
-            gap: 10px;
-            color: #fcd34d;
+            gap: 12px;
+            color: #fde68a;
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.4);
         }
 
         .card-link-disabled {
             color: var(--neutral-600);
             cursor: not-allowed;
+            pointer-events: none;
+            background: rgba(113, 113, 122, 0.1);
+            border-color: rgba(113, 113, 122, 0.2);
         }
 
-        /* Conatus Energy Indicator */
+        /* v6.0: Conatus Energy Indicator - now relative in card-content */
         .conatus-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            margin-top: 12px;
             height: 3px;
             background: rgba(251, 191, 36, 0.1);
-            border-radius: 0 0 12px 12px;
+            border-radius: 3px;
             overflow: hidden;
         }
 
@@ -1185,8 +1204,8 @@
                 float crystalWave = sin(pos.x * 8.0 + uTime * 1.5) * cos(pos.y * 8.0 + uTime * 1.2);
                 pos.z += crystalWave * uHover * 0.15;
 
-                // Edge beveling effect
-                float edgeDist = min(min(abs(pos.x) - 7.5, abs(pos.y) - 4.5), 0.0);
+                // Edge beveling effect (v6.0: updated for taller 16x20 card)
+                float edgeDist = min(min(abs(pos.x) - 7.5, abs(pos.y) - 9.5), 0.0);
                 pos.z += edgeDist * 0.3;
 
                 // Momentum-based deformation
@@ -1518,37 +1537,63 @@
             }
 
             void main() {
-                // Crystalline base - very dark with subtle gradient
-                vec3 baseColor = vec3(0.02, 0.02, 0.03);
+                // ═══ UNIFIED CARD LAYOUT v6.0 ═══
+                // Header (top 40%): Project-specific shader scene
+                // Body (bottom 60%): Dark surface for HTML content overlay
 
-                // ═══ INNER COSMOS - Project-specific scene ═══
-                vec3 sceneColor = vec3(0.0);
-                vec2 sceneUv = vUv;
+                float headerHeight = 0.4; // 40% of card = header region
+                float transitionZone = 0.05; // Smooth transition between regions
 
-                // Only show scene in inner area of card
-                float sceneMask = smoothstep(0.08, 0.15, vUv.x) * smoothstep(0.92, 0.85, vUv.x) *
-                                  smoothstep(0.08, 0.15, vUv.y) * smoothstep(0.92, 0.85, vUv.y);
+                // Determine if we're in header or body region
+                float headerMask = smoothstep(1.0 - headerHeight - transitionZone, 1.0 - headerHeight, vUv.y);
 
-                if (uSceneType == 0) {
-                    sceneColor = sceneSpinoza(sceneUv, uTime);      // SpinozaOS
-                } else if (uSceneType == 1) {
-                    sceneColor = sceneLithosphere(sceneUv, uTime);  // Lithosphere
-                } else if (uSceneType == 2) {
-                    sceneColor = sceneBoardroom(sceneUv, uTime);    // Boardroom
-                } else if (uSceneType == 3) {
-                    sceneColor = sceneNexus(sceneUv, uTime);        // NEXUS AI Forge
-                } else if (uSceneType == 4) {
-                    sceneColor = sceneOracle(sceneUv, uTime);       // ORACLE Engine
-                } else if (uSceneType == 5) {
-                    sceneColor = sceneEngram(sceneUv, uTime);       // Engram Memory
-                } else if (uSceneType == 6) {
-                    sceneColor = sceneManifesto(sceneUv, uTime);    // Digital Renaissance
-                } else {
-                    sceneColor = sceneVoice(sceneUv, uTime);        // NeuraByte Voice
+                // ═══ HEADER REGION - Shader Scene ═══
+                vec3 headerColor = vec3(0.0);
+                if (vUv.y > (1.0 - headerHeight)) {
+                    // Map UV to header texture space (0-1 within header)
+                    vec2 headerUv = vec2(
+                        vUv.x,
+                        (vUv.y - (1.0 - headerHeight)) / headerHeight
+                    );
+
+                    // Edge mask for header (don't render scene at very edges)
+                    float headerEdgeMask = smoothstep(0.05, 0.12, headerUv.x) * smoothstep(0.95, 0.88, headerUv.x) *
+                                          smoothstep(0.05, 0.15, headerUv.y) * smoothstep(0.95, 0.85, headerUv.y);
+
+                    // Select project-specific scene
+                    vec3 sceneColor = vec3(0.0);
+                    if (uSceneType == 0) {
+                        sceneColor = sceneSpinoza(headerUv, uTime);
+                    } else if (uSceneType == 1) {
+                        sceneColor = sceneLithosphere(headerUv, uTime);
+                    } else if (uSceneType == 2) {
+                        sceneColor = sceneBoardroom(headerUv, uTime);
+                    } else if (uSceneType == 3) {
+                        sceneColor = sceneNexus(headerUv, uTime);
+                    } else if (uSceneType == 4) {
+                        sceneColor = sceneOracle(headerUv, uTime);
+                    } else if (uSceneType == 5) {
+                        sceneColor = sceneEngram(headerUv, uTime);
+                    } else if (uSceneType == 6) {
+                        sceneColor = sceneManifesto(headerUv, uTime);
+                    } else {
+                        sceneColor = sceneVoice(headerUv, uTime);
+                    }
+
+                    // Apply scene with hover enhancement
+                    headerColor = sceneColor * headerEdgeMask * (0.6 + uHover * 0.6) * uEmergence;
                 }
 
-                // Apply scene with mask and hover enhancement
-                baseColor += sceneColor * sceneMask * (0.5 + uHover * 0.5) * uEmergence;
+                // ═══ BODY REGION - Dark Surface ═══
+                vec3 bodyColor = vec3(0.067, 0.067, 0.075); // #111113 equivalent
+
+                // Subtle grid pattern in body
+                float gridX = smoothstep(0.02, 0.0, abs(fract(vUv.x * 20.0) - 0.5));
+                float gridY = smoothstep(0.02, 0.0, abs(fract(vUv.y * 40.0) - 0.5));
+                bodyColor += vec3(0.03) * (gridX + gridY) * 0.1 * (1.0 - headerMask);
+
+                // ═══ COMBINE REGIONS ═══
+                vec3 baseColor = mix(bodyColor, headerColor + vec3(0.02, 0.02, 0.03), headerMask);
 
                 // Fresnel effect - glass-like edge illumination
                 float fresnel = pow(1.0 - max(dot(vViewDirection, vNormal), 0.0), 3.0);
@@ -1765,7 +1810,8 @@
                 this.hasEmerged = false;
 
                 // Create 3D crystalline geometry (BoxGeometry for depth)
-                const geometry = new THREE.BoxGeometry(16, 10, 0.5, 32, 32, 1);
+                // v6.0: Taller card to accommodate shader header (40%) + content body (60%)
+                const geometry = new THREE.BoxGeometry(16, 20, 0.5, 32, 32, 1);
 
                 // Create crystalline holographic material
                 this.material = new THREE.ShaderMaterial({
@@ -1849,23 +1895,29 @@
                 const label = document.createElement('div');
                 label.className = 'card-label';
                 label.id = `label-${this.data.id}-${Date.now()}`;
+
+                // v6.0: Updated structure with header spacer and content wrapper
+                // Only "Launch →" button is clickable (cards remain draggable)
                 label.innerHTML = `
                     <div class="card-label-inner">
-                        <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
-                            ${this.data.status === 'live' ? 'Live' : 'Coming'}
-                        </span>
-                        <div class="card-category">${this.data.category}</div>
-                        <h3 class="card-title">${this.data.title}</h3>
-                        <p class="card-description">${this.data.description}</p>
-                        <div class="card-tech">
-                            ${this.data.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
-                        </div>
-                        ${this.data.url
-                            ? `<a href="${this.data.url}" class="card-link" target="_blank">Launch &rarr;</a>`
-                            : `<span class="card-link card-link-disabled">Coming Soon</span>`
-                        }
-                        <div class="conatus-bar">
-                            <div class="conatus-fill" style="width: 100%"></div>
+                        <div class="label-spacer"></div>
+                        <div class="card-content">
+                            <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
+                                ${this.data.status === 'live' ? 'Live' : 'Coming'}
+                            </span>
+                            <div class="card-category">${this.data.category}</div>
+                            <h3 class="card-title">${this.data.title}</h3>
+                            <p class="card-description">${this.data.description}</p>
+                            <div class="card-tech">
+                                ${this.data.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+                            </div>
+                            ${this.data.url
+                                ? `<a href="${this.data.url}" class="card-link" target="_blank">Launch &rarr;</a>`
+                                : `<span class="card-link card-link-disabled">Coming Soon</span>`
+                            }
+                            <div class="conatus-bar">
+                                <div class="conatus-fill" style="width: 100%"></div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1874,15 +1926,8 @@
                 this.labelElement = label;
                 this.conatusBar = label.querySelector('.conatus-fill');
 
-                // Make entire card clickable (if has URL)
-                if (this.data.url) {
-                    const cardInner = label.querySelector('.card-label-inner');
-                    cardInner.addEventListener('click', (e) => {
-                        // Don't trigger if clicking on the link itself (it will handle its own click)
-                        if (e.target.classList.contains('card-link')) return;
-                        window.open(this.data.url, '_blank');
-                    });
-                }
+                // v6.0: No card-wide click handler - only Launch button handles clicks
+                // Cards remain fully draggable/interactive with physics
             }
 
             updateLabel(camera) {
