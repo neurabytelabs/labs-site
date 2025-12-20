@@ -3,7 +3,7 @@
  * Three cosmic bodies locked in eternal gravitational waltz
  * Space-time bending like silk around their mass
  *
- * Visual: Refik Anadol meets astrophysics
+ * Visual: Generative data art meets astrophysics
  * Palette: Solar Plasma Orange, Nebula Teal, Starlight White
  */
 

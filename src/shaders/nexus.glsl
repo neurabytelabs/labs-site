@@ -3,7 +3,7 @@
  * A cosmic furnace where raw digital chaos is hammered into structured intelligence
  * Matter streams colliding, fusing, crystallizing into geometric perfection
  *
- * Visual: Refik Anadol's data sculptures meets blacksmith mythology
+ * Visual: Generative data sculptures meets blacksmith mythology
  * Palette: Forge Fire Red, Molten Coral, Creation Gold, Transmutation Violet
  */
 

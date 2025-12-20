@@ -1,6 +1,6 @@
 /**
  * NeuraByte Labs - Main Entry Point
- * v11.0.0 - Masterpiece Shader Edition
+ * v11.1.0 - Masterpiece Shader Edition
  */
 
 import './styles/main.css';
@@ -8,8 +8,8 @@ import { LabsApp } from './components/LabsApp.js';
 
 // Initialize app
 function init() {
-  console.log('[Labs] NeuraByte Labs v11.0.0');
-  console.log('[Labs] Masterpiece Shader Edition - Refik Anadol Level Visuals');
+  console.log('[Labs] NeuraByte Labs v11.1.0');
+  console.log('[Labs] Masterpiece Shader Edition - Generative Data Art Visuals');
 
   // Initialize main application
   window.labsApp = new LabsApp();
