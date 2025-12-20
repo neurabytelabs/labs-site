@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="NeuraByte Labs - Experimental AI & design projects pushing boundaries">
   <meta name="theme-color" content="#0a0a0f">
+  <meta name="author" content="Mustafa Saraç">
+  <meta name="keywords" content="AI, WebGL, Three.js, Design Systems, Experiments, NeuraByte">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://labs.neurabytelabs.com/">
+  <meta property="og:title" content="NeuraByte Labs | Experimental Projects">
+  <meta property="og:description" content="Experimental projects exploring AI, design systems, and human-computer interaction. 8 live projects with museum-grade generative visuals.">
+  <meta property="og:image" content="https://labs.neurabytelabs.com/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NeuraByte Labs | Experimental Projects">
+  <meta name="twitter:description" content="Experimental projects exploring AI, design systems, and human-computer interaction.">
+  <meta name="twitter:image" content="https://labs.neurabytelabs.com/og-image.png">
 
   <title>NeuraByte Labs | Experimental Projects</title>
 
@@ -13,10 +28,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Favicon -->
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+  <!-- Scroll Progress Indicator -->
+  <div id="scroll-progress" class="scroll-progress"></div>
+
   <!-- Header -->
   <header class="header">
     <div class="header-inner">
@@ -76,7 +96,7 @@
 
   <!-- Version Badge (Fixed Position) -->
   <button id="version-badge" class="version-badge" aria-label="View version info">
-    v11.1
+    v11.1.1
   </button>
 
   <!-- Version Modal -->
@@ -89,14 +109,26 @@
       </div>
       <div class="version-modal-body">
         <div class="version-current">
-          <span class="version-number">v11.1.0</span>
-          <span class="version-name">Masterpiece Shader Edition</span>
+          <span class="version-number">v11.1.1</span>
+          <span class="version-name">Performance & UX Update</span>
         </div>
         <div class="version-description">
           Museum-grade generative data art shaders for all 8 project cards.
         </div>
         <div class="changelog">
           <h4>Changelog</h4>
+          <div class="changelog-entry">
+            <span class="changelog-version">v11.1.1</span>
+            <span class="changelog-date">2025-12-20</span>
+            <ul>
+              <li>Code-split Three.js & GSAP bundles</li>
+              <li>Scroll progress indicator</li>
+              <li>Enhanced card hover animations</li>
+              <li>OG meta tags for social sharing</li>
+              <li>PWA manifest support</li>
+              <li>Mobile optimizations</li>
+            </ul>
+          </div>
           <div class="changelog-entry">
             <span class="changelog-version">v11.1.0</span>
             <span class="changelog-date">2025-12-20</span>
