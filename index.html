@@ -247,43 +247,43 @@
             z-index: 5;
         }
 
+        /* ═══ UNIFIED CARD LABELS v6.0 ═══ */
         .card-label {
             position: absolute;
-            pointer-events: none; /* v6.0: Let clicks pass through to card-link */
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
             transform-origin: center center;
             will-change: transform, left, top, opacity;
         }
 
-        /* v6.0: No hover transform - shader handles visual feedback */
-
         .card-label-inner {
-            /* v6.0: Transparent background - WebGL handles the card surface */
             background: transparent;
-            backdrop-filter: none;
-            border: none;
             border-radius: 12px;
             padding: 0;
-            min-width: 280px;
-            transition: all 0.3s ease;
-            pointer-events: none; /* v6.0: Only specific elements are clickable */
+            min-width: 260px;
+            max-width: 300px;
         }
 
-        /* v6.0: Spacer for shader header area */
+        /* Spacer for shader header area */
         .label-spacer {
-            height: 160px; /* Header height to match shader region */
-            pointer-events: none;
+            height: 140px;
         }
 
-        /* v6.0: Card content area below header */
+        /* Card content area */
         .card-content {
             padding: 16px 20px 20px 20px;
-            pointer-events: none;
+            background: rgba(17, 17, 19, 0.92);
+            border-radius: 0 0 12px 12px;
+            border: 1px solid rgba(251, 191, 36, 0.12);
+            border-top: none;
         }
 
-        /* v6.0: Hover effect now handled by WebGL shader (uHover uniform) */
-        .card-label:hover .card-label-inner {
-            /* No CSS styles - shader handles glow and border */
+        /* Header row with status and category */
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .card-category {
@@ -326,82 +326,58 @@
             border: 1px solid rgba(251, 191, 36, 0.1);
         }
 
-        /* v6.0: Status badge - now relative positioning in card-content */
+        /* Status badge */
         .card-status {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 100px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 0.65rem;
+            font-weight: 500;
             font-family: var(--font-mono);
-            margin-bottom: 8px;
         }
 
         .status-live {
-            background: rgba(34, 197, 94, 0.1);
             color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
         .status-coming {
-            background: rgba(113, 113, 122, 0.1);
             color: var(--neutral-500);
-            border: 1px solid rgba(113, 113, 122, 0.2);
         }
 
-        /* v6.0: Only Launch button is clickable - enhanced styling */
+        /* Launch button - THE ONLY CLICKABLE ELEMENT */
         .card-link {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 10px 20px;
             color: var(--spinoza-yellow);
             text-decoration: none;
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
             font-family: var(--font-mono);
-            transition: gap 0.2s, color 0.2s, background 0.2s, border-color 0.2s;
-            cursor: pointer;
-            position: relative;
-            z-index: 10;
-            pointer-events: auto; /* v6.0: This is the ONLY clickable element */
-            padding: 8px 16px;
             background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.25);
             border-radius: 8px;
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            cursor: pointer;
+            pointer-events: auto !important; /* Force clickable */
+            transition: all 0.25s ease;
         }
 
         .card-link:hover {
-            gap: 12px;
-            color: #fde68a;
-            background: rgba(251, 191, 36, 0.2);
-            border-color: rgba(251, 191, 36, 0.4);
+            gap: 14px;
+            color: #fff;
+            background: rgba(251, 191, 36, 0.25);
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
         }
 
         .card-link-disabled {
-            color: var(--neutral-600);
-            cursor: not-allowed;
-            pointer-events: none;
+            color: var(--neutral-500);
             background: rgba(113, 113, 122, 0.1);
-            border-color: rgba(113, 113, 122, 0.2);
+            border-color: rgba(113, 113, 122, 0.15);
+            cursor: default;
+            pointer-events: none;
         }
 
-        /* v6.0: Conatus Energy Indicator - now relative in card-content */
-        .conatus-bar {
-            margin-top: 12px;
-            height: 3px;
-            background: rgba(251, 191, 36, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .conatus-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--spinoza-yellow), var(--spinoza-indigo));
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--spinoza-yellow);
-        }
+        /* v6.0: Conatus bars removed for cleaner design */
 
         /* Child Card Styling */
         .card-label.is-child {
@@ -1249,288 +1225,243 @@
                 );
             }
 
-            // ═══ INNER COSMOS - Card Scene Functions ═══
+            // ═══ INNER COSMOS v6.0 - Enhanced Card Scene Functions ═══
 
-            // SpinozaOS: Sacred Geometry (Vesica Piscis, Golden Spiral)
+            // SpinozaOS: Sacred Geometry with Pulsing Energy
             vec3 sceneSpinoza(vec2 uv, float time) {
                 vec2 center = uv - 0.5;
                 float dist = length(center);
                 float angle = atan(center.y, center.x);
 
-                // Golden ratio based geometry
+                vec3 color = vec3(0.0);
                 float phi = 1.618033988749895;
-                float circles = 0.0;
 
-                // Concentric circles with golden ratio spacing
-                for (float i = 1.0; i < 5.0; i++) {
-                    float r = i / (phi * 3.0);
-                    circles += smoothstep(0.015, 0.0, abs(dist - r)) * (0.3 + 0.2 * sin(time + i));
+                // Pulsing concentric rings
+                for (float i = 1.0; i < 6.0; i++) {
+                    float r = i / (phi * 2.5);
+                    float pulse = sin(time * 2.0 - i * 0.5) * 0.3 + 0.7;
+                    float ring = smoothstep(0.02, 0.0, abs(dist - r * pulse));
+                    color += uColor * ring * (1.0 - i * 0.15);
                 }
 
-                // Rotating hexagon pattern
-                float hex = cos(angle * 6.0 + time * 0.5) * 0.5 + 0.5;
-                hex *= smoothstep(0.4, 0.2, dist);
+                // Rotating sacred pattern
+                float pattern = 0.0;
+                for (float i = 0.0; i < 6.0; i++) {
+                    float a = angle + time * 0.3 + i * 1.047;
+                    pattern += smoothstep(0.03, 0.0, abs(sin(a * 3.0) * dist - 0.2));
+                }
+                color += uAccentColor * pattern * 0.4;
 
-                // Vesica piscis intersection
-                float vesica1 = length(center - vec2(0.15, 0.0));
-                float vesica2 = length(center + vec2(0.15, 0.0));
-                float vesicaIntersect = smoothstep(0.02, 0.0, abs(vesica1 - 0.2)) *
-                                        step(vesica2, 0.2);
-                vesicaIntersect += smoothstep(0.02, 0.0, abs(vesica2 - 0.2)) *
-                                   step(vesica1, 0.2);
+                // Central glow
+                float glow = exp(-dist * 6.0) * (sin(time * 3.0) * 0.3 + 0.7);
+                color += uColor * glow * 0.8;
 
-                vec3 color = uColor * (circles + hex * 0.3 + vesicaIntersect * 0.5);
-                color += uAccentColor * vesicaIntersect * sin(time * 2.0) * 0.3;
-
-                return color * 0.4;
+                return color * 0.6;
             }
 
-            // Lithosphere: Orbiting Bodies
+            // Lithosphere: Dynamic Orbital System
             vec3 sceneLithosphere(vec2 uv, float time) {
                 vec2 center = uv - 0.5;
                 vec3 color = vec3(0.0);
 
-                // Central "sun"
-                float sun = smoothstep(0.08, 0.02, length(center));
-                color += uColor * sun;
+                // Glowing central body
+                float core = exp(-length(center) * 8.0);
+                color += uColor * core * 1.5;
 
-                // Orbiting bodies
-                for (float i = 0.0; i < 3.0; i++) {
-                    float orbitRadius = 0.12 + i * 0.08;
-                    float orbitSpeed = (1.5 - i * 0.3);
-                    float phase = i * 2.094;
+                // Multiple orbiting bodies with trails
+                for (float i = 0.0; i < 4.0; i++) {
+                    float radius = 0.1 + i * 0.08;
+                    float speed = 1.2 - i * 0.2;
+                    float phase = i * 1.57;
 
-                    vec2 bodyPos = vec2(
-                        cos(time * orbitSpeed + phase) * orbitRadius,
-                        sin(time * orbitSpeed + phase) * orbitRadius
-                    );
+                    vec2 pos = vec2(cos(time * speed + phase), sin(time * speed + phase)) * radius;
+                    float body = exp(-length(center - pos) * 25.0);
+                    color += mix(uColor, uAccentColor, i / 4.0) * body;
 
-                    float body = smoothstep(0.03, 0.01, length(center - bodyPos));
-                    color += mix(uColor, uAccentColor, i / 3.0) * body;
-
-                    // Orbit trail
-                    float orbitLine = smoothstep(0.008, 0.0, abs(length(center) - orbitRadius));
-                    color += uAccentColor * orbitLine * 0.2;
+                    // Orbit glow
+                    float orbit = smoothstep(0.015, 0.0, abs(length(center) - radius));
+                    color += uAccentColor * orbit * 0.15;
                 }
 
-                return color * 0.5;
+                return color * 0.7;
             }
 
-            // Boardroom: Neural Network
+            // Boardroom: Neural Network Pulse
             vec3 sceneBoardroom(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
                 vec3 color = vec3(0.0);
 
-                // Grid of neural nodes
-                vec2 gridUv = fract(uv * 4.0) - 0.5;
-                vec2 gridId = floor(uv * 4.0);
+                // Animated neural grid
+                vec2 gridUv = fract(uv * 5.0) - 0.5;
+                vec2 gridId = floor(uv * 5.0);
 
-                // Node pulse based on grid position
-                float nodePulse = sin(time * 2.0 + gridId.x * 1.5 + gridId.y * 2.3) * 0.5 + 0.5;
-                float node = smoothstep(0.15, 0.05, length(gridUv)) * nodePulse;
+                // Pulsing nodes
+                float wave = sin(time * 2.5 + gridId.x * 0.8 + gridId.y * 1.2);
+                float node = exp(-length(gridUv) * 8.0) * (wave * 0.4 + 0.6);
+                color += uColor * node;
 
-                // Connections between nodes (simplified)
-                float connection = 0.0;
-                connection += smoothstep(0.02, 0.0, abs(gridUv.x)) * step(abs(gridUv.y), 0.3);
-                connection += smoothstep(0.02, 0.0, abs(gridUv.y)) * step(abs(gridUv.x), 0.3);
-                connection *= sin(time * 3.0 + length(gridId) * 2.0) * 0.5 + 0.5;
+                // Flowing connections
+                float connX = smoothstep(0.03, 0.0, abs(gridUv.y)) * step(abs(gridUv.x), 0.4);
+                float connY = smoothstep(0.03, 0.0, abs(gridUv.x)) * step(abs(gridUv.y), 0.4);
+                float flow = sin(time * 4.0 - length(gridId) * 1.5) * 0.5 + 0.5;
+                color += uAccentColor * (connX + connY) * flow * 0.4;
 
-                color += uColor * node * 0.8;
-                color += uAccentColor * connection * 0.3;
+                // Background energy
+                float energy = sin(uv.x * 10.0 + time) * sin(uv.y * 10.0 - time * 0.7) * 0.1;
+                color += uColor * max(0.0, energy);
 
-                return color * 0.4;
+                return color * 0.6;
             }
 
-            // NEXUS AI Forge: Matrix Code Rain
+            // NEXUS AI Forge: Digital Rain
             vec3 sceneNexus(vec2 uv, float time) {
                 vec3 color = vec3(0.0);
 
-                // Matrix-style falling code columns
-                for (float i = 0.0; i < 8.0; i++) {
-                    float colX = (i + 0.5) / 8.0;
-                    float speed = 0.5 + fract(sin(i * 45.67) * 123.45) * 0.5;
-                    float offset = fract(sin(i * 78.9) * 456.78);
+                // Falling code streams
+                for (float i = 0.0; i < 10.0; i++) {
+                    float x = fract(sin(i * 73.156) * 43758.5453);
+                    float speed = 0.4 + fract(cos(i * 45.67) * 12345.6) * 0.4;
+                    float y = fract(time * speed + sin(i * 12.34) * 100.0);
 
-                    // Falling character position
-                    float charY = fract(time * speed + offset);
-                    float trail = smoothstep(0.0, 0.3, charY) * smoothstep(1.0, 0.7, charY);
+                    vec2 pos = vec2(x, 1.0 - y);
+                    float d = length(uv - pos);
 
-                    // Character glow
-                    float distX = abs(uv.x - colX);
-                    float distY = abs(uv.y - (1.0 - charY));
-                    float charGlow = smoothstep(0.05, 0.01, distX) * smoothstep(0.08, 0.02, distY);
+                    // Bright head
+                    color += vec3(0.2, 1.0, 0.4) * exp(-d * 30.0);
 
-                    // Trail behind character
-                    float trailGlow = smoothstep(0.03, 0.0, distX) * step(uv.y, 1.0 - charY) *
-                                     smoothstep(0.0, 0.2, (1.0 - charY) - uv.y);
-
-                    color += vec3(0.1, 1.0, 0.3) * charGlow * 0.8;
-                    color += vec3(0.0, 0.5, 0.2) * trailGlow * 0.3;
+                    // Fading trail
+                    float trail = step(uv.y, pos.y) * smoothstep(0.3, 0.0, pos.y - uv.y);
+                    trail *= smoothstep(0.04, 0.0, abs(uv.x - pos.x));
+                    color += vec3(0.0, 0.6, 0.3) * trail * 0.5;
                 }
 
-                // Rust orange accent pulse
-                float centerGlow = exp(-length(uv - 0.5) * 3.0);
-                color += vec3(0.9, 0.4, 0.1) * centerGlow * (sin(time * 2.0) * 0.3 + 0.4);
+                // Orange core glow
+                float core = exp(-length(uv - 0.5) * 4.0);
+                color += vec3(1.0, 0.5, 0.1) * core * (sin(time * 2.5) * 0.2 + 0.4);
 
-                return color * 0.4;
+                return color * 0.7;
             }
 
-            // ORACLE Engine: Decision Tree / Strategy Branches
+            // ORACLE Engine: Mystical Eye
             vec3 sceneOracle(vec2 uv, float time) {
                 vec2 center = uv - 0.5;
+                float dist = length(center);
                 vec3 color = vec3(0.0);
 
-                // Central oracle eye
-                float eyeRadius = 0.08 + sin(time * 1.5) * 0.02;
-                float eye = smoothstep(eyeRadius + 0.02, eyeRadius, length(center));
-                float pupil = smoothstep(0.03, 0.01, length(center));
-                color += uAccentColor * eye * 0.8;
-                color += vec3(0.1) * pupil;
+                // Pulsing oracle eye
+                float eyePulse = sin(time * 2.0) * 0.02;
+                float eye = smoothstep(0.12 + eyePulse, 0.08 + eyePulse, dist);
+                float pupil = exp(-dist * 20.0);
+                color += uAccentColor * eye;
+                color += vec3(0.1, 0.05, 0.2) * pupil;
 
-                // Decision branches radiating outward
-                for (float i = 0.0; i < 6.0; i++) {
-                    float angle = i * 1.047 + time * 0.2; // 60 degree spacing
-                    vec2 dir = vec2(cos(angle), sin(angle));
-
-                    // Main branch
-                    float branch = smoothstep(0.02, 0.0, abs(dot(center, vec2(-dir.y, dir.x))));
-                    branch *= smoothstep(0.1, 0.15, length(center)) * smoothstep(0.45, 0.35, length(center));
-
-                    // Decision nodes at branch ends
-                    vec2 nodePos = dir * 0.3;
-                    float node = smoothstep(0.04, 0.02, length(center - nodePos));
-                    float nodePulse = sin(time * 2.0 + i * 1.0) * 0.3 + 0.7;
-
-                    color += uColor * branch * 0.4;
-                    color += uAccentColor * node * nodePulse * 0.6;
+                // Radiating insight beams
+                float angle = atan(center.y, center.x);
+                for (float i = 0.0; i < 8.0; i++) {
+                    float a = i * 0.785 + time * 0.3;
+                    float beam = smoothstep(0.08, 0.0, abs(mod(angle + a, 0.785) - 0.3925));
+                    beam *= smoothstep(0.15, 0.25, dist) * smoothstep(0.5, 0.35, dist);
+                    float pulse = sin(time * 3.0 + i) * 0.3 + 0.7;
+                    color += uColor * beam * pulse * 0.4;
                 }
 
-                // Probability waves
-                float wave = sin(length(center) * 20.0 - time * 3.0) * 0.5 + 0.5;
-                wave *= smoothstep(0.4, 0.2, length(center));
-                color += uColor * wave * 0.1;
+                // Energy ripples
+                float ripple = sin(dist * 25.0 - time * 4.0) * 0.5 + 0.5;
+                ripple *= smoothstep(0.5, 0.2, dist) * smoothstep(0.1, 0.2, dist);
+                color += uAccentColor * ripple * 0.2;
 
-                return color * 0.4;
+                return color * 0.7;
             }
 
-            // Engram Memory: Cyberpunk Memory Cubes
+            // Engram Memory: Holographic Data Cubes
             vec3 sceneEngram(vec2 uv, float time) {
                 vec3 color = vec3(0.0);
 
-                // 3D-like memory grid
-                vec2 gridUv = fract(uv * 3.0) - 0.5;
-                vec2 gridId = floor(uv * 3.0);
+                vec2 gridUv = fract(uv * 4.0) - 0.5;
+                vec2 gridId = floor(uv * 4.0);
 
-                // Pseudo-3D cube effect
-                float cubePhase = sin(time * 1.5 + gridId.x * 2.0 + gridId.y * 3.0) * 0.5 + 0.5;
-                float cubeSize = 0.15 + cubePhase * 0.1;
+                // Animated cube phase
+                float phase = sin(time * 2.0 + gridId.x * 1.5 + gridId.y * 2.0) * 0.5 + 0.5;
+                float size = 0.12 + phase * 0.08;
 
-                // Cube face
-                float cube = step(abs(gridUv.x), cubeSize) * step(abs(gridUv.y), cubeSize);
+                // Glowing cube
+                float cube = smoothstep(size + 0.02, size, max(abs(gridUv.x), abs(gridUv.y)));
 
-                // Cube edges (3D effect)
-                float edgeL = smoothstep(0.02, 0.0, abs(gridUv.x + cubeSize));
-                float edgeR = smoothstep(0.02, 0.0, abs(gridUv.x - cubeSize));
-                float edgeT = smoothstep(0.02, 0.0, abs(gridUv.y + cubeSize));
-                float edgeB = smoothstep(0.02, 0.0, abs(gridUv.y - cubeSize));
-                float edges = (edgeL + edgeR) * step(abs(gridUv.y), cubeSize) +
-                             (edgeT + edgeB) * step(abs(gridUv.x), cubeSize);
-
-                // Memory state colors (cyberpunk palette)
-                vec3 memColor = mix(
-                    vec3(0.0, 0.8, 0.9),  // Cyan
-                    vec3(0.9, 0.1, 0.5),  // Magenta
-                    fract(gridId.x * 0.3 + gridId.y * 0.7 + time * 0.1)
+                // Cyberpunk gradient
+                vec3 cubeColor = mix(
+                    vec3(0.0, 0.9, 1.0),
+                    vec3(1.0, 0.1, 0.6),
+                    phase
                 );
+                color += cubeColor * cube * 0.6;
 
-                color += memColor * cube * 0.2 * cubePhase;
-                color += vec3(0.9, 0.9, 1.0) * edges * 0.5;
+                // Edge glow
+                float edge = smoothstep(0.03, 0.0, abs(max(abs(gridUv.x), abs(gridUv.y)) - size));
+                color += vec3(1.0) * edge * 0.8;
 
-                // Data stream overlay
-                float stream = sin(uv.y * 30.0 + time * 5.0) * 0.5 + 0.5;
-                stream *= sin(uv.x * 20.0 - time * 3.0) * 0.5 + 0.5;
-                color += vec3(0.0, 1.0, 0.8) * stream * 0.05;
+                // Scanning line
+                float scan = smoothstep(0.02, 0.0, abs(fract(uv.y * 2.0 - time * 0.5) - 0.5));
+                color += vec3(0.0, 1.0, 0.8) * scan * 0.15;
 
-                return color * 0.5;
+                return color * 0.6;
             }
 
-            // Digital Renaissance Manifesto: Knowledge Waves
+            // Digital Renaissance Manifesto: Flowing Knowledge
             vec3 sceneManifesto(vec2 uv, float time) {
                 vec2 center = uv - 0.5;
                 vec3 color = vec3(0.0);
 
-                // Open book shape
-                float bookSpine = smoothstep(0.02, 0.0, abs(center.x));
-                float bookPage = smoothstep(0.4, 0.35, abs(center.x)) * smoothstep(-0.3, -0.1, center.y);
-                color += vec3(0.9, 0.85, 0.7) * bookPage * 0.15;
-                color += uColor * bookSpine * 0.3;
+                // Elegant flowing lines
+                for (float i = 0.0; i < 8.0; i++) {
+                    float y = -0.3 + i * 0.08;
+                    float wave = sin(uv.x * 12.0 + time * 1.5 + i * 0.8) * 0.015;
+                    float line = smoothstep(0.012, 0.0, abs(center.y - y - wave));
+                    line *= smoothstep(0.45, 0.15, abs(center.x));
 
-                // Flowing text lines (abstract)
-                for (float i = 0.0; i < 6.0; i++) {
-                    float lineY = -0.2 + i * 0.08;
-                    float lineWave = sin(uv.x * 15.0 + time * (1.0 + i * 0.2) + i) * 0.01;
-                    float textLine = smoothstep(0.015, 0.0, abs(center.y - lineY - lineWave));
-                    textLine *= smoothstep(0.35, 0.1, abs(center.x));
-
-                    // Text appears/fades effect
-                    float reveal = smoothstep(-0.3, 0.3, sin(time * 0.5 + i * 0.5) + center.x * 2.0);
-                    color += uColor * textLine * reveal * 0.4;
+                    float reveal = sin(time + i * 0.4) * 0.5 + 0.5;
+                    color += uColor * line * reveal * 0.5;
                 }
 
-                // Knowledge emanation (light rays from book)
-                float rays = 0.0;
-                for (float i = 0.0; i < 5.0; i++) {
-                    float angle = -0.5 + i * 0.25;
-                    vec2 rayDir = vec2(sin(angle), cos(angle));
-                    float ray = smoothstep(0.03, 0.0, abs(dot(center + vec2(0.0, 0.2), vec2(-rayDir.y, rayDir.x))));
-                    ray *= step(0.0, dot(center + vec2(0.0, 0.2), rayDir));
-                    ray *= smoothstep(0.5, 0.1, length(center + vec2(0.0, 0.2)));
-                    rays += ray * (sin(time * 2.0 + i) * 0.3 + 0.7);
-                }
-                color += uAccentColor * rays * 0.2;
+                // Central light source
+                float light = exp(-length(center + vec2(0.0, 0.15)) * 5.0);
+                color += uAccentColor * light * 0.8;
 
-                return color * 0.5;
+                // Radiating wisdom
+                float angle = atan(center.y + 0.15, center.x);
+                float rays = sin(angle * 8.0 + time) * 0.5 + 0.5;
+                rays *= exp(-length(center + vec2(0.0, 0.15)) * 3.0);
+                color += uColor * rays * 0.3;
+
+                return color * 0.7;
             }
 
-            // NeuraByte Voice: Audio Waveform
+            // NeuraByte Voice: Sound Waves
             vec3 sceneVoice(vec2 uv, float time) {
                 vec2 center = uv - 0.5;
                 vec3 color = vec3(0.0);
 
-                // Central microphone icon (simplified)
-                float micBody = smoothstep(0.06, 0.04, abs(center.x)) *
-                               smoothstep(0.15, 0.13, center.y) * step(-0.05, center.y);
-                float micTop = smoothstep(0.08, 0.06, length(center - vec2(0.0, 0.15)));
-                float micStand = smoothstep(0.015, 0.0, abs(center.x)) *
-                                step(-0.15, center.y) * step(center.y, -0.05);
-                color += uColor * (micBody + micTop + micStand) * 0.5;
+                // Central sound source
+                float source = exp(-length(center) * 10.0);
+                color += uColor * source * 1.2;
 
-                // Audio waveform rings
-                for (float i = 1.0; i < 5.0; i++) {
-                    float radius = 0.1 + i * 0.07;
-                    float wave = sin(time * (3.0 - i * 0.3) + i * 1.5);
-                    float amplitude = 0.02 + abs(wave) * 0.03;
-
-                    // Semicircle waves (left and right of mic)
-                    float dist = length(center);
-                    float waveRing = smoothstep(amplitude, 0.0, abs(dist - radius));
-                    waveRing *= step(0.1, abs(center.x)); // Don't overlap mic
-                    waveRing *= smoothstep(-0.2, 0.1, center.y); // Upper half focus
-
-                    float intensity = (1.0 - i / 5.0) * (abs(wave) * 0.5 + 0.5);
-                    color += uAccentColor * waveRing * intensity * 0.4;
+                // Expanding sound waves
+                for (float i = 1.0; i < 6.0; i++) {
+                    float radius = i * 0.08;
+                    float wave = sin(time * 3.0 - i * 0.5);
+                    float ring = smoothstep(0.025, 0.0, abs(length(center) - radius - wave * 0.02));
+                    float fade = 1.0 - i / 6.0;
+                    color += uAccentColor * ring * fade * 0.6;
                 }
 
-                // Spectrum bars at bottom
-                for (float i = 0.0; i < 7.0; i++) {
-                    float barX = -0.3 + i * 0.1;
-                    float barHeight = 0.05 + sin(time * 4.0 + i * 1.2) * 0.04;
-                    float bar = step(abs(center.x - barX), 0.02) *
-                               step(-0.35, center.y) * step(center.y, -0.35 + barHeight);
-                    color += mix(uColor, uAccentColor, i / 7.0) * bar * 0.5;
+                // Frequency bars
+                for (float i = 0.0; i < 9.0; i++) {
+                    float x = -0.4 + i * 0.1;
+                    float h = 0.08 + sin(time * 5.0 + i * 1.3) * 0.06;
+                    float bar = smoothstep(0.025, 0.01, abs(center.x - x));
+                    bar *= step(-0.35, center.y) * step(center.y, -0.35 + h);
+                    color += mix(uColor, uAccentColor, i / 9.0) * bar * 0.7;
                 }
 
-                return color * 0.5;
+                return color * 0.7;
             }
 
             void main() {
@@ -1893,38 +1824,32 @@
                 label.className = 'card-label';
                 label.id = `label-${this.data.id}-${Date.now()}`;
 
-                // v6.0: Updated structure with header spacer and content wrapper
-                // Only "Launch →" button is clickable (cards remain draggable)
+                // v6.0: Clean card structure - header spacer + content
                 label.innerHTML = `
                     <div class="card-label-inner">
                         <div class="label-spacer"></div>
                         <div class="card-content">
-                            <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
-                                ${this.data.status === 'live' ? 'Live' : 'Coming'}
-                            </span>
-                            <div class="card-category">${this.data.category}</div>
+                            <div class="card-header-row">
+                                <span class="card-status ${this.data.status === 'live' ? 'status-live' : 'status-coming'}">
+                                    ${this.data.status === 'live' ? '● Live' : '○ Coming'}
+                                </span>
+                                <span class="card-category">${this.data.category}</span>
+                            </div>
                             <h3 class="card-title">${this.data.title}</h3>
                             <p class="card-description">${this.data.description}</p>
                             <div class="card-tech">
                                 ${this.data.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
                             </div>
                             ${this.data.url
-                                ? `<a href="${this.data.url}" class="card-link" target="_blank">Launch &rarr;</a>`
+                                ? `<a href="${this.data.url}" class="card-link" target="_blank" rel="noopener">Launch →</a>`
                                 : `<span class="card-link card-link-disabled">Coming Soon</span>`
                             }
-                            <div class="conatus-bar">
-                                <div class="conatus-fill" style="width: 100%"></div>
-                            </div>
                         </div>
                     </div>
                 `;
 
                 container.appendChild(label);
                 this.labelElement = label;
-                this.conatusBar = label.querySelector('.conatus-fill');
-
-                // v6.0: No card-wide click handler - only Launch button handles clicks
-                // Cards remain fully draggable/interactive with physics
             }
 
             updateLabel(camera) {
@@ -1950,11 +1875,6 @@
 
                 // Opacity based on visibility (hide if behind camera)
                 this.labelElement.style.opacity = pos.z < 1 ? 1 : 0;
-
-                // Update conatus bar
-                if (this.conatusBar && !this.isChild) {
-                    this.conatusBar.style.width = `${this.conatus * 100}%`;
-                }
 
                 // Child styling
                 if (this.isChild && !this.labelElement.classList.contains('is-child')) {
