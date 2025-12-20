@@ -17,7 +17,7 @@
 
     <style>
         /* ═══════════════════════════════════════════════════════════════════
-           NEURABYTE LABS - CYBER-KINETIC EXPERIENCE v4.0
+           NEURABYTE LABS - CYBER-KINETIC EXPERIENCE v5.0
            Neural Network Background + Three.js + WebGL + Physics
            "More Geometrico" - Spinoza's Vision Made Digital
            ═══════════════════════════════════════════════════════════════════ */
@@ -709,7 +709,7 @@
     <div class="control-panel" id="control-panel">
         <div class="panel-header">
             <div class="panel-title">Experience Controls</div>
-            <div class="panel-version">v4.0</div>
+            <div class="panel-version">v5.0</div>
         </div>
 
         <div class="panel-section">
@@ -756,7 +756,7 @@
             </div>
             <div class="control-item">
                 <span class="control-label">Cards</span>
-                <span class="control-label" id="card-count">5</span>
+                <span class="control-label" id="card-count">8</span>
             </div>
             <div class="control-item">
                 <span class="control-label">Neurons</span>
@@ -768,9 +768,14 @@
             <div class="section-title">Changelog</div>
             <div class="changelog-list">
                 <div class="changelog-item">
+                    <div class="changelog-version">v5.0 "Digital Renaissance"</div>
+                    <div class="changelog-date">December 2025</div>
+                    <div class="changelog-text">8 projects: NEXUS, ORACLE, Engram, Manifesto, Voice. Unique 3D scenes per card.</div>
+                </div>
+                <div class="changelog-item">
                     <div class="changelog-version">v4.0 "More Geometrico"</div>
                     <div class="changelog-date">December 2025</div>
-                    <div class="changelog-text">Neural network background, card emergence animation, Inner Cosmos scenes, control panel</div>
+                    <div class="changelog-text">Neural network background, card emergence, Inner Cosmos scenes, control panel</div>
                 </div>
                 <div class="changelog-item">
                     <div class="changelog-version">v3.0 "Cyber-Kinetic"</div>
@@ -853,24 +858,54 @@
                     icon: '🧠'
                 },
                 {
-                    id: 'emotion',
-                    title: 'Emotion Lab',
-                    category: 'AI Experiments',
-                    description: 'Interactive Spinoza emotion analysis. Explore the geometry of affects.',
-                    tech: ['CONATUS', 'D3.js', 'Spinoza'],
-                    status: 'coming',
-                    url: null,
-                    icon: '💫'
+                    id: 'nexus',
+                    title: 'NEXUS AI Forge',
+                    category: 'Developer Tools',
+                    description: 'Ultimate AI-augmented developer tool. Cross-platform, Rust-powered, multi-model AI.',
+                    tech: ['Rust', 'Multi-AI', 'CLI'],
+                    status: 'live',
+                    url: 'https://github.com/mrsarac/NEXUS-AI-Forge',
+                    icon: '⚡'
                 },
                 {
-                    id: 'particle',
-                    title: 'Particle Lab',
-                    category: 'Physics & Visualization',
-                    description: 'WebGPU-powered particle systems. Millions of particles, infinite possibilities.',
-                    tech: ['WebGPU', 'Compute', 'GLSL'],
-                    status: 'coming',
+                    id: 'oracle',
+                    title: 'ORACLE Engine',
+                    category: 'AI Simulation',
+                    description: 'Strategic decision simulation platform. Gemini AI-powered scenario analysis.',
+                    tech: ['Gemini AI', 'Python', 'Strategy'],
+                    status: 'live',
+                    url: 'https://github.com/mrsarac/ORACLE-Engine',
+                    icon: '🔮'
+                },
+                {
+                    id: 'engram',
+                    title: 'Engram Memory',
+                    category: 'Learning & Memory',
+                    description: 'Cyberpunk memory prosthetic. AI-powered flashcards with FSRS spaced repetition.',
+                    tech: ['FSRS', 'AI', 'Cyberpunk'],
+                    status: 'dev',
                     url: null,
-                    icon: '✨'
+                    icon: '🧬'
+                },
+                {
+                    id: 'manifesto',
+                    title: 'Digital Renaissance',
+                    category: 'Philosophy & Education',
+                    description: 'Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.',
+                    tech: ['AI Education', 'Philosophy', 'Manifesto'],
+                    status: 'live',
+                    url: 'https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/',
+                    icon: '📜'
+                },
+                {
+                    id: 'voice',
+                    title: 'NeuraByte Voice',
+                    category: 'Native Apps',
+                    description: 'Zero-latency voice-to-text for macOS & iOS. Push-to-talk with premium animations.',
+                    tech: ['Swift', 'macOS', 'iOS'],
+                    status: 'dev',
+                    url: null,
+                    icon: '🎤'
                 }
             ],
             physics: {
@@ -904,7 +939,7 @@
             uniform float uTime;
             uniform vec2 uMouse;
             uniform float uMouseRadius;
-            uniform vec3 uCardPositions[5];
+            uniform vec3 uCardPositions[8];
             uniform float uDragIntensity;
             uniform float uGlobalPulse;
             uniform vec3 uRippleOrigin;
@@ -943,7 +978,7 @@
 
                 // Card influence - neurons cluster around cards
                 float totalCardInfluence = 0.0;
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 8; i++) {
                     vec3 cardPos = uCardPositions[i];
                     vec2 cardDiff = pos.xy - cardPos.xy;
                     float cardDist = length(cardDiff);
@@ -1173,7 +1208,7 @@
             uniform float uGlobalPulse;
             uniform float uChromaticPhase;
             uniform float uEmergence;
-            uniform int uSceneType; // 0=SpinozaOS, 1=Lithosphere, 2=Boardroom, 3=Emotion, 4=Particle
+            uniform int uSceneType; // 0=SpinozaOS, 1=Lithosphere, 2=Boardroom, 3=NEXUS, 4=ORACLE, 5=Engram, 6=Manifesto, 7=Voice
 
             varying vec2 vUv;
             varying float vElevation;
@@ -1284,59 +1319,196 @@
                 return color * 0.4;
             }
 
-            // Emotion Lab: Emotional Waves
-            vec3 sceneEmotion(vec2 uv, float time) {
-                vec2 center = uv - 0.5;
+            // NEXUS AI Forge: Matrix Code Rain
+            vec3 sceneNexus(vec2 uv, float time) {
                 vec3 color = vec3(0.0);
 
-                // Layered emotional waves
-                for (float i = 0.0; i < 4.0; i++) {
-                    float freq = 3.0 + i * 2.0;
-                    float amp = 0.1 - i * 0.02;
-                    float phase = i * 1.57;
+                // Matrix-style falling code columns
+                for (float i = 0.0; i < 8.0; i++) {
+                    float colX = (i + 0.5) / 8.0;
+                    float speed = 0.5 + fract(sin(i * 45.67) * 123.45) * 0.5;
+                    float offset = fract(sin(i * 78.9) * 456.78);
 
-                    float wave = sin(uv.x * freq + time * (1.0 + i * 0.3) + phase) * amp;
-                    float line = smoothstep(0.02, 0.0, abs(uv.y - 0.5 - wave - i * 0.08 + 0.12));
+                    // Falling character position
+                    float charY = fract(time * speed + offset);
+                    float trail = smoothstep(0.0, 0.3, charY) * smoothstep(1.0, 0.7, charY);
 
-                    vec3 waveColor = mix(uColor, uAccentColor, i / 4.0);
-                    color += waveColor * line * (0.6 - i * 0.1);
+                    // Character glow
+                    float distX = abs(uv.x - colX);
+                    float distY = abs(uv.y - (1.0 - charY));
+                    float charGlow = smoothstep(0.05, 0.01, distX) * smoothstep(0.08, 0.02, distY);
+
+                    // Trail behind character
+                    float trailGlow = smoothstep(0.03, 0.0, distX) * step(uv.y, 1.0 - charY) *
+                                     smoothstep(0.0, 0.2, (1.0 - charY) - uv.y);
+
+                    color += vec3(0.1, 1.0, 0.3) * charGlow * 0.8;
+                    color += vec3(0.0, 0.5, 0.2) * trailGlow * 0.3;
                 }
 
-                // Central emotion indicator
-                float emotionGlow = exp(-length(center) * 4.0);
-                float emotionPulse = sin(time * 1.5) * 0.3 + 0.7;
-                color += uColor * emotionGlow * emotionPulse * 0.5;
+                // Rust orange accent pulse
+                float centerGlow = exp(-length(uv - 0.5) * 3.0);
+                color += vec3(0.9, 0.4, 0.1) * centerGlow * (sin(time * 2.0) * 0.3 + 0.4);
 
                 return color * 0.4;
             }
 
-            // Particle Lab: Particle Field
-            vec3 sceneParticle(vec2 uv, float time) {
+            // ORACLE Engine: Decision Tree / Strategy Branches
+            vec3 sceneOracle(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
                 vec3 color = vec3(0.0);
 
-                // Pseudo-random particle field
-                for (float i = 0.0; i < 15.0; i++) {
-                    // Deterministic "random" positions
-                    float rx = fract(sin(i * 12.9898) * 43758.5453);
-                    float ry = fract(sin(i * 78.233) * 43758.5453);
+                // Central oracle eye
+                float eyeRadius = 0.08 + sin(time * 1.5) * 0.02;
+                float eye = smoothstep(eyeRadius + 0.02, eyeRadius, length(center));
+                float pupil = smoothstep(0.03, 0.01, length(center));
+                color += uAccentColor * eye * 0.8;
+                color += vec3(0.1) * pupil;
 
-                    vec2 particlePos = vec2(
-                        rx + sin(time * (0.5 + rx) + i) * 0.1,
-                        ry + cos(time * (0.3 + ry) + i * 1.3) * 0.1
-                    );
+                // Decision branches radiating outward
+                for (float i = 0.0; i < 6.0; i++) {
+                    float angle = i * 1.047 + time * 0.2; // 60 degree spacing
+                    vec2 dir = vec2(cos(angle), sin(angle));
 
-                    float particle = smoothstep(0.03, 0.01, length(uv - particlePos));
-                    float flicker = sin(time * 5.0 + i * 3.0) * 0.3 + 0.7;
+                    // Main branch
+                    float branch = smoothstep(0.02, 0.0, abs(dot(center, vec2(-dir.y, dir.x))));
+                    branch *= smoothstep(0.1, 0.15, length(center)) * smoothstep(0.45, 0.35, length(center));
 
-                    color += mix(uColor, uAccentColor, rx) * particle * flicker;
+                    // Decision nodes at branch ends
+                    vec2 nodePos = dir * 0.3;
+                    float node = smoothstep(0.04, 0.02, length(center - nodePos));
+                    float nodePulse = sin(time * 2.0 + i * 1.0) * 0.3 + 0.7;
+
+                    color += uColor * branch * 0.4;
+                    color += uAccentColor * node * nodePulse * 0.6;
                 }
 
-                // Connecting streams
-                float stream = sin(uv.x * 20.0 + uv.y * 10.0 + time * 2.0) * 0.5 + 0.5;
-                stream *= smoothstep(0.6, 0.4, length(uv - 0.5));
-                color += uAccentColor * stream * 0.1;
+                // Probability waves
+                float wave = sin(length(center) * 20.0 - time * 3.0) * 0.5 + 0.5;
+                wave *= smoothstep(0.4, 0.2, length(center));
+                color += uColor * wave * 0.1;
 
-                return color * 0.3;
+                return color * 0.4;
+            }
+
+            // Engram Memory: Cyberpunk Memory Cubes
+            vec3 sceneEngram(vec2 uv, float time) {
+                vec3 color = vec3(0.0);
+
+                // 3D-like memory grid
+                vec2 gridUv = fract(uv * 3.0) - 0.5;
+                vec2 gridId = floor(uv * 3.0);
+
+                // Pseudo-3D cube effect
+                float cubePhase = sin(time * 1.5 + gridId.x * 2.0 + gridId.y * 3.0) * 0.5 + 0.5;
+                float cubeSize = 0.15 + cubePhase * 0.1;
+
+                // Cube face
+                float cube = step(abs(gridUv.x), cubeSize) * step(abs(gridUv.y), cubeSize);
+
+                // Cube edges (3D effect)
+                float edgeL = smoothstep(0.02, 0.0, abs(gridUv.x + cubeSize));
+                float edgeR = smoothstep(0.02, 0.0, abs(gridUv.x - cubeSize));
+                float edgeT = smoothstep(0.02, 0.0, abs(gridUv.y + cubeSize));
+                float edgeB = smoothstep(0.02, 0.0, abs(gridUv.y - cubeSize));
+                float edges = (edgeL + edgeR) * step(abs(gridUv.y), cubeSize) +
+                             (edgeT + edgeB) * step(abs(gridUv.x), cubeSize);
+
+                // Memory state colors (cyberpunk palette)
+                vec3 memColor = mix(
+                    vec3(0.0, 0.8, 0.9),  // Cyan
+                    vec3(0.9, 0.1, 0.5),  // Magenta
+                    fract(gridId.x * 0.3 + gridId.y * 0.7 + time * 0.1)
+                );
+
+                color += memColor * cube * 0.2 * cubePhase;
+                color += vec3(0.9, 0.9, 1.0) * edges * 0.5;
+
+                // Data stream overlay
+                float stream = sin(uv.y * 30.0 + time * 5.0) * 0.5 + 0.5;
+                stream *= sin(uv.x * 20.0 - time * 3.0) * 0.5 + 0.5;
+                color += vec3(0.0, 1.0, 0.8) * stream * 0.05;
+
+                return color * 0.5;
+            }
+
+            // Digital Renaissance Manifesto: Knowledge Waves
+            vec3 sceneManifesto(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                vec3 color = vec3(0.0);
+
+                // Open book shape
+                float bookSpine = smoothstep(0.02, 0.0, abs(center.x));
+                float bookPage = smoothstep(0.4, 0.35, abs(center.x)) * smoothstep(-0.3, -0.1, center.y);
+                color += vec3(0.9, 0.85, 0.7) * bookPage * 0.15;
+                color += uColor * bookSpine * 0.3;
+
+                // Flowing text lines (abstract)
+                for (float i = 0.0; i < 6.0; i++) {
+                    float lineY = -0.2 + i * 0.08;
+                    float lineWave = sin(uv.x * 15.0 + time * (1.0 + i * 0.2) + i) * 0.01;
+                    float textLine = smoothstep(0.015, 0.0, abs(center.y - lineY - lineWave));
+                    textLine *= smoothstep(0.35, 0.1, abs(center.x));
+
+                    // Text appears/fades effect
+                    float reveal = smoothstep(-0.3, 0.3, sin(time * 0.5 + i * 0.5) + center.x * 2.0);
+                    color += uColor * textLine * reveal * 0.4;
+                }
+
+                // Knowledge emanation (light rays from book)
+                float rays = 0.0;
+                for (float i = 0.0; i < 5.0; i++) {
+                    float angle = -0.5 + i * 0.25;
+                    vec2 rayDir = vec2(sin(angle), cos(angle));
+                    float ray = smoothstep(0.03, 0.0, abs(dot(center + vec2(0.0, 0.2), vec2(-rayDir.y, rayDir.x))));
+                    ray *= step(0.0, dot(center + vec2(0.0, 0.2), rayDir));
+                    ray *= smoothstep(0.5, 0.1, length(center + vec2(0.0, 0.2)));
+                    rays += ray * (sin(time * 2.0 + i) * 0.3 + 0.7);
+                }
+                color += uAccentColor * rays * 0.2;
+
+                return color * 0.5;
+            }
+
+            // NeuraByte Voice: Audio Waveform
+            vec3 sceneVoice(vec2 uv, float time) {
+                vec2 center = uv - 0.5;
+                vec3 color = vec3(0.0);
+
+                // Central microphone icon (simplified)
+                float micBody = smoothstep(0.06, 0.04, abs(center.x)) *
+                               smoothstep(0.15, 0.13, center.y) * step(-0.05, center.y);
+                float micTop = smoothstep(0.08, 0.06, length(center - vec2(0.0, 0.15)));
+                float micStand = smoothstep(0.015, 0.0, abs(center.x)) *
+                                step(-0.15, center.y) * step(center.y, -0.05);
+                color += uColor * (micBody + micTop + micStand) * 0.5;
+
+                // Audio waveform rings
+                for (float i = 1.0; i < 5.0; i++) {
+                    float radius = 0.1 + i * 0.07;
+                    float wave = sin(time * (3.0 - i * 0.3) + i * 1.5);
+                    float amplitude = 0.02 + abs(wave) * 0.03;
+
+                    // Semicircle waves (left and right of mic)
+                    float dist = length(center);
+                    float waveRing = smoothstep(amplitude, 0.0, abs(dist - radius));
+                    waveRing *= step(0.1, abs(center.x)); // Don't overlap mic
+                    waveRing *= smoothstep(-0.2, 0.1, center.y); // Upper half focus
+
+                    float intensity = (1.0 - i / 5.0) * (abs(wave) * 0.5 + 0.5);
+                    color += uAccentColor * waveRing * intensity * 0.4;
+                }
+
+                // Spectrum bars at bottom
+                for (float i = 0.0; i < 7.0; i++) {
+                    float barX = -0.3 + i * 0.1;
+                    float barHeight = 0.05 + sin(time * 4.0 + i * 1.2) * 0.04;
+                    float bar = step(abs(center.x - barX), 0.02) *
+                               step(-0.35, center.y) * step(center.y, -0.35 + barHeight);
+                    color += mix(uColor, uAccentColor, i / 7.0) * bar * 0.5;
+                }
+
+                return color * 0.5;
             }
 
             void main() {
@@ -1352,15 +1524,21 @@
                                   smoothstep(0.08, 0.15, vUv.y) * smoothstep(0.92, 0.85, vUv.y);
 
                 if (uSceneType == 0) {
-                    sceneColor = sceneSpinoza(sceneUv, uTime);
+                    sceneColor = sceneSpinoza(sceneUv, uTime);      // SpinozaOS
                 } else if (uSceneType == 1) {
-                    sceneColor = sceneLithosphere(sceneUv, uTime);
+                    sceneColor = sceneLithosphere(sceneUv, uTime);  // Lithosphere
                 } else if (uSceneType == 2) {
-                    sceneColor = sceneBoardroom(sceneUv, uTime);
+                    sceneColor = sceneBoardroom(sceneUv, uTime);    // Boardroom
                 } else if (uSceneType == 3) {
-                    sceneColor = sceneEmotion(sceneUv, uTime);
+                    sceneColor = sceneNexus(sceneUv, uTime);        // NEXUS AI Forge
+                } else if (uSceneType == 4) {
+                    sceneColor = sceneOracle(sceneUv, uTime);       // ORACLE Engine
+                } else if (uSceneType == 5) {
+                    sceneColor = sceneEngram(sceneUv, uTime);       // Engram Memory
+                } else if (uSceneType == 6) {
+                    sceneColor = sceneManifesto(sceneUv, uTime);    // Digital Renaissance
                 } else {
-                    sceneColor = sceneParticle(sceneUv, uTime);
+                    sceneColor = sceneVoice(sceneUv, uTime);        // NeuraByte Voice
                 }
 
                 // Apply scene with mask and hover enhancement
@@ -1608,13 +1786,16 @@
 
                 this.mesh = new THREE.Mesh(geometry, this.material);
 
-                // Position in 3D space - spread cards dynamically for 5 cards
+                // Position in 3D space - spread cards dynamically for 8 cards
                 const positions = [
-                    { x: 0, y: 18, z: 6 },     // Top center - SpinozaOS (featured)
-                    { x: -24, y: 4, z: 3 },    // Left - Lithosphere
-                    { x: 24, y: 6, z: -2 },    // Right - Boardroom
-                    { x: -20, y: -12, z: -4 }, // Bottom left - Emotion Lab
-                    { x: 22, y: -10, z: 5 }    // Bottom right - Particle Lab
+                    { x: 0, y: 20, z: 6 },     // 0: SpinozaOS (featured top center)
+                    { x: -26, y: 8, z: 2 },    // 1: Lithosphere (top left)
+                    { x: 26, y: 10, z: -2 },   // 2: Boardroom (top right)
+                    { x: -28, y: -6, z: -3 },  // 3: NEXUS AI Forge (mid left)
+                    { x: 0, y: -2, z: 8 },     // 4: ORACLE Engine (center front)
+                    { x: 28, y: -4, z: -1 },   // 5: Engram Memory (mid right)
+                    { x: -22, y: -18, z: 4 },  // 6: Digital Renaissance (bottom left)
+                    { x: 24, y: -16, z: 3 }    // 7: NeuraByte Voice (bottom right)
                 ];
 
                 const pos = positions[index] || { x: 0, y: 0, z: 0 };
@@ -2540,8 +2721,8 @@
                 }
 
                 // Update card positions in grid shader for attraction effect (first 5 for uniform)
-                const cardPositions = this.cards.slice(0, 5).map(card => card.mesh.position.clone());
-                while (cardPositions.length < 5) {
+                const cardPositions = this.cards.slice(0, 8).map(card => card.mesh.position.clone());
+                while (cardPositions.length < 8) {
                     cardPositions.push(new THREE.Vector3(0, 0, -100)); // Off-screen
                 }
                 this.gridMaterial.uniforms.uCardPositions.value = cardPositions;
