@@ -1,6 +1,6 @@
 {
   "name": "neurabyte-labs",
-  "version": "11.2.0",
+  "version": "12.1.0",
   "description": "NeuraByte Labs - Experimental AI Projects Showcase",
   "type": "module",
   "scripts": {
