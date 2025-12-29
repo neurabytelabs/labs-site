@@ -1,20 +1,31 @@
 [
   {
-    "id": "metalogos",
-    "title": "META-LOGOS: The Cognitive Forge",
-    "category": "AI Framework",
-    "description": "Enterprise-grade cognitive architecture for autonomous agents. Self-improving codebase with i18n support.",
-    "tech": ["Python", "LangChain", "Cognitive Arch"],
+    "id": "conatus",
+    "title": "CONATUS",
+    "category": "AI Philosophy",
+    "description": "Spinoza-inspired emotional analysis platform. Transform journaling into philosophical self-discovery with AI.",
+    "tech": ["React", "Express", "PostgreSQL", "Gemini AI"],
     "status": "live",
-    "url": "https://forge.neurabytelabs.com",
-    "gradient": "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+    "url": "https://getconatus.com",
+    "gradient": "linear-gradient(135deg, #fbbf24 0%, #d97706 100%)",
+    "icon": "sun"
+  },
+  {
+    "id": "substance",
+    "title": "SUBSTANCE",
+    "category": "Intelligence Engine",
+    "description": "AI-powered research intelligence platform. Real-time arXiv analysis with socket-based streaming.",
+    "tech": ["React", "Express", "PostgreSQL", "Socket.io"],
+    "status": "live",
+    "url": "https://substanceagi.com",
+    "gradient": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
     "icon": "brain"
   },
   {
     "id": "spinozaos",
     "title": "SpinozaOS",
     "category": "Design Systems",
-    "description": "Award-winning design system for the Age of Superintelligence. \"More Geometrico\" philosophy.",
+    "description": "Philosophical design system for the Age of Superintelligence. More Geometrico approach.",
     "tech": ["Design Tokens", "React", "Motion"],
     "status": "live",
     "url": "https://github.com/mrsarac/spinozaos",
@@ -42,6 +53,39 @@
     "url": "https://board.phinote.com",
     "gradient": "linear-gradient(135deg, #8b5cf6 0%, #4c1d95 100%)",
     "icon": "users"
+  },
+  {
+    "id": "silent-ear",
+    "title": "Silent-Ear",
+    "category": "Industrial Edge AI",
+    "description": "Real-time anomaly detection for predictive maintenance. Rust-powered edge AI with WebSocket streaming.",
+    "tech": ["Rust", "Edge AI", "WebSocket"],
+    "status": "live",
+    "url": "https://silent-ear.neurabytelabs.com",
+    "gradient": "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+    "icon": "activity"
+  },
+  {
+    "id": "cactus-rs",
+    "title": "cactus-rs",
+    "category": "Open Source",
+    "description": "Rust FFI bindings for Cactus AI engine. LLM inference, Whisper, embeddings, and vector search.",
+    "tech": ["Rust", "FFI", "Metal GPU", "LLM"],
+    "status": "live",
+    "url": "https://github.com/mrsarac/cactus-rs",
+    "gradient": "linear-gradient(135deg, #22c55e 0%, #15803d 100%)",
+    "icon": "chip"
+  },
+  {
+    "id": "metalogos",
+    "title": "META-LOGOS",
+    "category": "AI Framework",
+    "description": "Enterprise-grade cognitive architecture for autonomous agents. Self-improving codebase.",
+    "tech": ["Python", "LangChain", "Cognitive Arch"],
+    "status": "live",
+    "url": "https://forge.neurabytelabs.com",
+    "gradient": "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+    "icon": "brain"
   },
   {
     "id": "nexus",
@@ -75,28 +119,6 @@
     "url": null,
     "gradient": "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
     "icon": "chip"
-  },
-  {
-    "id": "silent-ear",
-    "title": "Silent-Ear",
-    "category": "Industrial Edge AI",
-    "description": "Real-time anomaly detection for predictive maintenance. Rust-powered edge AI with WebSocket streaming.",
-    "tech": ["Rust", "Edge AI", "WebSocket"],
-    "status": "live",
-    "url": "https://silent-ear.neurabytelabs.com",
-    "gradient": "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
-    "icon": "activity"
-  },
-  {
-    "id": "manifesto",
-    "title": "Digital Renaissance",
-    "category": "Philosophy & Education",
-    "description": "Manifesto for the Age of Autodidacts. AI-powered self-learning revolution.",
-    "tech": ["AI Education", "Philosophy", "Manifesto"],
-    "status": "live",
-    "url": "https://readwise.io/reader/shared/01kayk0tzxvfc603qbvmcwfr21/",
-    "gradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-    "icon": "book"
   },
   {
     "id": "voice",
