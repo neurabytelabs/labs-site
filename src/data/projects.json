@@ -138,7 +138,7 @@
     "description": "Terminal information flow visualizer. Tomato Garden philosophy 🍅 - visualize Second Core knowledge.",
     "tech": ["Python", "Textual TUI", "Spinoza", "Second Core"],
     "status": "live",
-    "url": "https://github.com/mrsarac/ayas",
+    "url": null,
     "gradient": "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
     "icon": "terminal"
   },
@@ -182,7 +182,7 @@
     "description": "SuperWhisper-inspired voice-to-text app. Zero-latency speech recognition for iOS & macOS.",
     "tech": ["Swift", "Cactus AI", "iOS", "macOS"],
     "status": "dev",
-    "url": "https://github.com/mrsarac/echo-ios",
+    "url": null,
     "gradient": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
     "icon": "mic"
   },
@@ -193,7 +193,7 @@
     "description": "AI-powered macOS customization platform. Built on Spinoza's CONATUS, RATIO, LAETITIA principles.",
     "tech": ["Rust", "AI", "macOS", "Spinoza"],
     "status": "dev",
-    "url": "https://github.com/neurabytelabs/potentia",
+    "url": null,
     "gradient": "linear-gradient(135deg, #fbbf24 0%, #d97706 100%)",
     "icon": "sparkles"
   }
