@@ -83,7 +83,7 @@
     "description": "Industrial protocol bridge. Modbus TCP/RTU to REST/WebSocket/MQTT gateway for legacy PLCs.",
     "tech": ["Rust", "Modbus", "MQTT", "WebSocket"],
     "status": "live",
-    "url": "https://rustbridge.mustafasarac.com",
+    "url": "https://rustbridge.mustafasarac.com/api/info",
     "gradient": "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
     "icon": "zap"
   },
@@ -93,8 +93,8 @@
     "category": "Design Tools",
     "description": "Free & open-source fake chat/social post generator. WhatsApp, iMessage, Discord, Instagram mockups.",
     "tech": ["Next.js 16", "React 19", "TypeScript", "Tailwind"],
-    "status": "dev",
-    "url": null,
+    "status": "live",
+    "url": "https://fakely.mustafasarac.com",
     "gradient": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
     "icon": "message-square"
   },
